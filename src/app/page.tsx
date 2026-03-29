@@ -200,7 +200,7 @@ export default function LucidApp() {
         {currentModule === "summary" && (
           <Summary
             projectData={projectData}
-            onBackToDashboard={() => setCurrentModule("dashboard")}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
       </ScrollArea>

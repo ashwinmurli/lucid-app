@@ -99,6 +99,18 @@ export default function TensionPairs({ onComplete, onBack }) {
 
   if (locked) {
     return (
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Tensions</span>
+            <span style={{ fontSize: 9, color: "rgba(61,56,48,0.35)" }}>–</span>
+            <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Locked</span>
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto" }}>
       <div style={{ padding: "8vh 48px 60px", animation: `fadeIn 0.6s ${ease} both` }}>
         <div style={{ maxWidth: 520, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 32 }}>
@@ -125,11 +137,30 @@ export default function TensionPairs({ onComplete, onBack }) {
           )}
         </div>
       </div>
+      </div>
+      </div>
     );
   }
 
   return (
-    <div style={{ padding: "40px 48px 60px", animation: `promptIn 0.5s ${ease} both` }}>
+    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Tensions</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
+            <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcd, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{count}/3</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto" }}>
+      <div style={{ padding: "40px 48px 60px", animation: `promptIn 0.5s ${ease} both` }}>
       <div style={{ maxWidth: 520, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Define the tensions</h2>
@@ -180,6 +211,8 @@ export default function TensionPairs({ onComplete, onBack }) {
           </div>
         )}
       </div>
+    </div>
+    </div>
     </div>
   );
 }
