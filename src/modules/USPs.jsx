@@ -33,7 +33,7 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isPrimary ? "rgba(212,115,74,0.15)" : "rgba(61,56,48,0.06)"}`,
+        border: `1px solid ${isPrimary ? "rgba(229,166,50,0.15)" : "rgba(44,40,36,0.06)"}`,
         boxShadow: hover && !isLocked
           ? "0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.5) inset"
           : S.raised,
@@ -58,14 +58,14 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
               width: 22, height: 22, borderRadius: "50%", border: "none",
               cursor: "pointer", flexShrink: 0, marginTop: 2,
               background: isPrimary
-                ? radioPressed ? "#B85A35" : S.accent
+                ? radioPressed ? "#C8901F" : S.accent
                 : radioPressed
                   ? "#C8C3B9"
                   : `linear-gradient(180deg, ${S.card} 0%, ${S.recess} 100%)`,
               boxShadow: isPrimary
                 ? radioPressed
-                  ? "0 1px 2px rgba(0,0,0,0.15) inset, 0 0 6px rgba(212,115,74,0.2)"
-                  : "0 2px 6px rgba(212,115,74,0.25), 0 1px 2px rgba(0,0,0,0.08), 0 1px 0 rgba(255,180,140,0.15) inset"
+                  ? "0 1px 2px rgba(0,0,0,0.15) inset, 0 0 6px rgba(229,166,50,0.2)"
+                  : "0 2px 6px rgba(229,166,50,0.25), 0 1px 2px rgba(0,0,0,0.08), 0 1px 0 rgba(255,180,140,0.15) inset"
                 : radioPressed
                   ? S.pressed
                   : "0 1px 3px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.6) inset, 0 -1px 0 rgba(0,0,0,0.03)",
@@ -80,10 +80,10 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
       </div>
 
       {/* Lucy annotation */}
-      <div style={{ height: 1, background: "rgba(212,115,74,0.06)" }} />
+      <div style={{ height: 1, background: "rgba(229,166,50,0.06)" }} />
       <div style={{ padding: "8px 16px", display: "flex", alignItems: "flex-start", gap: 8 }}>
-        <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(212,115,74,0.3)" }} />
-        <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(212,115,74,0.45)", lineHeight: 1.5 }}>{usp.raw}</div>
+        <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
+        <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{usp.raw}</div>
       </div>
 
       {/* Proof & contrast — controlled expand */}
@@ -92,7 +92,7 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
           display: "flex", alignItems: "center", gap: 4,
           background: "none", border: "none", cursor: "pointer", padding: "4px 0",
           fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-          color: "rgba(61,56,48,0.3)", transition: "color 0.15s ease",
+          color: "rgba(44,40,36,0.3)", transition: "color 0.15s ease",
         }}>
           <span style={{
             display: "inline-block", fontSize: 10, lineHeight: 1,
@@ -109,13 +109,13 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
             animation: `fadeIn 0.2s ${ease} both`,
           }}>
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.2)", marginBottom: 4 }}>WHY IT'S TRUE</div>
-              <div style={{ fontSize: 12, fontWeight: 400, color: "rgba(61,56,48,0.55)", lineHeight: 1.6 }}>{usp.proof}</div>
+              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)", marginBottom: 4 }}>WHY IT'S TRUE</div>
+              <div style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.55)", lineHeight: 1.6 }}>{usp.proof}</div>
             </div>
-            <div style={{ height: 1, background: "rgba(61,56,48,0.06)", margin: "0 0 10px" }} />
+            <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 0 10px" }} />
             <div>
-              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.2)", marginBottom: 4 }}>WHAT OTHERS DO</div>
-              <div style={{ fontSize: 12, fontWeight: 400, color: "rgba(61,56,48,0.55)", lineHeight: 1.6 }}>{usp.contrast}</div>
+              <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)", marginBottom: 4 }}>WHAT OTHERS DO</div>
+              <div style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.55)", lineHeight: 1.6 }}>{usp.contrast}</div>
             </div>
           </div>
         )}
@@ -167,30 +167,30 @@ export default function USPs({ onBack } = {}) {
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'Inter', sans-serif", color: S.text, position: "relative", background: "#D8D3CA" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
         @keyframes promptIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         @keyframes lucyPulse { 0%, 100% { opacity:0.7; } 50% { opacity:1; } }
         textarea:focus, input:focus { outline:none; }
-        ::selection { background:rgba(212,115,74,0.1); }
+        ::selection { background:rgba(229,166,50,0.12); }
         textarea::placeholder, input::placeholder { color: rgba(0,0,0,0.25); }
         * { box-sizing:border-box; margin:0; padding:0; }
       `}</style>
 
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #EDEAE4 0%, #E5E2DB 100%)", overflow: "hidden" }}>
         {/* Header */}
         <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
+            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDEAE4", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Strategy</span>
-              <span style={{ fontSize: 9, color: "rgba(61,56,48,0.35)" }}>–</span>
-              <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>{locked ? "USPs Locked" : "USPs"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Strategy</span>
+              <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
+              <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "USPs Locked" : "USPs"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
               <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: primaryId ? S.accent : S.lcd, lineHeight: 1 }}>{usps.length}</span>
@@ -204,7 +204,7 @@ export default function USPs({ onBack } = {}) {
               <div style={{ maxWidth: 560, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
                   <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>What makes them different?</h2>
-                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(61,56,48,0.3)", lineHeight: 1.6 }}>Select a lead USP. The rest will support it.</p>
+                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Select a lead USP. The rest will support it.</p>
                 </div>
 
                 {/* Lead USP — floats to top when selected */}
@@ -219,7 +219,7 @@ export default function USPs({ onBack } = {}) {
 
                 {/* Divider */}
                 {primary && supporting.length > 0 && (
-                  <div style={{ height: 1, background: "rgba(61,56,48,0.06)", margin: "8px 0 16px" }} />
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "8px 0 16px" }} />
                 )}
 
                 {/* Supporting / All candidates */}
@@ -246,38 +246,38 @@ export default function USPs({ onBack } = {}) {
                           onChange={(e) => setInput(e.target.value)}
                           placeholder="Write a rough statement about what makes this brand different..."
                           rows={2}
-                          style={{ width: "100%", background: "transparent", border: "none", fontSize: 14, fontWeight: 400, lineHeight: 1.65, color: S.text, resize: "none", outline: "none", fontFamily: "'Inter', sans-serif" }}
+                          style={{ width: "100%", background: "transparent", border: "none", fontSize: 14, fontWeight: 400, lineHeight: 1.65, color: S.text, resize: "none", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
                           onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey && input.trim()) addUSP(); }}
                         />
                       </div>
-                      <div style={{ height: 1, background: "rgba(61,56,48,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
                       <button onClick={addUSP} disabled={!input.trim() || isExpanding}
                         style={{
                           width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                           padding: "11px 0", border: "none",
                           cursor: input.trim() && !isExpanding ? "pointer" : "default",
-                          fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
+                          fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
                           letterSpacing: "0.08em", textTransform: "uppercase",
-                          color: isExpanding ? S.accent : input.trim() ? S.text : "rgba(61,56,48,0.1)",
-                          background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`,
+                          color: isExpanding ? S.accent : input.trim() ? S.text : "rgba(44,40,36,0.1)",
+                          background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
                           boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
                           transition: "all 0.06s ease",
                         }}>
                         {isExpanding ? (
                           <><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent, animation: "lucyPulse 1s ease-in-out infinite" }} />LUCY IS EXPANDING...</>
                         ) : (
-                          <><div style={{ width: 6, height: 6, borderRadius: "50%", background: input.trim() ? S.accent : "rgba(61,56,48,0.08)" }} />EXPAND WITH LUCY</>
+                          <><div style={{ width: 6, height: 6, borderRadius: "50%", background: input.trim() ? S.accent : "rgba(44,40,36,0.08)" }} />EXPAND WITH LUCY</>
                         )}
                       </button>
                     </div>
-                    <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: "1px solid rgba(61,56,48,0.04)", padding: "6px 8px" }}>
+                    <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: "1px solid rgba(44,40,36,0.04)", padding: "6px 8px" }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <LucyScreen mode={isExpanding ? "thinking" : lucyMode} hoveredModeInfo={hoveredModeInfo} aiMode={aiMode}
                             guideText={aiMode === "guide" ? "Write what makes them different in plain language. Lucy will structure it into claim, proof, and contrast." : null} />
                         </div>
-                        <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
-                          {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDE9E1" : "rgba(61,56,48,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
+                        <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
+                          {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
                         </div>
                       </div>
                     </div>
@@ -289,9 +289,9 @@ export default function USPs({ onBack } = {}) {
                   <div style={{ marginTop: 16, animation: `fadeIn 0.4s ${ease} both` }}>
                     <button onClick={() => setLocked(true)} style={{
                       width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer",
-                      fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
                       letterSpacing: "0.08em", textTransform: "uppercase", color: S.text,
-                      background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`,
+                      background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
                       boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)",
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                     }}>
@@ -309,9 +309,9 @@ export default function USPs({ onBack } = {}) {
             <div style={{ padding: "8vh 48px 60px", animation: `fadeIn 0.6s ${ease} both` }}>
               <div style={{ maxWidth: 560, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 4, marginBottom: 16, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(212,115,74,0.3)" }} />
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(61,56,48,0.3)" }}>USPs LOCKED</span>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 4, marginBottom: 16, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(229,166,50,0.3)" }} />
+                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.3)" }}>USPs LOCKED</span>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, letterSpacing: "-0.02em" }}>Why they win.</h2>
                 </div>
@@ -325,7 +325,7 @@ export default function USPs({ onBack } = {}) {
                 )}
 
                 {primary && supporting.length > 0 && (
-                  <div style={{ height: 1, background: "rgba(61,56,48,0.06)", margin: "8px 0 16px" }} />
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "8px 0 16px" }} />
                 )}
 
                 {/* Supporting */}
@@ -345,7 +345,7 @@ export default function USPs({ onBack } = {}) {
                 <div style={{ maxWidth: 300, margin: "40px auto 0" }}>
                   <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-                      <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
+                      <PixelIcon icon="approves" color={S.lcdBright} size={14} />
                       <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>POSITIONING SET</span>
                     </div>
                     <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>1 primary · {supporting.length} supporting</div>
