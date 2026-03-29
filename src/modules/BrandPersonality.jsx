@@ -9,9 +9,8 @@ import { S, ease, colors, fonts, shadows } from "../lib/tokens";
 import { PixelIcon, LucyMini } from "../components/ui";
 
 const MODES = {
-  guide: { key: "GDE", desc: "CONTEXT BEFORE YOU WRITE" },
-  challenge: { key: "CHL", desc: "PUSHBACK AFTER YOU WRITE" },
-  cocreate: { key: "CRT", desc: "IDEAS ALONGSIDE YOURS" },
+  support: { key: "S", desc: "HELP ME" },
+  challenge: { key: "C", desc: "PUSH ME" },
 };
 
 const CHAPTERS = [
@@ -32,8 +31,7 @@ const CHAPTERS = [
 const ALL_PROMPTS = CHAPTERS.flatMap((ch) => ch.prompts.map((p) => ({ ...p, chapter: ch.title })));
 
 function shouldLucySpeak(text, usedSpark, mode) {
-  if (mode === "guide") return null;
-  if (mode === "cocreate") return "cocreate";
+  if (mode === "support") return "support";
   if (usedSpark) return "sparked";
   if (text.trim().length < 55) return "weak";
   const vague = ["good","nice","professional","quality","great","best","innovative","passionate","unique"];
@@ -70,7 +68,7 @@ export default function BrandPersonality({ onBack } = {}) {
     const trigger = shouldLucySpeak(text, usedSpark, aiMode);
     let lucyText = null;
     if (aiMode === "challenge" && trigger && prompt.challenge) lucyText = prompt.challenge[trigger];
-    else if (aiMode === "cocreate" && prompt.cocreate) lucyText = prompt.cocreate;
+    else if (aiMode === "support" && prompt.cocreate) lucyText = prompt.cocreate;
     setLucyMode("thinking");
     setTimeout(() => { setLucyMode(lucyText ? "idle" : "approves"); setTimeout(() => setLucyMode("idle"), 2000); }, lucyText ? 2000 : 800);
     setNotes((prev) => [{ text: text.trim(), prompt: prompt.q, lucyText, lucyMode: lucyText ? aiMode : null, chapter: prompt.chapter, id: Date.now() }, ...prev]);
@@ -86,8 +84,7 @@ export default function BrandPersonality({ onBack } = {}) {
     if (!text.trim() || lucyMode === "thinking" || lucyMode === "approves") return null;
     const t = text.trim(); const lower = t.toLowerCase();
     const vague = ["good","nice","professional","quality","great","best","innovative","passionate","unique"];
-    if (aiMode === "cocreate") return "composing";
-    if (aiMode === "guide") return "listening";
+    if (aiMode === "support") return t.length < 30 ? "listening" : "composing";
     if (t.length < 30) return "listening";
     if (vague.some((v) => lower.includes(v))) return "vague";
     if (t.length < 55) return "weak";
@@ -97,16 +94,16 @@ export default function BrandPersonality({ onBack } = {}) {
 
   // Derive Lucy's display state
   const lucyDisplay = useMemo(() => {
-    if (lucyMode === "thinking") return { icon: "challenge", label: "READING", color: S.accent };
-    if (lucyMode === "approves") return { icon: "done", label: "NOTED", color: S.lcdBright };
-    if (typingStatus === "weak") return { icon: "challenge", label: "PUSH MORE", color: S.accent };
-    if (typingStatus === "vague") return { icon: "challenge", label: "BE SPECIFIC", color: S.accent };
-    if (typingStatus === "strong") return { icon: "done", label: "LOOKING GOOD", color: S.lcdBright };
-    if (typingStatus === "composing") return { icon: "spark", label: "COMPOSING", color: S.lcd };
+    if (lucyMode === "thinking") return { icon: "challenge", label: "READING" };
+    if (lucyMode === "approves") return { icon: "done", label: "NOTED" };
+    if (typingStatus === "weak") return { icon: "challenge", label: "PUSH MORE" };
+    if (typingStatus === "vague") return { icon: "challenge", label: "BE SPECIFIC" };
+    if (typingStatus === "strong") return { icon: "done", label: "LOOKING GOOD" };
+    if (typingStatus === "composing") return { icon: "spark", label: "COMPOSING" };
+    if (typingStatus === "listening") return { icon: aiMode === "support" ? "guide" : "challenge", label: "LISTENING" };
     const defaults = {
-      guide: { icon: "guide", label: "GUIDE", color: S.lcd },
-      challenge: { icon: "challenge", label: "READY", color: S.lcd },
-      cocreate: { icon: "spark", label: "CO-OP", color: S.lcd },
+      support: { icon: "guide", label: "SUPPORT" },
+      challenge: { icon: "challenge", label: "CHALLENGE" },
     };
     return defaults[aiMode] || defaults.challenge;
   }, [lucyMode, aiMode, typingStatus]);
@@ -117,7 +114,7 @@ export default function BrandPersonality({ onBack } = {}) {
   const lucyFeedbackMode = lastNote?.lucyMode || null;
 
   // Determine if Lucy has content to show beyond the top strip
-  const lucyGuide = aiMode === "guide" && prompt ? prompt.guide : null;
+  const lucyGuide = aiMode === "support" && prompt ? prompt.guide : null;
   const lucyHasContent = !!lucyFeedback || !!lucyGuide;
 
   return (
@@ -268,10 +265,12 @@ export default function BrandPersonality({ onBack } = {}) {
                 </button>
               </div>
 
-              {/* Lucy Module — one cohesive dark block */}
+              {/* Lucy Module — subtle amber wash */}
               <div style={{
                 marginTop: 16,
-                background: S.screen, borderRadius: 6,
+                background: "rgba(229,166,50,0.06)",
+                border: "1px solid rgba(229,166,50,0.1)",
+                borderRadius: 6,
                 overflow: "hidden",
               }}>
                 {/* Top strip: e-ink icon + status + mode buttons */}
@@ -281,37 +280,37 @@ export default function BrandPersonality({ onBack } = {}) {
                 }}>
                   {/* E-ink badge */}
                   <div style={{
-                    width: 28, height: 20,
+                    width: 40, height: 30,
                     background: colors.eink, borderRadius: 2,
                     border: `1px solid ${colors.einkBorder}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     flexShrink: 0,
                   }}>
-                    <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={12} />
+                    <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
                   </div>
 
                   {/* Status label */}
                   <span style={{
                     fontFamily: fonts.pixel, fontSize: 10,
-                    color: lucyDisplay.color, lineHeight: 1, flex: 1,
+                    color: S.accent, lineHeight: 1, flex: 1,
                   }}>{lucyDisplay.label}</span>
 
                   {/* Mode toggle */}
                   <div style={{
                     display: "flex", borderRadius: 3,
-                    background: "rgba(255,255,255,0.04)",
+                    background: "rgba(44,40,36,0.06)",
                     padding: 2,
                   }}>
                     {Object.entries(MODES).map(([key, m]) => (
                       <button key={key}
                         onClick={() => setAiMode(key)}
                         style={{
-                          width: 24, height: 18, borderRadius: 2, border: "none",
+                          width: 28, height: 22, borderRadius: 3, border: "none",
                           cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                          fontFamily: fonts.primary, fontSize: 6, fontWeight: 700, letterSpacing: "0.04em",
-                          color: aiMode === key ? S.screen : "rgba(255,255,255,0.2)",
-                          background: aiMode === key ? S.accent : "transparent",
-                          boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.2)" : "none",
+                          fontFamily: fonts.primary, fontSize: 8, fontWeight: 700, letterSpacing: "0.04em",
+                          color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.3)",
+                          background: aiMode === key ? S.accent : "rgba(44,40,36,0.06)",
+                          boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
                           transition: "all 0.15s ease",
                         }}
                       >{m.key}</button>
@@ -321,13 +320,13 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Lucy's feedback (from last kept note) */}
                 {lucyFeedback && (
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", padding: "12px 14px 14px" }}>
+                  <div style={{ borderTop: "1px solid rgba(229,166,50,0.1)", padding: "12px 14px 14px" }}>
                     <div style={{
                       fontSize: 9, color: S.accent, fontWeight: 500,
                       textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5,
-                    }}>{lucyFeedbackMode === "cocreate" ? "co-create" : "challenge"}</div>
+                    }}>{lucyFeedbackMode === "support" ? "support" : "challenge"}</div>
                     <div style={{
-                      fontSize: 13, color: colors.lucyText, lineHeight: 1.6,
+                      fontSize: 13, color: "rgba(44,40,36,0.7)", lineHeight: 1.6,
                     }}>
                       {lucyFeedback}
                       {lucyMode === "thinking" && (
@@ -341,13 +340,12 @@ export default function BrandPersonality({ onBack } = {}) {
                   </div>
                 )}
 
-                {/* Guide text (when in guide mode) */}
+                {/* Guide text (when in support mode) */}
                 {lucyGuide && (
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.04)", padding: "8px 12px" }}>
+                  <div style={{ borderTop: "1px solid rgba(229,166,50,0.1)", padding: "8px 12px" }}>
                     <div style={{
                       fontFamily: fonts.pixel, fontSize: 10,
-                      color: S.lcd, lineHeight: 1.5,
-                      opacity: 0.7,
+                      color: "rgba(44,40,36,0.5)", lineHeight: 1.5,
                     }}>{lucyGuide}</div>
                   </div>
                 )}
