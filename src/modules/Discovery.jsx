@@ -57,6 +57,21 @@ export default function Discovery({ onBack } = {}) {
 
   const hoveredModeInfo = hoveredAiMode ? MODES[hoveredAiMode] : null;
   const answeredCount = questions.filter((q) => q.response.trim()).length;
+
+  const goToThemeQuestion = (area) => {
+    setPhase("questions");
+    // Expand the first question of that theme
+    const themeUpper = area.toUpperCase();
+    const firstQ = questions.find((q) => q.theme === themeUpper);
+    if (firstQ) {
+      setExpandedQ((prev) => ({ ...prev, [firstQ.id]: true }));
+    }
+    // Scroll to theme header after phase change renders
+    setTimeout(() => {
+      const el = document.getElementById(`theme-${area.toLowerCase()}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  };
   const briefDone = briefStep >= BRIEF_QUESTIONS.length;
 
   const toggleQ = (id, idx) => setExpandedQ((prev) => ({ ...prev, [id]: !(prev[id] ?? (idx === 0)) }));
@@ -211,7 +226,7 @@ export default function Discovery({ onBack } = {}) {
                     return (
                       <div key={q.id}>
                         {showTheme && (
-                          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 8, marginTop: i > 0 ? 20 : 0 }}>{q.theme}</div>
+                          <div id={`theme-${q.theme.toLowerCase()}`} style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 8, marginTop: i > 0 ? 20 : 0 }}>{q.theme}</div>
                         )}
                         <div style={{
                           background: S.card, borderRadius: 4,
@@ -311,7 +326,13 @@ export default function Discovery({ onBack } = {}) {
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {GAPS.map((gap, i) => (
                     <div key={i} style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(61,56,48,0.06)", boxShadow: S.raised, padding: "14px 16px", animation: `promptIn 0.4s ${ease} ${i * 0.1}s both` }}>
-                      <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.accent, marginBottom: 6 }}>{gap.area}</div>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                        <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: S.accent }}>{gap.area}</div>
+                        <button onClick={() => goToThemeQuestion(gap.area)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.25)", padding: "2px 8px", borderRadius: 3, transition: "all 0.15s ease" }}
+                          onMouseEnter={(e) => { e.currentTarget.style.color = S.accent; e.currentTarget.style.background = "rgba(212,115,74,0.06)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(61,56,48,0.25)"; e.currentTarget.style.background = "none"; }}
+                        >EDIT ›</button>
+                      </div>
                       <div style={{ fontSize: 13, fontWeight: 400, color: S.text, lineHeight: 1.6 }}>{gap.note}</div>
                     </div>
                   ))}
