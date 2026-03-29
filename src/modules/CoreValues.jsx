@@ -46,7 +46,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isSelected ? "rgba(212,115,74,0.15)" : "rgba(61,56,48,0.06)"}`,
+        border: `1px solid ${isSelected ? "rgba(229,166,50,0.15)" : "rgba(44,40,36,0.06)"}`,
         boxShadow: isSelected
           ? "0 2px 10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,0.5) inset"
           : hover
@@ -81,8 +81,8 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
       {/* Unselected: short reason */}
       {!isSelected && (
         <div style={{ padding: "6px 16px 14px", display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(212,115,74,0.3)" }} />
-          <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(212,115,74,0.45)", lineHeight: 1.5 }}>{value.reason}</div>
+          <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
+          <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{value.reason}</div>
         </div>
       )}
 
@@ -98,7 +98,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
               style={{
                 width: "100%", background: "transparent", border: "none",
                 fontSize: 13, fontWeight: 400, lineHeight: 1.65, color: S.text,
-                resize: "none", outline: "none", fontFamily: "'Inter', sans-serif",
+                resize: "none", outline: "none", fontFamily: "'DM Sans', sans-serif",
               }}
             />
           </div>
@@ -112,7 +112,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
               overflow: "hidden",
             }}>
               <div style={{ padding: "8px 10px", display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, background: isRefining ? S.accent : "rgba(212,115,74,0.25)", transition: "background 0.3s ease" }} />
+                <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, background: isRefining ? S.accent : "rgba(229,166,50,0.25)", transition: "background 0.3s ease" }} />
                 <input
                   value={refineInput}
                   onChange={(e) => setRefineInput(e.target.value)}
@@ -121,13 +121,13 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
                   style={{
                     flex: 1, background: "transparent", border: "none",
                     fontSize: 11, fontWeight: 400, color: S.text,
-                    outline: "none", fontFamily: "'Inter', sans-serif",
+                    outline: "none", fontFamily: "'DM Sans', sans-serif",
                   }}
                 />
                 {refineInput.trim() && (
                   <button onClick={handleRefine} style={{
                     fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-                    color: isRefining ? "rgba(212,115,74,0.3)" : S.accent,
+                    color: isRefining ? "rgba(229,166,50,0.3)" : S.accent,
                     background: "none", border: "none", cursor: "pointer",
                     transition: "color 0.15s ease", flexShrink: 0,
                   }}>
@@ -190,32 +190,32 @@ export default function CoreValues({ onBack } = {}) {
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'Inter', sans-serif", color: S.text, position: "relative", background: "#D8D3CA" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
         @keyframes promptIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         @keyframes lucyPulse { 0%, 100% { opacity:0.7; } 50% { opacity:1; } }
         textarea:focus, input:focus { outline:none; }
-        ::selection { background:rgba(212,115,74,0.1); }
+        ::selection { background:rgba(229,166,50,0.12); }
         textarea::placeholder, input::placeholder { color: rgba(0,0,0,0.25); }
         * { box-sizing:border-box; margin:0; padding:0; }
       `}</style>
 
       {/* ══ CANVAS ══ */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #EDEAE4 0%, #E5E2DB 100%)", overflow: "hidden" }}>
 
         {/* Header */}
         <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
+            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDEAE4", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Values</span>
-              <span style={{ fontSize: 9, color: "rgba(61,56,48,0.35)" }}>–</span>
-              <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>{locked ? "Locked" : "Core Values"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Values</span>
+              <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
+              <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "Locked" : "Core Values"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
               <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: canLock || locked ? S.accent : S.lcd, lineHeight: 1 }}>{selectedValues.length}/3</span>
@@ -232,7 +232,7 @@ export default function CoreValues({ onBack } = {}) {
               <div style={{ maxWidth: 520, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 40 }}>
                   <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Define the values</h2>
-                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(61,56,48,0.3)", lineHeight: 1.6 }}>Toggle three values and write what each one means for this brand.</p>
+                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Toggle three values and write what each one means for this brand.</p>
                 </div>
 
                 {/* Selected — float to top */}
@@ -251,7 +251,7 @@ export default function CoreValues({ onBack } = {}) {
 
                 {/* Divider */}
                 {selectedValues.length > 0 && unselectedValues.length > 0 && (
-                  <div style={{ height: 1, background: "rgba(61,56,48,0.06)", margin: "8px 0 16px" }} />
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "8px 0 16px" }} />
                 )}
 
                 {/* Candidates */}
@@ -274,22 +274,22 @@ export default function CoreValues({ onBack } = {}) {
                   <div>
                     <div style={{ background: S.recess, borderRadius: "6px 6px 0 0", border: `1px solid ${S.border}`, borderBottom: "none", overflow: "hidden" }}>
                       <div style={{ padding: "14px 16px" }}>
-                        <input value={customWord} onChange={(e) => setCustomWord(e.target.value)} placeholder="Value word..." style={{ width: "100%", background: "transparent", border: "none", fontSize: 18, fontWeight: 600, color: S.text, outline: "none", fontFamily: "'Inter', sans-serif", letterSpacing: "-0.01em" }} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} />
+                        <input value={customWord} onChange={(e) => setCustomWord(e.target.value)} placeholder="Value word..." style={{ width: "100%", background: "transparent", border: "none", fontSize: 18, fontWeight: 600, color: S.text, outline: "none", fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.01em" }} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} />
                       </div>
-                      <div style={{ height: 1, background: "rgba(61,56,48,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
                       <button onClick={addCustom} disabled={!customWord.trim() || selectedValues.length >= 3}
-                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: customWord.trim() && selectedValues.length < 3 ? "pointer" : "default", fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: customWord.trim() && selectedValues.length < 3 ? S.text : "rgba(61,56,48,0.1)", background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
+                        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: customWord.trim() && selectedValues.length < 3 ? "pointer" : "default", fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: customWord.trim() && selectedValues.length < 3 ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
                         ADD & SELECT
                       </button>
                     </div>
-                    <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: `1px solid rgba(61,56,48,0.04)`, padding: "6px 8px" }}>
+                    <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: `1px solid rgba(44,40,36,0.04)`, padding: "6px 8px" }}>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <LucyScreen mode={lucyMode} hoveredModeInfo={hoveredModeInfo} aiMode={aiMode}
                             guideText={aiMode === "guide" ? "Pick the values that feel essential — not aspirational. What does this brand already live by?" : null} />
                         </div>
-                        <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
-                          {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDE9E1" : "rgba(61,56,48,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
+                        <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
+                          {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
                         </div>
                       </div>
                     </div>
@@ -301,9 +301,9 @@ export default function CoreValues({ onBack } = {}) {
                   <div style={{ marginTop: 16, animation: `fadeIn 0.4s ${ease} both` }}>
                     <button onClick={() => setLocked(true)} style={{
                       width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer",
-                      fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
                       letterSpacing: "0.08em", textTransform: "uppercase", color: S.text,
-                      background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`,
+                      background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
                       boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)",
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                     }}>
@@ -324,11 +324,11 @@ export default function CoreValues({ onBack } = {}) {
                   <div style={{
                     display: "inline-flex", alignItems: "center", gap: 6,
                     padding: "5px 12px", borderRadius: 4, marginBottom: 16,
-                    background: "rgba(61,56,48,0.04)",
+                    background: "rgba(44,40,36,0.04)",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
                   }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(212,115,74,0.3)" }} />
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(61,56,48,0.3)" }}>VALUES LOCKED</span>
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(229,166,50,0.3)" }} />
+                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.3)" }}>VALUES LOCKED</span>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, letterSpacing: "-0.02em" }}>
                     What they stand for.
@@ -338,8 +338,8 @@ export default function CoreValues({ onBack } = {}) {
                 {selectedValues.map((v, i) => (
                   <div key={v.id} style={{ marginBottom: 32, animation: `promptIn 0.5s ${ease} ${i * 0.15}s both` }}>
                     <div style={{ fontSize: 28, fontWeight: 600, color: S.text, letterSpacing: "-0.02em", marginBottom: 6 }}>{v.word}</div>
-                    <div style={{ fontSize: 14, fontWeight: 400, color: "rgba(61,56,48,0.4)", lineHeight: 1.6 }}>{v.definition}</div>
-                    {i < 2 && <div style={{ height: 1, background: "rgba(61,56,48,0.06)", marginTop: 32 }} />}
+                    <div style={{ fontSize: 14, fontWeight: 400, color: "rgba(44,40,36,0.4)", lineHeight: 1.6 }}>{v.definition}</div>
+                    {i < 2 && <div style={{ height: 1, background: "rgba(44,40,36,0.06)", marginTop: 32 }} />}
                   </div>
                 ))}
 
@@ -347,7 +347,7 @@ export default function CoreValues({ onBack } = {}) {
                 <div style={{ maxWidth: 340, margin: "40px auto 0" }}>
                   <div style={{ background: S.screen, borderRadius: 4, padding: "12px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 6 }}>
-                      <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
+                      <PixelIcon icon="approves" color={S.lcdBright} size={14} />
                       <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>VALUES COMPLETE</span>
                     </div>
                     <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>

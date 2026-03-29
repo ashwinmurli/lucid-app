@@ -102,7 +102,7 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isExpanded ? "rgba(212,115,74,0.12)" : "rgba(61,56,48,0.06)"}`,
+        border: `1px solid ${isExpanded ? "rgba(229,166,50,0.12)" : "rgba(44,40,36,0.06)"}`,
         boxShadow: hover
           ? "0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.5) inset"
           : S.raised,
@@ -121,9 +121,9 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
         }}>
           {/* Chevron as rotating indicator */}
           <span style={{
-            fontSize: 14, color: isExpanded ? S.accent : "rgba(61,56,48,0.35)",
+            fontSize: 14, color: isExpanded ? S.accent : "rgba(44,40,36,0.35)",
             display: "inline-block", flexShrink: 0,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'DM Sans', sans-serif",
             transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
             transition: `transform 0.25s ${ease}, color 0.2s ease`,
           }}>›</span>
@@ -131,29 +131,29 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
         </div>
 
         {/* Button bar — full height, flush right, machined into the card */}
-        <div style={{ display: "flex", flexShrink: 0, borderLeft: "1px solid rgba(61,56,48,0.04)" }}>
+        <div style={{ display: "flex", flexShrink: 0, borderLeft: "1px solid rgba(44,40,36,0.04)" }}>
           <button onClick={onEdit} style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "14px 14px", border: "none", cursor: "pointer",
             fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-            color: "rgba(61,56,48,0.25)",
+            color: "rgba(44,40,36,0.25)",
             background: `linear-gradient(180deg, rgba(242,237,229,0.5) 0%, transparent 100%)`,
-            borderRight: "1px solid rgba(61,56,48,0.04)",
+            borderRight: "1px solid rgba(44,40,36,0.04)",
             transition: "color 0.15s ease", userSelect: "none",
           }}
             onMouseEnter={(e) => e.currentTarget.style.color = S.text}
-            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(61,56,48,0.25)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.25)"}
           >EDIT</button>
           <button onClick={() => onCopy()} style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
             padding: "14px 14px", border: "none", cursor: "pointer",
             fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-            color: copied ? S.lcdBright : "rgba(61,56,48,0.25)",
-            background: copied ? "rgba(122,154,122,0.04)" : `linear-gradient(180deg, rgba(242,237,229,0.5) 0%, transparent 100%)`,
+            color: copied ? S.lcdBright : "rgba(44,40,36,0.25)",
+            background: copied ? "rgba(229,166,50,0.04)" : `linear-gradient(180deg, rgba(242,237,229,0.5) 0%, transparent 100%)`,
             transition: "all 0.15s ease", userSelect: "none",
           }}
             onMouseEnter={(e) => { if (!copied) e.currentTarget.style.color = S.accent; }}
-            onMouseLeave={(e) => { if (!copied) e.currentTarget.style.color = copied ? S.lcdBright : "rgba(61,56,48,0.25)"; }}
+            onMouseLeave={(e) => { if (!copied) e.currentTarget.style.color = copied ? S.lcdBright : "rgba(44,40,36,0.25)"; }}
           >
             <div style={{ width: 4, height: 4, borderRadius: "50%", background: copied ? S.lcdBright : "currentColor" }} />
             {copied ? "COPIED" : "COPY"}
@@ -168,7 +168,7 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
         transition: `grid-template-rows 0.35s ${ease}`,
       }}>
         <div style={{ overflow: "hidden" }}>
-          <div style={{ height: 1, background: "rgba(61,56,48,0.04)" }} />
+          <div style={{ height: 1, background: "rgba(44,40,36,0.04)" }} />
           <div style={{ padding: "14px 16px 16px" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {section.blocks.map((block, j) => (
@@ -176,7 +176,7 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
                   {block.label && (
                     <div style={{
                       fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
-                      color: block.label === "LEAD" ? S.accent : "rgba(61,56,48,0.15)",
+                      color: block.label === "LEAD" ? S.accent : "rgba(44,40,36,0.15)",
                       marginBottom: 4,
                     }}>{block.label}</div>
                   )}
@@ -191,10 +191,10 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
                   <div key={j} style={{
                     display: "inline-flex", alignItems: "center",
                     padding: "4px 8px", borderRadius: 4,
-                    background: t.strong ? "rgba(212,115,74,0.08)" : "rgba(61,56,48,0.04)",
+                    background: t.strong ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.04)",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
                     fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                    color: t.strong ? "rgba(212,115,74,0.55)" : "rgba(61,56,48,0.25)",
+                    color: t.strong ? "rgba(229,166,50,0.55)" : "rgba(44,40,36,0.25)",
                   }}>{t.label}</div>
                 ))}
               </div>
@@ -220,30 +220,30 @@ export default function Summary({ onBack } = {}) {
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'Inter', sans-serif", color: S.text, position: "relative", background: "#D8D3CA" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
         @keyframes promptIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         * { box-sizing:border-box; margin:0; padding:0; }
         textarea:focus, input:focus { outline:none; }
-        ::selection { background:rgba(212,115,74,0.1); }
+        ::selection { background:rgba(229,166,50,0.12); }
         textarea::placeholder, input::placeholder { color: rgba(0,0,0,0.25); }
         .summary-scroll::-webkit-scrollbar { width:3px; }
         .summary-scroll::-webkit-scrollbar-track { background:transparent; }
-        .summary-scroll::-webkit-scrollbar-thumb { background:rgba(61,56,48,0.06); border-radius:3px; }
+        .summary-scroll::-webkit-scrollbar-thumb { background:rgba(44,40,36,0.06); border-radius:3px; }
       `}</style>
 
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #EDEAE4 0%, #E5E2DB 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {/* Header */}
         <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
+            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDEAE4", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>Summary</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Summary</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
               <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.accent, lineHeight: 1 }}>{SECTIONS.length}</span>
@@ -297,10 +297,10 @@ export default function Summary({ onBack } = {}) {
           <button onClick={() => copy("all", buildAllText())} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "6px 14px",
             borderRadius: 4, border: "none", cursor: "pointer",
-            fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
+            fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
             letterSpacing: "0.08em", textTransform: "uppercase",
             color: copied === "all" ? S.lcdBright : S.text,
-            background: copied === "all" ? "rgba(122,154,122,0.08)" : `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`,
+            background: copied === "all" ? "rgba(229,166,50,0.08)" : `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
             boxShadow: copied === "all"
               ? "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)"
               : S.raised,

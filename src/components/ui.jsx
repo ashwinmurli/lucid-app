@@ -6,7 +6,24 @@
 import { useState, useRef, useEffect } from "react";
 import { S, colors, shadows, ease, fonts } from "../lib/tokens";
 
-/* ── Lucy's pixel icons (5x5 grid patterns) ── */
+/* ── Lucy's SVG icons (pixelarticons style) ── */
+export const LUCY_ICONS_SVG = {
+  guide: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 3h9v2H2zM0 19h11v2H0zM13 3h9v2h-9zm0 16h11v2H13zM11 5h2v18h-2zM0 5h2v14H0zm22 0h2v14h-2zm-7 2h5v2h-5zm0 4h5v2h-5zm0 4h2v2h-2z"/></svg>,
+  challenge: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 10h2v2H2zm0 4h2v-2H2zm20-4h-2v2h2zm0 4h-2v-2h2zM4 8h2v2H4zm0 8h2v-2H4zm16-8h-2v2h2zm0 8h-2v-2h2zM6 6h2v2H6zm0 12h2v-2H6zM18 6h-2v2h2zm0 12h-2v-2h2zM8 4h2v2H8zm0 16h2v-2H8zm8-16h-2v2h2zm0 16h-2v-2h2zM10 2h2v2h-2zm0 20h2v-2h-2zm4-20h-2v2h2zm0 20h-2v-2h2zm-3-5h2v-2h-2zm0-4h2V7h-2z"/></svg>,
+  spark: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/></svg>,
+  lock: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M5 8h14v2H5zm0 12h14v2H5zM3 10h2v10H3zm16 0h2v10h-2zM7 4h2v4H7zm2-2h6v2H9zm6 2h2v4h-2z"/></svg>,
+  push: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M8 21h8v-2H8zm0-2h2v-6H8zm-5-6h5v-2H3zm0-2h2V9H3zm2-2h2V7H5zm2-2h2V5H7zm2-2h2V3H9zm2-2h2V1h-2zm2 2h2V3h-2zm2 2h2V5h-2zm2 2h2V7h-2zm2 4h2V9h-2zm-3 0h3v-2h-3zm-2 6h2v-6h-2z"/></svg>,
+  probe: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M22 22h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-6-2H6v-2h8v2Zm4 0h-2v-2h2v2ZM6 16H4v-2h2v2Zm10 0h-2v-2h2v2ZM4 14H2V6h2v8Zm14 0h-2V6h2v8ZM6 6H4V4h2v2Zm10 0h-2V4h2v2Zm-2-2H6V2h8v2Z"/></svg>,
+  drift: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M10 19H2v-2h8v2Zm12 0h-8v-2h8v2Zm-10-2h-2v-6h2v6Zm6-10h2v2h2v2h-2v2h-2v2h-2v-4h-4V9h4V5h2v2ZM8 11H2V9h6v2Z"/></svg>,
+  done: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg>,
+  idle: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 10h2v2H2zm0 4h2v-2H2zm20-4h-2v2h2zm0 4h-2v-2h2zM4 8h2v2H4zm0 8h2v-2H4zm16-8h-2v2h2zm0 8h-2v-2h2zM6 6h2v2H6zm0 12h2v-2H6zM18 6h-2v2h2zm0 12h-2v-2h2zM8 4h2v2H8zm0 16h2v-2H8zm8-16h-2v2h2zm0 16h-2v-2h2zM10 2h2v2h-2zm0 20h2v-2h-2zm4-20h-2v2h2zm0 20h-2v-2h2zm-3-5h2v-2h-2zm0-4h2V7h-2z"/></svg>,
+  thinking: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 10h2v2H2zm0 4h2v-2H2zm20-4h-2v2h2zm0 4h-2v-2h2zM4 8h2v2H4zm0 8h2v-2H4zm16-8h-2v2h2zm0 8h-2v-2h2zM6 6h2v2H6zm0 12h2v-2H6zM18 6h-2v2h2zm0 12h-2v-2h2zM8 4h2v2H8zm0 16h2v-2H8zm8-16h-2v2h2zm0 16h-2v-2h2zM10 2h2v2h-2zm0 20h2v-2h-2zm4-20h-2v2h2zm0 20h-2v-2h2zm-3-5h2v-2h-2zm0-4h2V7h-2z"/></svg>,
+  approves: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg>,
+  cocreate: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/></svg>,
+  off: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/></svg>,
+};
+
+/* ── Backward compat: keep old LUCY_ICONS for any remaining references ── */
 export const LUCY_ICONS = {
   off:      "0010001010100010101000100",
   idle:     "0111011011100011101101110",
@@ -16,21 +33,32 @@ export const LUCY_ICONS = {
   cocreate: "0101001010001000101001010",
 };
 
-/* ── Pixel Icon ── */
-export function PixelIcon({ pattern, color, size = 2 }) {
-  return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: `repeat(5, ${size}px)`,
-      gridTemplateRows: `repeat(5, ${size}px)`,
-      gap: size > 1 ? 0.5 : 0,
-      flexShrink: 0,
-    }}>
-      {pattern.split("").map((p, i) => (
-        <div key={i} style={{ background: p === "1" ? color : "transparent" }} />
-      ))}
-    </div>
-  );
+/* ── Pixel Icon (SVG-based) ── */
+export function PixelIcon({ icon, pattern, color, size = 14, style }) {
+  // Support new SVG icons via `icon` prop
+  if (icon) {
+    const Icon = LUCY_ICONS_SVG[icon] || LUCY_ICONS_SVG.idle;
+    return <Icon style={{ width: size, height: size, color, display: 'block', ...style }} />;
+  }
+  // Fallback: old pattern-based rendering (backward compat)
+  if (pattern) {
+    const pxSize = size <= 5 ? size : 2;
+    return (
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(5, ${pxSize}px)`,
+        gridTemplateRows: `repeat(5, ${pxSize}px)`,
+        gap: pxSize > 1 ? 0.5 : 0,
+        flexShrink: 0,
+        ...style,
+      }}>
+        {pattern.split("").map((p, i) => (
+          <div key={i} style={{ background: p === "1" ? color : "transparent" }} />
+        ))}
+      </div>
+    );
+  }
+  return null;
 }
 
 /* ── Lucy Screen (full interactive version with hover grid) ── */
@@ -58,17 +86,17 @@ export function LucyScreen({ mode, hoveredModeInfo, aiMode, guideText }) {
   };
 
   let es;
-  if (isThinking) es = { label: "COMPOSING", icon: "thinking", bg: "#2E1E14", text: colors.accent };
-  else if (mode === "approves") es = { label: "NOTED", icon: "approves", bg: "#162216", text: colors.lcdBright };
-  else es = { label: MODES[aiMode]?.label || "READY", icon: MODES[aiMode]?.icon || "idle", bg: "#1A2019", text: colors.lcd };
+  if (isThinking) es = { label: "COMPOSING", icon: "thinking", bg: "#1C1916", text: colors.accent };
+  else if (mode === "approves") es = { label: "NOTED", icon: "approves", bg: "#1C1916", text: colors.lcdBright };
+  else es = { label: MODES[aiMode]?.label || "READY", icon: MODES[aiMode]?.icon || "idle", bg: "#1C1916", text: colors.lcd };
   if (mode === "off") es = { label: "LUCY", icon: "off", bg: colors.screen, text: colors.lcdDim };
 
-  const gridRgb = es.text === colors.accent ? "212,115,74" : es.text === colors.lcdBright ? "160,200,160" : "122,154,122";
+  const gridRgb = es.text === colors.accent ? "229,166,50" : es.text === colors.lcdBright ? "240,192,80" : "229,166,50";
   const smi = hoveredModeInfo && isActive;
   const dIcon = smi ? (hoveredModeInfo.key === "GDE" ? "guide" : hoveredModeInfo.key === "CRT" ? "cocreate" : "idle") : es.icon;
   const dLabel = smi ? hoveredModeInfo.desc : es.label;
   const dColor = smi ? colors.lcd : es.text;
-  const dBg = smi ? "#1A2019" : es.bg;
+  const dBg = smi ? "#1C1916" : es.bg;
 
   return (
     <div style={{ position: "relative" }}>
@@ -96,7 +124,7 @@ export function LucyScreen({ mode, hoveredModeInfo, aiMode, guideText }) {
           display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap",
         }}>
           <div style={{ animation: isThinking ? "lucyPulse 1.5s ease-in-out infinite" : "none" }}>
-            <PixelIcon pattern={LUCY_ICONS[dIcon] || LUCY_ICONS.off} color={dColor} size={2} />
+            <PixelIcon icon={dIcon} color={dColor} size={14} />
           </div>
           <span style={{ fontFamily: fonts.pixel, fontSize: 10, color: dColor, lineHeight: 1, transition: "color 0.3s ease" }}>{dLabel}</span>
         </div>
@@ -138,7 +166,7 @@ export function LucyMini({ text, color, icon }) {
       border: "1px solid rgba(0,0,0,0.12)",
       display: "inline-flex", alignItems: "center", gap: 5,
     }}>
-      <PixelIcon pattern={LUCY_ICONS[icon || "idle"]} color={color || colors.lcd} size={2} />
+      <PixelIcon icon={icon || "idle"} color={color || colors.lcd} size={14} />
       <span style={{ fontFamily: fonts.pixel, fontSize: 10, color: color || colors.lcd }}>{text}</span>
     </div>
   );
@@ -153,8 +181,8 @@ export function TransportBtn({ children, onClick, disabled, muted, dot, flex, st
       cursor: disabled ? "default" : "pointer",
       fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
       letterSpacing: "0.08em", textTransform: "uppercase",
-      color: disabled ? "rgba(61,56,48,0.1)" : muted ? "rgba(61,56,48,0.35)" : colors.text,
-      background: `linear-gradient(180deg, #F2EDE5 0%, ${colors.card} 100%)`,
+      color: disabled ? "rgba(44,40,36,0.1)" : muted ? "rgba(44,40,36,0.35)" : colors.text,
+      background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`,
       boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
       transition: "all 0.06s ease",
       ...(flex ? { flex: 1 } : { width: "100%" }),
@@ -189,7 +217,7 @@ export function Cinematic({ steps }) {
           animation: step > 0 ? "lucyPulse 1.2s ease-in-out infinite" : "none",
           marginBottom: 20,
         }}>
-          <PixelIcon pattern={LUCY_ICONS.thinking} color={colors.accent} size={4} />
+          <PixelIcon icon="thinking" color={colors.accent} size={28} />
         </div>
         {step > 0 && (
           <div key={atEnd ? "final" : step} style={{
@@ -205,7 +233,7 @@ export function Cinematic({ steps }) {
             {steps.map((_, i) => (
               <div key={i} style={{
                 width: 4, height: 4,
-                background: step > i ? colors.accent : "rgba(212,115,74,0.15)",
+                background: step > i ? colors.accent : "rgba(229,166,50,0.15)",
                 transition: "background 0.3s ease",
               }} />
             ))}
@@ -233,7 +261,7 @@ export function Header({ label, onLogoClick, rightContent }) {
           style={{
             fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase",
             padding: "3px 8px", borderRadius: 2,
-            background: colors.text, color: "#EDE9E1",
+            background: colors.text, color: "#EDEAE4",
             boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
             cursor: onLogoClick ? "pointer" : "default",
           }}
@@ -246,10 +274,10 @@ export function Header({ label, onLogoClick, rightContent }) {
           <div style={{
             display: "flex", alignItems: "center", gap: 5,
             padding: "0 10px", borderRadius: 4, height: 24,
-            background: "rgba(61,56,48,0.04)",
+            background: "rgba(44,40,36,0.04)",
             boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
           }}>
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.35)" }}>{label}</span>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{label}</span>
           </div>
           {rightContent}
         </div>

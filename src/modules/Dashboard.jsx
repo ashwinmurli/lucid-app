@@ -70,7 +70,7 @@ function ProgressDots({ complete, total }) {
       {Array.from({ length: total }, (_, i) => (
         <div key={i} style={{
           width: 4, height: 4,
-          background: i < complete ? S.accent : "rgba(61,56,48,0.08)",
+          background: i < complete ? S.accent : "rgba(44,40,36,0.08)",
           borderRadius: "50%",
           transition: "background 0.2s ease",
         }} />
@@ -119,27 +119,27 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'Inter', sans-serif", color: S.text, position: "relative", background: "#D8D3CA" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
         @keyframes promptIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
         @keyframes lucyPulse { 0%, 100% { opacity:0.7; } 50% { opacity:1; } }
         * { box-sizing:border-box; margin:0; padding:0; }
         textarea:focus, input:focus { outline:none; }
-        ::selection { background:rgba(212,115,74,0.1); }
+        ::selection { background:rgba(229,166,50,0.12); }
         textarea::placeholder, input::placeholder { color: rgba(0,0,0,0.25); }
         .dash-scroll::-webkit-scrollbar { width:3px; }
         .dash-scroll::-webkit-scrollbar-track { background:transparent; }
-        .dash-scroll::-webkit-scrollbar-thumb { background:rgba(61,56,48,0.06); border-radius:3px; }
+        .dash-scroll::-webkit-scrollbar-thumb { background:rgba(44,40,36,0.06); border-radius:3px; }
       `}</style>
 
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #ECE7DE 0%, #E3DED4 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, #EDEAE4 0%, #E5E2DB 100%)", overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {/* Header */}
         <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}>LUCID</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDEAE4", boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}>LUCID</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {/* View toggle */}
@@ -151,8 +151,8 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                 <button key={v.key} onClick={() => setView(v.key)} style={{
                   width: 28, height: 24, border: "none", cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, color: view === v.key ? S.text : "rgba(61,56,48,0.2)",
-                  background: view === v.key ? "rgba(61,56,48,0.06)" : "rgba(61,56,48,0.02)",
+                  fontSize: 11, color: view === v.key ? S.text : "rgba(44,40,36,0.2)",
+                  background: view === v.key ? "rgba(44,40,36,0.06)" : "rgba(44,40,36,0.02)",
                   transition: "all 0.15s ease", userSelect: "none",
                 }}>{v.icon}</button>
               ))}
@@ -178,7 +178,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                 {/* Top row — Lucy icon + status */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <PixelIcon pattern={LUCY_ICONS.guide} color={S.lcd} size={2.5} />
+                    <PixelIcon icon="guide" color={S.lcd} size={14} />
                     <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdDim }}>LUCY</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -212,33 +212,33 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
             {!creating ? (
               <button onClick={startCreate} style={{
                 width: "100%", padding: "14px 0", marginBottom: 24, borderRadius: 6,
-                border: `1px dashed rgba(61,56,48,0.12)`, cursor: "pointer",
-                fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600,
+                border: `1px dashed rgba(44,40,36,0.12)`, cursor: "pointer",
+                fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
                 letterSpacing: "0.08em", textTransform: "uppercase",
-                color: "rgba(61,56,48,0.25)", background: "transparent",
+                color: "rgba(44,40,36,0.25)", background: "transparent",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 transition: `all 0.2s ${ease}`,
               }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = S.text; e.currentTarget.style.borderColor = "rgba(61,56,48,0.25)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(61,56,48,0.25)"; e.currentTarget.style.borderColor = "rgba(61,56,48,0.12)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = S.text; e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(44,40,36,0.25)"; e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; }}
               >
                 + NEW PROJECT
               </button>
             ) : (
               <div style={{ marginBottom: 24, animation: `promptIn 0.3s ${ease} both` }}>
-                <div style={{ background: S.card, borderRadius: 6, border: "1px solid rgba(212,115,74,0.15)", boxShadow: S.raised, overflow: "hidden" }}>
+                <div style={{ background: S.card, borderRadius: 6, border: "1px solid rgba(229,166,50,0.15)", boxShadow: S.raised, overflow: "hidden" }}>
                   <div style={{ padding: "16px 20px" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 16 }}>
-                      <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(212,115,74,0.3)" }} />
-                      <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(212,115,74,0.5)", lineHeight: 1.5 }}>What's the client's name? Or the project name — whatever helps you find it later.</div>
+                      <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
+                      <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.5)", lineHeight: 1.5 }}>What's the client's name? Or the project name — whatever helps you find it later.</div>
                     </div>
                     <div style={{ background: S.recess, borderRadius: 4, border: `1px solid ${S.border}`, boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset", padding: "10px 12px" }}>
-                      <input ref={inputRef} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client or project name" onKeyDown={(e) => { if (e.key === "Enter") submitName(); if (e.key === "Escape") { setCreating(false); setNewName(""); } }} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, color: S.text, outline: "none", fontFamily: "'Inter', sans-serif" }} />
+                      <input ref={inputRef} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client or project name" onKeyDown={(e) => { if (e.key === "Enter") submitName(); if (e.key === "Escape") { setCreating(false); setNewName(""); } }} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, color: S.text, outline: "none", fontFamily: "'DM Sans', sans-serif" }} />
                     </div>
                   </div>
                   <div style={{ display: "flex", userSelect: "none" }}>
-                    <button onClick={() => { setCreating(false); setNewName(""); }} style={{ flex: 1, padding: "11px 0", border: "none", cursor: "pointer", fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(61,56,48,0.25)", background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", borderRight: "1px solid rgba(61,56,48,0.06)", borderRadius: "0 0 0 6px" }}>CANCEL</button>
-                    <button onClick={submitName} disabled={!newName.trim()} style={{ flex: 1, padding: "11px 0", border: "none", cursor: newName.trim() ? "pointer" : "default", fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: newName.trim() ? S.text : "rgba(61,56,48,0.1)", background: `linear-gradient(180deg, #F2EDE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: "0 0 6px 0" }}>
+                    <button onClick={() => { setCreating(false); setNewName(""); }} style={{ flex: 1, padding: "11px 0", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.25)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", borderRight: "1px solid rgba(44,40,36,0.06)", borderRadius: "0 0 0 6px" }}>CANCEL</button>
+                    <button onClick={submitName} disabled={!newName.trim()} style={{ flex: 1, padding: "11px 0", border: "none", cursor: newName.trim() ? "pointer" : "default", fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: newName.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: "0 0 6px 0" }}>
                       {newName.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}
                       START PROJECT
                     </button>
@@ -254,7 +254,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                   const st = STATUS_LABELS[project.status];
                   return (
                     <div key={project.id} onClick={() => onOpenProject?.(project)} style={{
-                      background: S.card, borderRadius: 4, border: "1px solid rgba(61,56,48,0.06)",
+                      background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)",
                       boxShadow: S.raised, overflow: "hidden", cursor: "pointer",
                       transition: `all 0.2s ${ease}`,
                       animation: `promptIn 0.4s ${ease} ${i * 0.05}s both`,
@@ -278,12 +278,12 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                           <ProgressDots complete={project.modulesComplete.length} total={MODULES.length} />
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             {project.currentModule && project.currentModule !== "discovery" && (
-                              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.2)" }}>{MODULES.find((m) => m.key === project.currentModule)?.label}</span>
+                              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)" }}>{MODULES.find((m) => m.key === project.currentModule)?.label}</span>
                             )}
                             {project.currentModule === "discovery" && (
-                              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.2)" }}>Discovery</span>
+                              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)" }}>Discovery</span>
                             )}
-                            <span style={{ fontSize: 9, fontWeight: 400, color: "rgba(61,56,48,0.15)" }}>{project.lastEdited}</span>
+                            <span style={{ fontSize: 9, fontWeight: 400, color: "rgba(44,40,36,0.15)" }}>{project.lastEdited}</span>
                           </div>
                         </div>
                       </div>
@@ -295,7 +295,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
 
             {/* ═══ LIST VIEW ═══ */}
             {view === "list" && (
-              <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(61,56,48,0.06)", boxShadow: S.raised, overflow: "hidden" }}>
+              <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, overflow: "hidden" }}>
                 {projects.map((project, i) => {
                   const st = STATUS_LABELS[project.status];
                   const isLast = i === projects.length - 1;
@@ -303,26 +303,26 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                     <div key={project.id} onClick={() => onOpenProject?.(project)} style={{
                       padding: "12px 20px", cursor: "pointer",
                       display: "flex", alignItems: "center", justifyContent: "space-between",
-                      borderBottom: isLast ? "none" : "1px solid rgba(61,56,48,0.04)",
+                      borderBottom: isLast ? "none" : "1px solid rgba(44,40,36,0.04)",
                       transition: `background 0.15s ease`,
                       animation: `fadeIn 0.3s ${ease} ${i * 0.04}s both`,
                     }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(61,56,48,0.02)"}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(44,40,36,0.02)"}
                       onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, flexShrink: 0, boxShadow: project.status === "complete" ? "0 0 4px rgba(160,200,160,0.4)" : "none" }} />
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: st.color, flexShrink: 0, boxShadow: project.status === "complete" ? "0 0 4px rgba(240,192,80,0.4)" : "none" }} />
                         <span style={{ fontSize: 13, fontWeight: 500, color: S.text }}>{project.name}</span>
                         <ProgressDots complete={project.modulesComplete.length} total={MODULES.length} />
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         {project.currentModule && (
-                          <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(61,56,48,0.2)" }}>
+                          <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)" }}>
                             {project.currentModule === "discovery" ? "Discovery" : MODULES.find((m) => m.key === project.currentModule)?.label}
                           </span>
                         )}
-                        <span style={{ fontSize: 9, fontWeight: 400, color: "rgba(61,56,48,0.15)" }}>{project.lastEdited}</span>
-                        <span style={{ fontSize: 14, color: "rgba(61,56,48,0.15)", fontFamily: "'Inter', sans-serif" }}>›</span>
+                        <span style={{ fontSize: 9, fontWeight: 400, color: "rgba(44,40,36,0.15)" }}>{project.lastEdited}</span>
+                        <span style={{ fontSize: 14, color: "rgba(44,40,36,0.15)", fontFamily: "'DM Sans', sans-serif" }}>›</span>
                       </div>
                     </div>
                   );
