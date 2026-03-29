@@ -80,7 +80,7 @@ function ProgressDots({ complete, total }) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function Dashboard() {
+export default function Dashboard({ onStartProject, onOpenProject } = {}) {
   const [view, setView] = useState("cards"); // cards | list
   const [projects, setProjects] = useState(SAMPLE_PROJECTS);
   const [creating, setCreating] = useState(false);
@@ -250,7 +250,7 @@ export default function Dashboard() {
                 {projects.map((project, i) => {
                   const st = STATUS_LABELS[project.status];
                   return (
-                    <div key={project.id} onClick={() => alert(`Open: ${project.name}`)} style={{
+                    <div key={project.id} onClick={() => onOpenProject?.(project)} style={{
                       background: S.card, borderRadius: 4, border: "1px solid rgba(61,56,48,0.06)",
                       boxShadow: S.raised, overflow: "hidden", cursor: "pointer",
                       transition: `all 0.2s ${ease}`,
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   const st = STATUS_LABELS[project.status];
                   const isLast = i === projects.length - 1;
                   return (
-                    <div key={project.id} onClick={() => alert(`Open: ${project.name}`)} style={{
+                    <div key={project.id} onClick={() => onOpenProject?.(project)} style={{
                       padding: "12px 20px", cursor: "pointer",
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                       borderBottom: isLast ? "none" : "1px solid rgba(61,56,48,0.04)",

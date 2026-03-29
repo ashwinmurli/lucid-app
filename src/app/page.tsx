@@ -112,6 +112,18 @@ export default function LucidApp() {
                 "OPENING DISCOVERY",
               ])
             }
+            onOpenProject={(project: any) => {
+              // Map legacy module names and handle completed projects
+              const moduleMap: Record<string, string> = { pvm: "values" };
+              const raw = project.currentModule;
+              const target = raw ? (moduleMap[raw] || raw) : "summary";
+              const validTarget = MODULE_ORDER.includes(target) ? target : "personality";
+              navigateTo(validTarget, [
+                `OPENING ${project.name.toUpperCase()}`,
+                "LOADING PROGRESS",
+                `RESUMING ${(MODULE_LABELS[validTarget] || validTarget).toUpperCase()}`,
+              ]);
+            }}
           />
         )}
 
