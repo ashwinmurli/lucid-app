@@ -112,7 +112,7 @@ function ChapterStack({ title, notes, total, isComplete, onEditNote }) {
 /* ══════════════════════════════════════════════════════════════
    MAIN
    ══════════════════════════════════════════════════════════════ */
-export default function BrandPersonality() {
+export default function BrandPersonality({ onBack } = {}) {
   const [cur, setCur] = useState(0);
   const [text, setText] = useState("");
   const [notes, setNotes] = useState([]);
@@ -193,7 +193,7 @@ export default function BrandPersonality() {
         {/* Header */}
         <div style={{ padding: "6px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${S.border}`, background: S.panel, boxShadow: "0 1px 0 rgba(255,255,255,0.4) inset, 0 1px 3px rgba(0,0,0,0.02)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}>LUCID</div>
+            <div onClick={() => onBack?.()} style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 2, background: S.text, color: "#EDE9E1", boxShadow: "0 1px 2px rgba(0,0,0,0.12)", cursor: "pointer" }}>LUCID</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <button onClick={() => { if (cur > 0) { setCur((c) => c - 1); setAnimKey((k) => k + 1); } }} style={{ width: 28, height: 28, borderRadius: 4, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(61,56,48,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)", color: "rgba(61,56,48,0.25)", fontSize: 14, fontFamily: "'Inter', sans-serif", transition: "all 0.08s ease" }}>‹</button>

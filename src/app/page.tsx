@@ -92,13 +92,6 @@ export default function LucidApp() {
     <PageShell>
       <style>{globalStyles}</style>
 
-      {currentModule !== "dashboard" && (
-        <Header
-          label={MODULE_LABELS[currentModule] || undefined}
-          onLogoClick={() => setCurrentModule("dashboard")}
-        />
-      )}
-
       {/* Cinematic transition overlay */}
       {transition && <Cinematic steps={transition.steps} />}
 
@@ -135,7 +128,7 @@ export default function LucidApp() {
               updateProject("gaps", data.gaps);
               navigateTo("personality");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -145,7 +138,7 @@ export default function LucidApp() {
               updateProject("personality", data);
               navigateTo("tensions");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -155,7 +148,7 @@ export default function LucidApp() {
               updateProject("tensions", data);
               navigateTo("values");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -165,7 +158,7 @@ export default function LucidApp() {
               updateProject("values", data);
               navigateTo("tone");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -175,7 +168,7 @@ export default function LucidApp() {
               updateProject("tone", data);
               navigateTo("usps");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -189,7 +182,7 @@ export default function LucidApp() {
                 "COMPOSING MANIFESTO",
               ]);
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
@@ -200,7 +193,7 @@ export default function LucidApp() {
               updateProject("manifesto", text);
               navigateTo("summary");
             }}
-            onBack={goBack}
+            onBack={() => setCurrentModule("dashboard")}
           />
         )}
 
