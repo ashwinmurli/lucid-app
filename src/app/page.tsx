@@ -37,8 +37,36 @@ const MODULE_LABELS: Record<string, string | null> = {
   summary: "Summary",
 };
 
+const INITIAL_PROJECTS = [
+  {
+    id: 1, name: "Aether Studios", status: "synthesis",
+    lastEdited: "2 hours ago",
+    modulesComplete: ["personality", "tensions", "pvm", "values"],
+    currentModule: "tone",
+  },
+  {
+    id: 2, name: "Nørde Coffee", status: "discovery",
+    lastEdited: "Yesterday",
+    modulesComplete: [],
+    currentModule: "discovery",
+  },
+  {
+    id: 3, name: "Veld Architecture", status: "complete",
+    lastEdited: "3 days ago",
+    modulesComplete: ["personality", "tensions", "pvm", "values", "tone", "usps", "manifesto"],
+    currentModule: null,
+  },
+  {
+    id: 4, name: "Halcyon Health", status: "synthesis",
+    lastEdited: "Last week",
+    modulesComplete: ["personality", "tensions"],
+    currentModule: "pvm",
+  },
+];
+
 export default function LucidApp() {
   const [currentModule, setCurrentModule] = useState("dashboard");
+  const [projects, setProjects] = useState(INITIAL_PROJECTS);
   const [transition, setTransition] = useState<{
     target: string;
     steps: string[];
@@ -98,6 +126,8 @@ export default function LucidApp() {
       <ScrollArea>
         {currentModule === "dashboard" && (
           <Dashboard
+            projects={projects}
+            setProjects={setProjects}
             onStartProject={(project: any) =>
               navigateTo("discovery", [
                 `CREATING ${(project?.name || "PROJECT").toUpperCase()}`,
@@ -106,7 +136,6 @@ export default function LucidApp() {
               ])
             }
             onOpenProject={(project: any) => {
-              // Map legacy module names and handle completed projects
               const moduleMap: Record<string, string> = { pvm: "values" };
               const raw = project.currentModule;
               const target = raw ? (moduleMap[raw] || raw) : "summary";

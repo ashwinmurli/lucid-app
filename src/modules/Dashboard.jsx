@@ -80,9 +80,8 @@ function ProgressDots({ complete, total }) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function Dashboard({ onStartProject, onOpenProject } = {}) {
+export default function Dashboard({ onStartProject, onOpenProject, projects, setProjects } = {}) {
   const [view, setView] = useState("cards"); // cards | list
-  const [projects, setProjects] = useState(SAMPLE_PROJECTS);
   const [creating, setCreating] = useState(false);
   const [createStep, setCreateStep] = useState(0);
   const [newName, setNewName] = useState("");
@@ -95,7 +94,9 @@ export default function Dashboard({ onStartProject, onOpenProject } = {}) {
   }, []);
 
   useEffect(() => {
-    if (creating && inputRef.current) inputRef.current.focus();
+    if (creating && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
   }, [creating, createStep]);
 
   const startCreate = () => {

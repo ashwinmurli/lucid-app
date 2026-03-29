@@ -64,6 +64,12 @@ export default function Discovery({ onBack } = {}) {
 
   // Generating cinematic
   useEffect(() => {
+    if (phase === "brief" && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [phase, briefStep]);
+
+  useEffect(() => {
     if (phase !== "generating") return;
     setTransStep(0);
     const steps = [
