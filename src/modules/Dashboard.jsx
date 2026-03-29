@@ -113,6 +113,8 @@ export default function Dashboard({ onStartProject, onOpenProject } = {}) {
     setProjects((prev) => [newProject, ...prev]);
     setCreating(false);
     setNewName("");
+    // Navigate into Discovery for this new project
+    onStartProject?.(newProject);
   };
 
   return (

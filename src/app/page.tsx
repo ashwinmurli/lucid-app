@@ -98,9 +98,9 @@ export default function LucidApp() {
       <ScrollArea>
         {currentModule === "dashboard" && (
           <Dashboard
-            onStartProject={() =>
+            onStartProject={(project: any) =>
               navigateTo("discovery", [
-                "CREATING PROJECT",
+                `CREATING ${(project?.name || "PROJECT").toUpperCase()}`,
                 "PREPARING LUCY",
                 "OPENING DISCOVERY",
               ])
