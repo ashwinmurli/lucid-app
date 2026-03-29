@@ -1,66 +1,204 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { colors, fonts, globalStyles } from "@/lib/tokens";
+import { Header, PageShell, ScrollArea, Cinematic } from "@/components/ui";
+import Dashboard from "@/modules/Dashboard";
+import Discovery from "@/modules/Discovery";
+import BrandPersonality from "@/modules/BrandPersonality";
+import TensionPairs from "@/modules/TensionPairs";
+import CoreValues from "@/modules/CoreValues";
+import ToneOfVoice from "@/modules/ToneOfVoice";
+import USPs from "@/modules/USPs";
+import Manifesto from "@/modules/Manifesto";
+import Summary from "@/modules/Summary";
+
+const MODULE_ORDER = [
+  "dashboard",
+  "discovery",
+  "personality",
+  "tensions",
+  "values",
+  "tone",
+  "usps",
+  "manifesto",
+  "summary",
+];
+
+const MODULE_LABELS: Record<string, string | null> = {
+  dashboard: null,
+  discovery: "Discovery",
+  personality: "Strategy – Personality",
+  tensions: "Strategy – Tensions",
+  values: "Strategy – Values",
+  tone: "Strategy – Tone",
+  usps: "Strategy – USPs",
+  manifesto: "Strategy – Manifesto",
+  summary: "Summary",
+};
+
+export default function LucidApp() {
+  const [currentModule, setCurrentModule] = useState("dashboard");
+  const [transition, setTransition] = useState<{
+    target: string;
+    steps: string[];
+  } | null>(null);
+
+  // Shared project state — flows between modules
+  const [projectData, setProjectData] = useState({
+    briefAnswers: [] as { q: string; a: string }[],
+    discoveryQuestions: [] as any[],
+    gaps: [] as any[],
+    personality: null as any,
+    tensions: null as any,
+    values: null as any,
+    tone: null as any,
+    usps: null as any,
+    manifesto: "",
+  });
+
+  const updateProject = (key: string, value: any) => {
+    setProjectData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const navigateTo = (target: string, cinematicSteps?: string[]) => {
+    if (cinematicSteps) {
+      setTransition({ target, steps: cinematicSteps });
+      const duration = 600 + cinematicSteps.length * 1400 + 400;
+      setTimeout(() => {
+        setCurrentModule(target);
+        setTransition(null);
+      }, duration);
+    } else {
+      setCurrentModule(target);
+    }
+  };
+
+  const goNext = () => {
+    const idx = MODULE_ORDER.indexOf(currentModule);
+    if (idx < MODULE_ORDER.length - 1) {
+      navigateTo(MODULE_ORDER[idx + 1]);
+    }
+  };
+
+  const goBack = () => {
+    const idx = MODULE_ORDER.indexOf(currentModule);
+    if (idx > 0) {
+      navigateTo(MODULE_ORDER[idx - 1]);
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <PageShell>
+      <style>{globalStyles}</style>
+
+      {currentModule !== "dashboard" && (
+        <Header
+          label={MODULE_LABELS[currentModule] || undefined}
+          onLogoClick={() => setCurrentModule("dashboard")}
         />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+
+      {/* Cinematic transition overlay */}
+      {transition && <Cinematic steps={transition.steps} />}
+
+      <ScrollArea>
+        {currentModule === "dashboard" && (
+          <Dashboard
+            onStartProject={() =>
+              navigateTo("discovery", [
+                "CREATING PROJECT",
+                "PREPARING LUCY",
+                "OPENING DISCOVERY",
+              ])
+            }
+          />
+        )}
+
+        {currentModule === "discovery" && (
+          <Discovery
+            onComplete={(data: any) => {
+              updateProject("briefAnswers", data.briefAnswers);
+              updateProject("discoveryQuestions", data.questions);
+              updateProject("gaps", data.gaps);
+              navigateTo("personality");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "personality" && (
+          <BrandPersonality
+            onComplete={(data: any) => {
+              updateProject("personality", data);
+              navigateTo("tensions");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "tensions" && (
+          <TensionPairs
+            onComplete={(data: any) => {
+              updateProject("tensions", data);
+              navigateTo("values");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "values" && (
+          <CoreValues
+            onComplete={(data: any) => {
+              updateProject("values", data);
+              navigateTo("tone");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "tone" && (
+          <ToneOfVoice
+            onComplete={(data: any) => {
+              updateProject("tone", data);
+              navigateTo("usps");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "usps" && (
+          <USPs
+            onComplete={(data: any) => {
+              updateProject("usps", data);
+              navigateTo("manifesto", [
+                "READING BRAND WORK",
+                "FINDING THE VOICE",
+                "COMPOSING MANIFESTO",
+              ]);
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "manifesto" && (
+          <Manifesto
+            projectData={projectData}
+            onComplete={(text: string) => {
+              updateProject("manifesto", text);
+              navigateTo("summary");
+            }}
+            onBack={goBack}
+          />
+        )}
+
+        {currentModule === "summary" && (
+          <Summary
+            projectData={projectData}
+            onBackToDashboard={() => setCurrentModule("dashboard")}
+          />
+        )}
+      </ScrollArea>
+    </PageShell>
   );
 }
