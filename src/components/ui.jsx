@@ -21,6 +21,11 @@ export const LUCY_ICONS_SVG = {
   approves: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg>,
   cocreate: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/></svg>,
   off: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 22h2v-4h-2zM9 5h2v4H9zm0 14h2v-4H9zm4-14h2v4h-2zm0 14h2v-4h-2zM5 9h4v2H5zm14 0h-4v2h4zM1 11h4v2H1zm22 0h-4v2h4zM5 13h4v2H5zm14 0h-4v2h4z"/></svg>,
+  more: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M3 11h2v2H3zm8 0h2v2h-2zm8 0h2v2h-2z"/></svg>,
+  edit: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M4 19h2v2H4zM6 17h2v2H6zM8 15h2v2H8zM10 13h2v2h-2zM12 11h2v2h-2zM14 9h2v2h-2zM16 7h2v2h-2zM14 5h4v2h-4zM16 3h2v2h-2zM18 3h2v4h-2z"/></svg>,
+  copy: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M4 2h11v2H4zm0 18h11v2H4zM2 4h2v16H2zm13 0h2v16h-2zM7 6h2v2H7zm0 4h2v2H7zm0 4h2v2H7zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z"/></svg>,
+  archive: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 3h20v4H2zm0 4h2v14H2zm18 0h2v14h-2zM4 21h16v2H4zM8 11h8v2H8z"/></svg>,
+  trash: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M9 1h6v2H9zM3 3h18v2H3zM5 5h2v14H5zM9 5h2v14H9zM13 5h2v14h-2zM17 5h2v14h-2zM5 19h14v2H5z"/></svg>,
 };
 
 /* ── Backward compat: keep old LUCY_ICONS for any remaining references ── */

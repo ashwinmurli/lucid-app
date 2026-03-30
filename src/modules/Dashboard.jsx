@@ -56,8 +56,12 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
   const [lucyGreeted, setLucyGreeted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
+  const [openTray, setOpenTray] = useState(null);
+  const [renamingId, setRenamingId] = useState(null);
+  const [renameValue, setRenameValue] = useState("");
   const inputRef = useRef(null);
   const searchInputRef = useRef(null);
+  const renameRef = useRef(null);
 
   useEffect(() => {
     const t = setTimeout(() => setLucyGreeted(true), 400);
@@ -69,6 +73,12 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [creating]);
+
+  useEffect(() => {
+    if (renamingId && renameRef.current) {
+      setTimeout(() => renameRef.current?.focus(), 50);
+    }
+  }, [renamingId]);
 
   const startCreate = () => {
     setCreating(true);
@@ -87,8 +97,36 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
     onStartProject?.(newProject);
   };
 
+  const startRename = (project) => {
+    setRenamingId(project.id);
+    setRenameValue(project.name);
+  };
+
+  const submitRename = (project) => {
+    if (!renameValue.trim()) return;
+    setProjects(prev => prev.map(p => p.id === project.id ? { ...p, name: renameValue.trim() } : p));
+    setRenamingId(null);
+    setOpenTray(null);
+  };
+
+  const duplicateProject = (project) => {
+    const dup = { ...project, id: Date.now(), name: `${project.name} (copy)`, lastEdited: "Just now" };
+    setProjects(prev => [dup, ...prev]);
+    setOpenTray(null);
+  };
+
+  const archiveProject = (project) => {
+    setProjects(prev => prev.map(p => p.id === project.id ? { ...p, archived: true } : p));
+    setOpenTray(null);
+  };
+
+  const deleteProject = (project) => {
+    setProjects(prev => prev.filter(p => p.id !== project.id));
+    setOpenTray(null);
+  };
+
   const filteredProjects = useMemo(() => {
-    let result = projects || [];
+    let result = (projects || []).filter(p => !p.archived);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => p.name.toLowerCase().includes(q));
@@ -405,19 +443,34 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                 const bg = project.status === "complete"
                   ? "rgba(229,166,50,0.1)"
                   : hexToAlpha(color, 0.1);
+                const trayOpen = openTray === project.id;
+
+                const TRAY_ACTIONS = [
+                  { icon: "edit",    label: "Rename",    action: () => startRename(project) },
+                  { icon: "copy",    label: "Duplicate", action: () => duplicateProject(project) },
+                  { icon: "archive", label: "Archive",   action: () => archiveProject(project) },
+                ];
 
                 return (
-                  <div key={project.id} onClick={() => onOpenProject?.(project)} style={{
+                  <div key={project.id} style={{
                     background: S.card, borderRadius: 6,
                     border: "1px solid rgba(44,40,36,0.06)",
-                    boxShadow: shadows.raised, overflow: "hidden", cursor: "pointer",
-                    transition: `all 0.2s ${ease}`, marginBottom: 8,
+                    boxShadow: trayOpen ? shadows.cardHover : shadows.raised,
+                    overflow: "hidden",
+                    transition: `box-shadow 0.2s ${ease}`, marginBottom: 8,
                     animation: `promptIn 0.4s ${ease} ${i * 0.05}s both`,
-                  }}
-                    onMouseEnter={e => { e.currentTarget.style.boxShadow = shadows.cardHover; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.boxShadow = shadows.raised; e.currentTarget.style.transform = "translateY(0)"; }}
-                  >
-                    <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  }}>
+                    {/* Header row */}
+                    <div
+                      onClick={() => onOpenProject?.(project)}
+                      style={{
+                        padding: "14px 20px", display: "flex", alignItems: "center",
+                        justifyContent: "space-between", cursor: "pointer",
+                        transition: `background 0.15s ${ease}`,
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(44,40,36,0.015)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                    >
                       <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{project.name}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                         <div style={{
@@ -427,7 +480,110 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                           background: bg, color: color,
                         }}>{label.toUpperCase()}</div>
                         <span style={{ fontSize: 9, color: "rgba(44,40,36,0.15)" }}>{project.lastEdited}</span>
+                        {/* Three-dot menu trigger */}
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            setOpenTray(prev => prev === project.id ? null : project.id);
+                            setRenamingId(null);
+                          }}
+                          style={{
+                            background: "transparent", border: "none", cursor: "pointer",
+                            padding: "2px 4px", borderRadius: 3, flexShrink: 0,
+                            color: trayOpen ? "rgba(44,40,36,0.5)" : "rgba(44,40,36,0.2)",
+                            display: "flex", alignItems: "center",
+                            transition: "color 0.15s ease",
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.color = "rgba(44,40,36,0.5)"; }}
+                          onMouseLeave={e => { if (!trayOpen) e.currentTarget.style.color = "rgba(44,40,36,0.2)"; }}
+                        >
+                          <PixelIcon icon="more" color="currentColor" size={14} />
+                        </button>
                       </div>
+                    </div>
+
+                    {/* Management tray */}
+                    <div style={{
+                      overflow: "hidden",
+                      maxHeight: trayOpen ? 60 : 0,
+                      opacity: trayOpen ? 1 : 0,
+                      transition: `max-height 0.22s ${ease}, opacity 0.15s ${ease}`,
+                      borderTop: trayOpen ? "1px solid rgba(44,40,36,0.04)" : "none",
+                    }}>
+                      {renamingId === project.id ? (
+                        /* Rename inline input */
+                        <div style={{ padding: "8px 14px 10px", display: "flex", alignItems: "center", gap: 8 }}>
+                          <div style={{
+                            flex: 1, background: S.recess, borderRadius: 4,
+                            border: `1px solid ${S.border}`,
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset",
+                            padding: "6px 10px",
+                          }}>
+                            <input
+                              ref={renameRef}
+                              value={renameValue}
+                              onChange={e => setRenameValue(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === "Enter") { e.stopPropagation(); submitRename(project); }
+                                if (e.key === "Escape") { e.stopPropagation(); setRenamingId(null); }
+                              }}
+                              style={{
+                                width: "100%", background: "transparent", border: "none",
+                                fontSize: 13, fontWeight: 400, color: S.text,
+                                fontFamily: fonts.primary, outline: "none",
+                              }}
+                            />
+                          </div>
+                          <button onClick={e => { e.stopPropagation(); setRenamingId(null); }} style={{
+                            padding: "4px 10px", borderRadius: 12, border: "none",
+                            background: "transparent", cursor: "pointer",
+                            fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                            color: "rgba(44,40,36,0.35)",
+                          }}>Cancel</button>
+                          <button onClick={e => { e.stopPropagation(); submitRename(project); }} style={{
+                            padding: "4px 10px", borderRadius: 12, border: "none",
+                            background: "transparent", cursor: "pointer",
+                            fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                            color: renameValue.trim() ? S.text : "rgba(44,40,36,0.2)",
+                          }}>Save</button>
+                        </div>
+                      ) : (
+                        /* Action buttons */
+                        <div style={{ padding: "8px 14px 10px", display: "flex", alignItems: "center", gap: 2 }}>
+                          {TRAY_ACTIONS.map(({ icon, label, action }) => (
+                            <button key={label} onClick={e => { e.stopPropagation(); action(); }} style={{
+                              display: "inline-flex", alignItems: "center", gap: 5,
+                              padding: "4px 10px", borderRadius: 12, border: "none",
+                              background: "transparent", cursor: "pointer",
+                              fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                              color: "rgba(44,40,36,0.35)",
+                              transition: "color 0.15s ease",
+                            }}
+                              onMouseEnter={e => { e.currentTarget.style.color = "rgba(44,40,36,0.7)"; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = "rgba(44,40,36,0.35)"; }}
+                            >
+                              <PixelIcon icon={icon} color="currentColor" size={12} />
+                              {label}
+                            </button>
+                          ))}
+                          {/* Delete — danger, pushed right */}
+                          <button onClick={e => { e.stopPropagation(); deleteProject(project); }} style={{
+                            display: "inline-flex", alignItems: "center", gap: 5,
+                            padding: "4px 10px", borderRadius: 12, border: "none",
+                            background: "transparent", cursor: "pointer",
+                            fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                            color: "rgba(196,48,48,0.4)",
+                            marginLeft: "auto",
+                            transition: "color 0.15s ease",
+                          }}
+                            onMouseEnter={e => { e.currentTarget.style.color = "#C43030"; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = "rgba(196,48,48,0.4)"; }}
+                          >
+                            <PixelIcon icon="trash" color="currentColor" size={12} />
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
