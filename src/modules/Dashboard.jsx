@@ -138,8 +138,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
   }, [projects, searchQuery, sortBy]);
 
   const { lucyContextLine, suggestions } = useMemo(() => {
-    if (!projects) return { lucyContextLine: "Ready to start something new?", suggestions: [] };
-    const active = projects.filter(p => p.status !== "complete");
+    const active = (projects || []).filter(p => p.status !== "complete");
     if (active.length === 0) {
       return {
         lucyContextLine: "All projects wrapped up. Ready to start something new?",
