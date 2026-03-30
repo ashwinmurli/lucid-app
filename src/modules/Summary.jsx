@@ -246,7 +246,7 @@ export default function Summary({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Summary</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.accent, lineHeight: 1 }}>{SECTIONS.length}</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.accent, lineHeight: 1 }}>{SECTIONS.length}</span>
             </div>
           </div>
         </div>
@@ -288,8 +288,8 @@ export default function Summary({ onBack } = {}) {
               boxShadow: "0 1px 3px rgba(0,0,0,0.15) inset, 0 1px 0 rgba(255,255,255,0.04)",
             }}>
               <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdBright }}>BRAND COMPLETE</span>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim, marginLeft: 2 }}>{SECTIONS.length} modules</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdBright }}>BRAND COMPLETE</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim, marginLeft: 2 }}>{SECTIONS.length} modules</span>
             </div>
           </div>
 

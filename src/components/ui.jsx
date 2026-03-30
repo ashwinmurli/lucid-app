@@ -126,7 +126,7 @@ export function LucyScreen({ mode, hoveredModeInfo, aiMode, guideText }) {
           <div style={{ animation: isThinking ? "lucyPulse 1.5s ease-in-out infinite" : "none" }}>
             <PixelIcon icon={dIcon} color={dColor} size={14} />
           </div>
-          <span style={{ fontFamily: fonts.pixel, fontSize: 10, color: dColor, lineHeight: 1, transition: "color 0.3s ease" }}>{dLabel}</span>
+          <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: dColor, lineHeight: 1, transition: "color 0.3s ease" }}>{dLabel}</span>
         </div>
         {isActive && !smi && !hasGuide && (
           <div style={{ position: "absolute", inset: 2, display: "grid", gridTemplateColumns: "repeat(36, 1fr)", gridTemplateRows: "repeat(10, 1fr)", gap: 0.5, opacity: hover ? 1 : 0, transition: "opacity 0.15s ease", zIndex: 2 }}>
@@ -147,7 +147,7 @@ export function LucyScreen({ mode, hoveredModeInfo, aiMode, guideText }) {
           <div style={{ height: 1, background: colors.lcdDim, margin: "0 6px" }} />
           <div style={{ padding: "6px 8px" }}>
             <div style={{ transform: "scale(0.65)", transformOrigin: "top left", width: "154%" }}>
-              <div style={{ fontFamily: fonts.pixel, fontSize: 16, color: colors.lcd, lineHeight: 1.5 }}>{guideText}</div>
+              <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 16, color: colors.lcd, lineHeight: 1.5 }}>{guideText}</div>
             </div>
           </div>
         </div>
@@ -167,7 +167,7 @@ export function LucyMini({ text, color, icon }) {
       display: "inline-flex", alignItems: "center", gap: 5,
     }}>
       <PixelIcon icon={icon || "idle"} color={color || colors.lcd} size={14} />
-      <span style={{ fontFamily: fonts.pixel, fontSize: 10, color: color || colors.lcd }}>{text}</span>
+      <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: color || colors.lcd }}>{text}</span>
     </div>
   );
 }
@@ -221,7 +221,7 @@ export function Cinematic({ steps }) {
         </div>
         {step > 0 && (
           <div key={atEnd ? "final" : step} style={{
-            fontFamily: fonts.pixel, fontSize: 14, color: colors.accent,
+            fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 14, color: colors.accent,
             letterSpacing: "0.05em",
             animation: atEnd ? "lucyPulse 2s ease-in-out infinite" : `fadeIn 0.4s ${ease} both`,
           }}>

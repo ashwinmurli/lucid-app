@@ -158,7 +158,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
               ))}
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcd, lineHeight: 1 }}>{projects.length}</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcd, lineHeight: 1 }}>{projects.length}</span>
             </div>
           </div>
         </div>
@@ -179,18 +179,18 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <PixelIcon icon="guide" color={S.lcd} size={14} />
-                    <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdDim }}>LUCY</span>
+                    <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdDim }}>LUCY</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdDim }}>{projects.filter((p) => p.status !== "complete").length} active</span>
+                    <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdDim }}>{projects.filter((p) => p.status !== "complete").length} active</span>
                     <div style={{ width: 4, height: 4, borderRadius: "50%", background: S.lcd }} />
                   </div>
                 </div>
 
                 {/* Greeting — large, centered */}
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 28, color: S.lcd, lineHeight: 1.2 }}>{getGreeting()}</div>
-                  <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 28, color: S.lcdBright, lineHeight: 1.2 }}>Ashwin.</div>
+                  <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 28, color: S.lcd, lineHeight: 1.2 }}>{getGreeting()}</div>
+                  <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 28, color: S.lcdBright, lineHeight: 1.2 }}>Ashwin.</div>
                 </div>
 
                 {/* Divider */}
@@ -198,12 +198,12 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
 
                 {/* Bottom — contextual message */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcd }}>
+                  <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcd }}>
                     {projects.length === 0
                       ? "No projects yet. Start one."
                       : "Pick up where you left off."}
                   </span>
-                  <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdDim }}>READY</span>
+                  <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdDim }}>READY</span>
                 </div>
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                   <div style={{ padding: "16px 20px" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 16 }}>
                       <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-                      <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.5)", lineHeight: 1.5 }}>What's the client's name? Or the project name — whatever helps you find it later.</div>
+                      <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.5)", lineHeight: 1.5 }}>What's the client's name? Or the project name — whatever helps you find it later.</div>
                     </div>
                     <div style={{ background: S.recess, borderRadius: 4, border: `1px solid ${S.border}`, boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset", padding: "10px 12px" }}>
                       <input ref={inputRef} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client or project name" onKeyDown={(e) => { if (e.key === "Enter") submitName(); if (e.key === "Escape") { setCreating(false); setNewName(""); } }} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, color: S.text, outline: "none", fontFamily: "'DM Sans', sans-serif" }} />
@@ -271,7 +271,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                             fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", padding: "3px 8px",
                             borderRadius: 3, background: S.screen,
                             boxShadow: "0 1px 2px rgba(0,0,0,0.15) inset, 0 1px 0 rgba(255,255,255,0.04)",
-                            fontFamily: "'DotGothic16', monospace", color: st.color,
+                            fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", color: st.color,
                           }}>{st.label}</div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

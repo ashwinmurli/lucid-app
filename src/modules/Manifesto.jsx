@@ -141,7 +141,7 @@ export default function Manifesto({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{phase === "locked" ? "Manifesto Locked" : phase === "composing" ? "Composing" : phase === "reviewing" ? "Review Draft" : "Editing"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: phase === "composing" ? S.accent : phase === "locked" ? S.accent : S.lcd, lineHeight: 1, animation: phase === "composing" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>{phase === "composing" ? "···" : wordCount}</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: phase === "composing" ? S.accent : phase === "locked" ? S.accent : S.lcd, lineHeight: 1, animation: phase === "composing" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>{phase === "composing" ? "···" : wordCount}</span>
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function Manifesto({ onBack } = {}) {
               <div style={{ position: "absolute", inset: 0, background: S.screen, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.6s ease both", zIndex: 5 }}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ display: "inline-block", animation: showPulse ? "lucyPulse 1.2s ease-in-out infinite" : "none", marginBottom: 20 }}><PixelIcon pattern={LUCY_ICONS.thinking} color={S.accent} size={4} /></div>
-                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: "'DotGothic16', monospace", fontSize: 14, color: S.accent, letterSpacing: "0.05em", animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
+                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 14, color: S.accent, animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
                   {transStep >= 1 && (<div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 16 }}>{[1,2,3,4].map((s) => (<div key={s} style={{ width: 4, height: 4, background: transStep >= s ? S.accent : "rgba(229,166,50,0.15)", transition: "background 0.3s ease" }} />))}</div>)}
                 </div>
               </div>
@@ -380,9 +380,9 @@ export default function Manifesto({ onBack } = {}) {
                   <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
                       <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
-                      <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>MANIFESTO COMPLETE</span>
+                      <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdBright }}>MANIFESTO COMPLETE</span>
                     </div>
-                    <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>{wordCount} words · {text.split("\n\n").length} paragraphs</div>
+                    <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim }}>{wordCount} words · {text.split("\n\n").length} paragraphs</div>
                   </div>
                 </div>
               </div>

@@ -154,7 +154,7 @@ export default function TensionPairs({ onComplete, onBack }) {
             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Tensions</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-            <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcd, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{count}/3</span>
+            <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcd, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{count}/3</span>
           </div>
         </div>
       </div>

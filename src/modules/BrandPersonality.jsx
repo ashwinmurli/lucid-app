@@ -174,7 +174,7 @@ export default function BrandPersonality({ onBack } = {}) {
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <span style={{
-                fontFamily: fonts.pixel, fontSize: 10, color: colors.personality,
+                fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: colors.personality,
                 lineHeight: 1, fontVariantNumeric: "tabular-nums",
               }}>{chapterProgress.num}/{chapterProgress.total}</span>
             </div>
@@ -265,12 +265,14 @@ export default function BrandPersonality({ onBack } = {}) {
                 </button>
               </div>
 
-              {/* Lucy Module — subtle amber wash */}
+              {/* Lucy Module — brushed warm aluminum */}
               <div style={{
                 marginTop: 16,
-                background: "rgba(229,166,50,0.06)",
-                border: "1px solid rgba(229,166,50,0.1)",
-                borderRadius: 6,
+                background: colors.lucySurface,
+                backgroundImage: colors.lucyGrain,
+                border: `1px solid ${colors.lucyBorder}`,
+                boxShadow: colors.lucyShadow,
+                borderRadius: 8,
                 overflow: "hidden",
               }}>
                 {/* Top strip: e-ink icon + status + mode buttons */}
@@ -291,8 +293,8 @@ export default function BrandPersonality({ onBack } = {}) {
 
                   {/* Status label */}
                   <span style={{
-                    fontFamily: fonts.pixel, fontSize: 10,
-                    color: S.accent, lineHeight: 1, flex: 1,
+                    fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
+                    color: colors.lucyStatusText, lineHeight: 1, flex: 1,
                   }}>{lucyDisplay.label}</span>
 
                   {/* Mode toggle */}
@@ -308,7 +310,7 @@ export default function BrandPersonality({ onBack } = {}) {
                           width: 28, height: 22, borderRadius: 3, border: "none",
                           cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                           fontFamily: fonts.primary, fontSize: 8, fontWeight: 700, letterSpacing: "0.04em",
-                          color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.3)",
+                          color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.25)",
                           background: aiMode === key ? S.accent : "rgba(44,40,36,0.06)",
                           boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
                           transition: "all 0.15s ease",
@@ -320,13 +322,13 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Lucy's feedback (from last kept note) */}
                 {lucyFeedback && (
-                  <div style={{ borderTop: "1px solid rgba(229,166,50,0.1)", padding: "12px 14px 14px" }}>
+                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "12px 14px 14px" }}>
                     <div style={{
-                      fontSize: 9, color: S.accent, fontWeight: 500,
+                      fontSize: 9, color: colors.lucyAmberText, fontWeight: 500,
                       textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5,
                     }}>{lucyFeedbackMode === "support" ? "support" : "challenge"}</div>
                     <div style={{
-                      fontSize: 13, color: "rgba(44,40,36,0.7)", lineHeight: 1.6,
+                      fontSize: 13, color: colors.lucyBodyText, lineHeight: 1.6,
                     }}>
                       {lucyFeedback}
                       {lucyMode === "thinking" && (
@@ -342,10 +344,10 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Guide text (when in support mode) */}
                 {lucyGuide && (
-                  <div style={{ borderTop: "1px solid rgba(229,166,50,0.1)", padding: "8px 12px" }}>
+                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
                     <div style={{
-                      fontFamily: fonts.pixel, fontSize: 10,
-                      color: "rgba(44,40,36,0.5)", lineHeight: 1.5,
+                      fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
+                      color: colors.lucyStatusText, lineHeight: 1.5,
                     }}>{lucyGuide}</div>
                   </div>
                 )}

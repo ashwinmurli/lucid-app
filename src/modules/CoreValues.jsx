@@ -82,7 +82,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
       {!isSelected && (
         <div style={{ padding: "6px 16px 14px", display: "flex", alignItems: "flex-start", gap: 8 }}>
           <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-          <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{value.reason}</div>
+          <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{value.reason}</div>
         </div>
       )}
 
@@ -218,7 +218,7 @@ export default function CoreValues({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "Locked" : "Core Values"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: canLock || locked ? S.accent : S.lcd, lineHeight: 1 }}>{selectedValues.length}/3</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: canLock || locked ? S.accent : S.lcd, lineHeight: 1 }}>{selectedValues.length}/3</span>
             </div>
           </div>
         </div>
@@ -348,9 +348,9 @@ export default function CoreValues({ onBack } = {}) {
                   <div style={{ background: S.screen, borderRadius: 4, padding: "12px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 6 }}>
                       <PixelIcon icon="approves" color={S.lcdBright} size={14} />
-                      <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>VALUES COMPLETE</span>
+                      <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdBright }}>VALUES COMPLETE</span>
                     </div>
-                    <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>
+                    <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim }}>
                       3 values · defined
                     </div>
                   </div>

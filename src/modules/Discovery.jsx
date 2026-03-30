@@ -141,7 +141,7 @@ export default function Discovery({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{headerPhase[phase]}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: phase === "generating" ? S.accent : S.lcd, lineHeight: 1, animation: phase === "generating" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: phase === "generating" ? S.accent : S.lcd, lineHeight: 1, animation: phase === "generating" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>
                 {phase === "brief" ? `${briefStep + 1}/${BRIEF_QUESTIONS.length}` : phase === "generating" ? "···" : phase === "questions" ? `${answeredCount}/${questions.length}` : "✓"}
               </span>
             </div>
@@ -199,7 +199,7 @@ export default function Discovery({ onBack } = {}) {
               <div style={{ position: "absolute", inset: 0, background: S.screen, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.6s ease both", zIndex: 5 }}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ display: "inline-block", animation: showPulse ? "lucyPulse 1.2s ease-in-out infinite" : "none", marginBottom: 20 }}><PixelIcon icon="thinking" color={S.accent} size={28} /></div>
-                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: "'DotGothic16', monospace", fontSize: 14, color: S.accent, letterSpacing: "0.05em", animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
+                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 14, color: S.accent, animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
                   {transStep >= 1 && (<div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 16 }}>{[1,2,3].map((s) => (<div key={s} style={{ width: 4, height: 4, background: transStep >= s ? S.accent : "rgba(229,166,50,0.15)", transition: "background 0.3s ease" }} />))}</div>)}
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function Discovery({ onBack } = {}) {
                                 {/* Lucy's strategic intent */}
                                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 12 }}>
                                   <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-                                  <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{q.intent}</div>
+                                  <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{q.intent}</div>
                                 </div>
 
                                 {/* Response input — always visible when expanded */}
@@ -351,9 +351,9 @@ export default function Discovery({ onBack } = {}) {
                   <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
                       <PixelIcon icon="approves" color={S.lcdBright} size={14} />
-                      <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>DISCOVERY REVIEWED</span>
+                      <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 10, color: S.lcdBright }}>DISCOVERY REVIEWED</span>
                     </div>
-                    <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>{answeredCount} captured · {GAPS.length} gaps</div>
+                    <div style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim }}>{answeredCount} captured · {GAPS.length} gaps</div>
                   </div>
                 </div>
               </div>
