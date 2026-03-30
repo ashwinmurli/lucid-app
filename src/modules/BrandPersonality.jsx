@@ -166,19 +166,6 @@ export default function BrandPersonality({ onBack } = {}) {
               {done ? "Complete" : prompt?.chapter}
             </span>
           </div>
-          {prompt && (
-            <div style={{
-              padding: "0 6px", borderRadius: 3, height: 24,
-              background: S.screen,
-              boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <span style={{
-                fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: colors.personality,
-                lineHeight: 1, fontVariantNumeric: "tabular-nums",
-              }}>{chapterProgress.num}/{chapterProgress.total}</span>
-            </div>
-          )}
         </div>
       </div>
 
@@ -277,13 +264,13 @@ export default function BrandPersonality({ onBack } = {}) {
               }}>
                 {/* Top strip: e-ink icon + status + mode buttons */}
                 <div style={{
-                  padding: "8px 10px",
-                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "10px 14px",
+                  display: "flex", alignItems: "center", gap: 10,
                 }}>
                   {/* E-ink badge */}
                   <div style={{
                     width: 40, height: 30,
-                    background: colors.eink, borderRadius: 2,
+                    background: colors.eink, borderRadius: 3,
                     border: `1px solid ${colors.einkBorder}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     flexShrink: 0,
@@ -293,8 +280,8 @@ export default function BrandPersonality({ onBack } = {}) {
 
                   {/* Status label */}
                   <span style={{
-                    fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                    color: colors.lucyStatusText, flex: 1,
                   }}>{lucyDisplay.label}</span>
 
                   {/* E-ink segmented switch */}
@@ -320,10 +307,10 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Lucy's feedback (from last kept note) */}
                 {lucyFeedback && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "12px 14px 14px" }}>
+                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
                     <div style={{
                       fontSize: 9, color: colors.lucyAmberText, fontWeight: 500,
-                      textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5,
+                      textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4,
                     }}>{lucyFeedbackMode === "support" ? "support" : "challenge"}</div>
                     <div style={{
                       fontSize: 13, color: colors.lucyBodyText, lineHeight: 1.6,
@@ -342,7 +329,7 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Guide text (when in support mode) */}
                 {lucyGuide && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
+                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
                     <div style={{
                       fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
                       color: colors.lucyStatusText, lineHeight: 1.5,

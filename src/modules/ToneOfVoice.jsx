@@ -345,9 +345,6 @@ export default function ToneOfVoice({ onBack } = {}) {
               <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "Tone Locked" : "Tone of Voice"}</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: locked ? colors.tone : S.lcd, lineHeight: 1 }}>{allSpectrums.length}</span>
-            </div>
           </div>
         </div>
 
@@ -395,7 +392,7 @@ export default function ToneOfVoice({ onBack } = {}) {
                   overflow: "hidden",
                 }}>
                   <div style={{
-                    padding: "12px 14px",
+                    padding: "10px 14px",
                     display: "flex", alignItems: "center", gap: 10,
                   }}>
                     <div style={{
@@ -436,9 +433,8 @@ export default function ToneOfVoice({ onBack } = {}) {
                   </div>
                   {aiMode === "support" && (
                     <>
-                      <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "0 14px" }} />
-                      <div style={{ padding: "12px 14px 14px" }}>
-                        <div style={{ fontSize: 9, color: colors.lucyAmberText, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5 }}>guide</div>
+                      <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                        <div style={{ fontSize: 9, color: colors.lucyAmberText, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>guide</div>
                         <div style={{ fontSize: 13, color: colors.lucyBodyText, lineHeight: 1.6 }}>
                           These starting positions come from the personality work. Adjust them — but trust your gut over the center.
                         </div>

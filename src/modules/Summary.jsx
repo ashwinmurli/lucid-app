@@ -7,6 +7,13 @@ import { useState } from "react";
 import { S, ease, colors, fonts, shadows, fontImports, globalStyles } from "../lib/tokens";
 import { PixelIcon } from "../components/ui";
 
+function hexToAlpha(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 const MODULE_COLORS = {
   personality: "#FF8C42",
   tensions: "#FF8C42",
@@ -15,6 +22,26 @@ const MODULE_COLORS = {
   tone: "#4AADFF",
   usps: "#B86EED",
   manifesto: "#6366F1",
+};
+
+const MODULE_DARK_COLORS = {
+  personality: "#D0701A",
+  tensions: "#D0701A",
+  purpose: "#C43055",
+  values: "#0D7D6A",
+  tone: "#2A7CC9",
+  usps: "#8A4CB8",
+  manifesto: "#4447B0",
+};
+
+const SECTION_ICONS = {
+  personality: "challenge",
+  tensions: "drift",
+  purpose: "push",
+  values: "done",
+  tone: "probe",
+  usps: "spark",
+  manifesto: "guide",
 };
 
 const SECTIONS = [
@@ -111,6 +138,8 @@ function CopyIcon({ size = 10, color = "currentColor" }) {
 /* ── Section Card ── */
 function SectionCard({ section, copied, onCopy, onEdit, index }) {
   const moduleColor = MODULE_COLORS[section.key] || colors.accent;
+  const moduleDarkColor = MODULE_DARK_COLORS[section.key] || "#D0701A";
+  const sectionIcon = SECTION_ICONS[section.key] || "done";
   const isTensions = section.key === "tensions";
   const isTone = section.key === "tone";
   const isManifesto = section.key === "manifesto";
@@ -122,94 +151,78 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
   return (
     <div
       style={{
-        background: S.card,
-        borderRadius: 6,
-        border: `1px solid rgba(44,40,36,0.06)`,
-        boxShadow: shadows.raised,
+        background: "#FAFAF7",
+        borderRadius: 8,
+        border: "1px solid rgba(44,40,36,0.06)",
+        boxShadow: "0 1px 0 rgba(255,255,255,0.5) inset, 0 2px 6px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
         overflow: "hidden",
         animation: `promptIn 0.4s ${ease} ${index * 0.05}s both`,
       }}
     >
-      {/* Header — color bar + title + Edit / Copy */}
+      {/* Header — pixel tag + Edit / Copy */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "10px 14px",
+        padding: "12px 16px",
+        borderBottom: "1px solid rgba(44,40,36,0.04)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Color bar */}
+          {/* Pixel-font tag with icon */}
           <div style={{
-            width: 3, height: 18, borderRadius: 2, flexShrink: 0,
-            background: moduleColor,
-          }} />
-          {/* Title in DotGothic16 */}
-          <span style={{
-            fontFamily: fonts.pixel, letterSpacing: "0.08em",
-            fontSize: 16,
-            transform: "scale(0.5)",
-            transformOrigin: "left center",
-            whiteSpace: "nowrap",
-            color: S.text,
-            letterSpacing: "0.04em",
-          }}>{section.title}</span>
+            fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
+            padding: "4px 10px", borderRadius: 3,
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: hexToAlpha(moduleColor, 0.1),
+            color: moduleDarkColor,
+          }}>
+            <PixelIcon icon={sectionIcon} color="currentColor" size={12} />
+            {section.title.toUpperCase()}
+          </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* Edit — text button */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {/* Edit — DM Sans text button */}
           <button onClick={onEdit} style={{
-            background: "none", border: "none", cursor: "pointer",
-            fontFamily: fonts.pixel, letterSpacing: "0.08em",
-            fontSize: 16,
-            transform: "scale(0.5)",
-            transformOrigin: "right center",
-            color: "rgba(44,40,36,0.3)",
+            padding: "4px 10px", borderRadius: 12, border: "none",
+            background: "transparent", cursor: "pointer",
+            fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+            color: "rgba(44,40,36,0.35)",
             transition: "color 0.15s ease",
-            padding: 0, userSelect: "none",
-            letterSpacing: "0.04em",
           }}
-            onMouseEnter={(e) => e.currentTarget.style.color = S.text}
-            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.3)"}
+            onMouseEnter={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.55)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.35)"}
           >Edit</button>
 
-          {/* Copy — pill with icon */}
+          {/* Copy — DM Sans pill with icon */}
           <button onClick={() => onCopy()} style={{
-            display: "flex", alignItems: "center", gap: 4,
-            background: copied ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.04)",
-            border: "1px solid rgba(44,40,36,0.06)",
-            borderRadius: 10, cursor: "pointer",
-            padding: "3px 8px 3px 6px",
-            color: copied ? colors.lcd : "rgba(44,40,36,0.3)",
-            transition: "all 0.15s ease", userSelect: "none",
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "4px 12px", borderRadius: 12,
+            border: "1px solid rgba(44,40,36,0.1)",
+            background: copied ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.03)",
+            cursor: "pointer",
+            fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+            color: copied ? "#C48B1E" : "rgba(44,40,36,0.4)",
+            transition: "all 0.15s ease",
           }}
-            onMouseEnter={(e) => { if (!copied) e.currentTarget.style.color = S.text; }}
-            onMouseLeave={(e) => { if (!copied) e.currentTarget.style.color = "rgba(44,40,36,0.3)"; }}
+            onMouseEnter={(e) => { if (!copied) { e.currentTarget.style.borderColor = "rgba(44,40,36,0.2)"; e.currentTarget.style.color = "rgba(44,40,36,0.6)"; e.currentTarget.style.background = "rgba(44,40,36,0.05)"; } }}
+            onMouseLeave={(e) => { if (!copied) { e.currentTarget.style.borderColor = "rgba(44,40,36,0.1)"; e.currentTarget.style.color = "rgba(44,40,36,0.4)"; e.currentTarget.style.background = "rgba(44,40,36,0.03)"; } }}
           >
             <CopyIcon size={10} />
-            <span style={{
-              fontFamily: fonts.pixel, letterSpacing: "0.08em",
-              fontSize: 16,
-              transform: "scale(0.5)",
-              transformOrigin: "left center",
-              whiteSpace: "nowrap",
-              letterSpacing: "0.04em",
-            }}>{copied ? "Copied" : "Copy"}</span>
+            {copied ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
 
-      {/* Divider */}
-      <div style={{ height: 1, background: "rgba(44,40,36,0.04)", margin: "0 14px" }} />
-
       {/* Content */}
-      <div style={{ padding: "12px 14px 16px" }}>
+      <div style={{ padding: "14px 16px 16px" }}>
 
         {/* ── Tension Pairs ── */}
         {isTensions && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {section.blocks.map((b, j) => (
-              <div key={j} style={{ fontSize: 14, lineHeight: 1.65, letterSpacing: "-0.01em" }}>
-                <span style={{ fontWeight: 600, color: S.text }}>{b.quality}</span>
-                <span style={{ color: "rgba(44,40,36,0.25)", fontWeight: 400 }}>{" "}but never{" "}</span>
-                <span style={{ fontWeight: 400, color: "rgba(44,40,36,0.5)" }}>{b.excess}</span>
+              <div key={j} style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.6 }}>
+                <strong style={{ fontWeight: 600 }}>{b.quality}</strong>
+                <span style={{ color: "rgba(44,40,36,0.2)" }}>, but never </span>
+                <span style={{ color: "rgba(44,40,36,0.35)" }}>{b.excess}</span>
               </div>
             ))}
           </div>
@@ -218,22 +231,21 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
         {/* ── Tone of Voice ── */}
         {isTone && (
           <>
-            <div style={{ fontSize: 13, fontWeight: 400, color: S.text, lineHeight: 1.65, letterSpacing: "-0.01em" }}>
-              {section.blocks[0].text}
-            </div>
             {section.tags && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
                 {section.tags.map((t, j) => (
-                  <div key={j} style={{
-                    display: "inline-flex", alignItems: "center",
-                    padding: "4px 8px", borderRadius: 4,
+                  <span key={j} style={{
+                    fontFamily: fonts.pixel, fontSize: 8, letterSpacing: "0.08em",
+                    padding: "3px 8px", borderRadius: 3,
                     background: t.strong ? "rgba(74,173,255,0.08)" : "rgba(74,173,255,0.04)",
-                    fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
                     color: t.strong ? "#2A7CC9" : "rgba(74,173,255,0.35)",
-                  }}>{t.label}</div>
+                  }}>{t.label.toUpperCase()}</span>
                 ))}
               </div>
             )}
+            <div style={{ fontSize: 14, color: "#2C2824", lineHeight: 1.65 }}>
+              {section.blocks[0].text}
+            </div>
           </>
         )}
 
@@ -244,23 +256,17 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
               <div key={j}>
                 {/* Badge */}
                 <div style={{
-                  display: "inline-flex", alignItems: "center",
-                  padding: "2px 6px", borderRadius: 3, marginBottom: 4,
-                  background: b.label === "LEAD" ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.04)",
-                  fontFamily: fonts.pixel, letterSpacing: "0.08em",
-                  fontSize: 16,
-                  transform: "scale(0.5)",
-                  transformOrigin: "left center",
-                  letterSpacing: "0.06em",
-                  color: b.label === "LEAD" ? "#C48B1E" : "rgba(44,40,36,0.2)",
+                  fontFamily: fonts.pixel, fontSize: 8, letterSpacing: "0.08em",
+                  color: b.label === "LEAD" ? "#C48B1E" : "rgba(44,40,36,0.3)",
+                  marginBottom: 4,
                 }}>{b.label}</div>
                 {/* Claim */}
-                <div style={{ fontSize: 13, fontWeight: 400, color: S.text, lineHeight: 1.65, letterSpacing: "-0.01em" }}>
+                <div style={{ fontSize: 14, color: "#2C2824", lineHeight: 1.65 }}>
                   {b.claim}
                 </div>
                 {/* Proof */}
                 {b.proof && (
-                  <div style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.45)", lineHeight: 1.55, marginTop: 4, letterSpacing: "-0.01em" }}>
+                  <div style={{ fontSize: 12, color: "rgba(44,40,36,0.45)", lineHeight: 1.55, marginTop: 4 }}>
                     {b.proof}
                   </div>
                 )}
@@ -272,7 +278,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
         {/* ── Manifesto ── */}
         {isManifesto && (
           <>
-            <div style={{ fontSize: 15, fontWeight: 400, color: S.text, lineHeight: 1.85, letterSpacing: "-0.01em" }}>
+            <div style={{ fontSize: 15, color: "#2C2824", lineHeight: 1.85 }}>
               {section.blocks.map((b, j) => (
                 <span key={j}>
                   {j > 0 && <><br /><br /></>}
@@ -281,34 +287,34 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
               ))}
             </div>
             <div style={{
-              marginTop: 10,
-              fontFamily: fonts.pixel, letterSpacing: "0.08em",
-              fontSize: 16,
-              transform: "scale(0.5)",
-              transformOrigin: "left center",
-              color: "rgba(44,40,36,0.2)",
-              letterSpacing: "0.04em",
-            }}>{manifestoWordCount} words</div>
+              display: "flex", alignItems: "center", gap: 8, marginTop: 12,
+            }}>
+              <span style={{
+                fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
+                color: "rgba(44,40,36,0.25)",
+              }}>{manifestoWordCount} WORDS</span>
+              <span style={{ color: "rgba(44,40,36,0.08)" }}>&middot;</span>
+              <span style={{
+                fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
+                color: "rgba(44,40,36,0.25)",
+              }}>DRAFT 3</span>
+            </div>
           </>
         )}
 
         {/* ── Default blocks (personality, purpose, values) ── */}
         {!isTensions && !isTone && !isUsps && !isManifesto && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {section.blocks.map((block, j) => (
               <div key={j}>
                 {block.label && (
                   <div style={{
-                    fontFamily: fonts.pixel, letterSpacing: "0.08em",
-                    fontSize: 16,
-                    transform: "scale(0.5)",
-                    transformOrigin: "left center",
-                    letterSpacing: "0.06em",
-                    color: "rgba(44,40,36,0.2)",
-                    marginBottom: 3,
+                    fontFamily: fonts.pixel, fontSize: 8, letterSpacing: "0.08em",
+                    color: "rgba(44,40,36,0.3)",
+                    marginBottom: 4,
                   }}>{block.label}</div>
                 )}
-                <div style={{ fontSize: 13, fontWeight: 400, color: S.text, lineHeight: 1.65, letterSpacing: "-0.01em" }}>
+                <div style={{ fontSize: 14, color: "#2C2824", lineHeight: 1.65 }}>
                   {block.text}
                 </div>
               </div>
@@ -382,75 +388,70 @@ export default function Summary({ onBack } = {}) {
               }}>Brand strategy &middot; {SECTIONS.length} modules complete</p>
             </div>
 
-            {/* ── Lucy module ── */}
+            {/* ── Lucy module — Dashboard variant ── */}
             <div style={{
+              borderRadius: 10, padding: 24, marginBottom: 12,
               background: colors.lucySurface,
               backgroundImage: colors.lucyGrain,
-              borderRadius: 6,
               border: `1px solid ${colors.lucyBorder}`,
               boxShadow: colors.lucyShadow,
-              padding: 16,
-              marginBottom: 12,
               animation: `promptIn 0.4s ${ease} both`,
             }}>
-              {/* Lucy status row */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                <PixelIcon icon="approves" color={colors.lucyAmberText} size={14} />
-                <span style={{
-                  fontFamily: fonts.pixel, letterSpacing: "0.08em",
-                  fontSize: 16,
-                  transform: "scale(0.5)",
-                  transformOrigin: "left center",
-                  color: colors.lucyStatusText,
-                  letterSpacing: "0.06em",
-                  whiteSpace: "nowrap",
-                }}>LUCY</span>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{
+                  width: 48, height: 36, background: colors.eink, borderRadius: 3,
+                  border: `1px solid ${colors.einkBorder}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <PixelIcon icon="done" color={colors.ink} size={22} />
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: fonts.pixel, fontSize: 14, letterSpacing: "0.08em",
+                    color: "#5A5550", lineHeight: 1.4, marginBottom: 4,
+                  }}>Looking good, Ashwin.</div>
+                  <div style={{
+                    fontSize: 13, color: "#6B6560", lineHeight: 1.5,
+                  }}>This is strong, considered work. The personality holds together, the tensions are tight, and the manifesto reads like it was written by one voice.</div>
+                </div>
               </div>
 
-              {/* Lucy message */}
-              <p style={{
-                fontSize: 13, fontWeight: 400, color: colors.lucyBodyText,
-                lineHeight: 1.6, letterSpacing: "-0.01em", marginBottom: 14,
-              }}>
-                This is strong, considered work. The personality holds together, the tensions are tight, and the manifesto reads like it was written by one voice. You've built something worth protecting.
-              </p>
-
               {/* E-ink action cards */}
-              <div style={{ display: "flex", gap: 8 }}>
-                {[
-                  { label: "Export brand book", icon: "push" },
-                  { label: "Start Visual Identity", icon: "spark" },
-                ].map((action, i) => (
-                  <button key={i} style={{
-                    flex: 1,
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    padding: "8px 12px",
-                    background: colors.eink,
-                    border: `1px solid ${colors.einkBorder}`,
-                    borderRadius: 4,
-                    cursor: "pointer",
-                    fontFamily: fonts.pixel, letterSpacing: "0.08em",
-                    fontSize: 16,
-                    transform: "scale(0.5)",
-                    transformOrigin: "center center",
-                    color: colors.ink,
-                    letterSpacing: "0.04em",
-                    whiteSpace: "nowrap",
-                    transition: `all 0.15s ${ease}`,
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-                  }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "#C4BFB0"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = colors.eink; }}
-                  >
-                    <PixelIcon icon={action.icon} color={colors.ink} size={12} />
-                    {action.label}
-                  </button>
-                ))}
+              <div style={{
+                marginTop: 18, paddingTop: 14,
+                borderTop: "1px solid rgba(44,40,36,0.08)",
+                display: "flex", flexDirection: "column", gap: 8,
+              }}>
+                {/* Export */}
+                <div style={{
+                  background: colors.eink, border: `1px solid ${colors.einkBorder}`,
+                  borderRadius: 6, padding: "12px 14px", cursor: "pointer",
+                  display: "flex", alignItems: "flex-start", gap: 12,
+                  transition: "all 0.15s ease",
+                }}>
+                  <PixelIcon icon="guide" color={colors.ink} size={16} style={{ marginTop: 2 }} />
+                  <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
+                    <strong>Export brand book</strong> — Generate a PDF with all your strategy work.
+                  </div>
+                </div>
+                {/* Visual Identity */}
+                <div style={{
+                  background: colors.eink, border: `1px solid ${colors.einkBorder}`,
+                  borderRadius: 6, padding: "12px 14px", cursor: "pointer",
+                  display: "flex", alignItems: "flex-start", gap: 12,
+                  transition: "all 0.15s ease",
+                }}>
+                  <PixelIcon icon="spark" color={colors.ink} size={16} style={{ marginTop: 2 }} />
+                  <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
+                    <strong>Start Visual Identity</strong> — Take this strategy into the Visual World module.
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* ── Section cards ── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {SECTIONS.map((section, i) => (
                 <SectionCard
                   key={section.key}

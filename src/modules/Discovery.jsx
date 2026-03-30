@@ -127,13 +127,13 @@ export default function Discovery({ onBack } = {}) {
     }}>
       {/* Top strip: e-ink icon + status + mode toggle */}
       <div style={{
-        padding: "8px 10px",
-        display: "flex", alignItems: "center", gap: 6,
+        padding: "10px 14px",
+        display: "flex", alignItems: "center", gap: 10,
       }}>
         {/* E-ink badge */}
         <div style={{
           width: 40, height: 30,
-          background: colors.eink, borderRadius: 2,
+          background: colors.eink, borderRadius: 3,
           border: `1px solid ${colors.einkBorder}`,
           display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0,
@@ -143,27 +143,24 @@ export default function Discovery({ onBack } = {}) {
 
         {/* Status label */}
         <span style={{
-          fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-          color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+          fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+          color: colors.lucyStatusText, flex: 1,
         }}>{lucyDisplay.label}</span>
 
         {/* E-ink segmented switch */}
         <div style={{
           display: "flex", borderRadius: 3,
-          background: colors.eink,
-          border: `1px solid ${colors.einkBorder}`,
-          padding: 2, gap: 1,
+          background: colors.eink, border: `1px solid ${colors.einkBorder}`,
+          overflow: "hidden",
         }}>
           {Object.entries(MODES).map(([key, m]) => (
             <button key={key}
               onClick={() => setAiMode(key)}
               style={{
-                padding: "3px 8px", borderRadius: 2, border: "none",
-                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: fonts.primary, fontSize: 8, fontWeight: 700, letterSpacing: "0.04em",
-                color: aiMode === key ? colors.eink : "#8A857E",
+                height: 24, padding: "0 10px", border: "none", cursor: "pointer",
+                fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
                 background: aiMode === key ? colors.ink : "transparent",
-                boxShadow: aiMode === key ? "0 1px 2px rgba(0,0,0,0.15)" : "none",
+                color: aiMode === key ? colors.eink : "#8A857E",
                 transition: "all 0.15s ease",
               }}
             >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
@@ -173,7 +170,7 @@ export default function Discovery({ onBack } = {}) {
 
       {/* Guide text */}
       {guideText && (
-        <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
+        <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
           <div style={{
             fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
             color: colors.lucyStatusText, lineHeight: 1.5,
@@ -211,11 +208,6 @@ export default function Discovery({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Discovery</span>
               <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{headerPhase[phase]}</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: colors.screen, boxShadow: shadows.screenDeep }}>
-              <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: phase === "generating" ? colors.accent : colors.discovery, lineHeight: 1, animation: phase === "generating" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>
-                {phase === "brief" ? `${briefStep + 1}/${BRIEF_QUESTIONS.length}` : phase === "generating" ? "···" : phase === "questions" ? `${answeredCount}/${questions.length}` : "✓"}
-              </span>
             </div>
           </div>
         </div>
@@ -336,7 +328,7 @@ export default function Discovery({ onBack } = {}) {
                       )}
                       <div style={{
                         background: colors.card, borderRadius: 4,
-                        border: `1px solid ${isExpanded ? "rgba(229,166,50,0.12)" : "rgba(44,40,36,0.06)"}`,
+                        border: "1px solid rgba(44,40,36,0.06)",
                         boxShadow: shadows.raised, overflow: "hidden", marginBottom: 6,
                         animation: `promptIn 0.4s ${ease} ${i * 0.04}s both`,
                       }}>

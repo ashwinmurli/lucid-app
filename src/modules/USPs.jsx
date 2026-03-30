@@ -245,14 +245,6 @@ export default function USPs({ onBack } = {}) {
             <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
             <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "USPs Locked" : "USPs"}</span>
           </div>
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "0 6px", borderRadius: 3, height: 24,
-            background: S.screen,
-            boxShadow: shadows.screenDeep,
-          }}>
-            <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: colors.usps, lineHeight: 1 }}>{usps.length}</span>
-          </div>
         </div>
       </div>
 
@@ -336,13 +328,13 @@ export default function USPs({ onBack } = {}) {
               }}>
                 {/* Top strip: e-ink icon + status + mode switch */}
                 <div style={{
-                  padding: "8px 10px",
-                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "10px 14px",
+                  display: "flex", alignItems: "center", gap: 10,
                 }}>
                   {/* E-ink badge */}
                   <div style={{
                     width: 40, height: 30,
-                    background: colors.eink, borderRadius: 2,
+                    background: colors.eink, borderRadius: 3,
                     border: `1px solid ${colors.einkBorder}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     flexShrink: 0,
@@ -352,8 +344,8 @@ export default function USPs({ onBack } = {}) {
 
                   {/* Status label */}
                   <span style={{
-                    fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                    color: colors.lucyStatusText, flex: 1,
                   }}>{lucyDisplay.label}</span>
 
                   {/* E-ink segmented switch */}
@@ -361,13 +353,13 @@ export default function USPs({ onBack } = {}) {
                     display: "flex", borderRadius: 3,
                     background: colors.eink,
                     border: `1px solid ${colors.einkBorder}`,
-                    padding: 2,
+                    overflow: "hidden",
                   }}>
                     {Object.entries(MODES).map(([key, m]) => (
                       <button key={key}
                         onClick={() => setAiMode(key)}
                         style={{
-                          height: 24, borderRadius: 2, border: "none",
+                          height: 24, border: "none",
                           cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
                           padding: "0 10px",
                           fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
@@ -382,7 +374,7 @@ export default function USPs({ onBack } = {}) {
 
                 {/* Guide text (support mode) */}
                 {aiMode === "support" && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
+                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
                     <div style={{
                       fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
                       color: colors.lucyBodyText, lineHeight: 1.5,
@@ -464,12 +456,12 @@ export default function USPs({ onBack } = {}) {
                 overflow: "hidden",
               }}>
                 <div style={{
-                  padding: "8px 10px",
-                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "10px 14px",
+                  display: "flex", alignItems: "center", gap: 10,
                 }}>
                   <div style={{
                     width: 40, height: 30,
-                    background: colors.eink, borderRadius: 2,
+                    background: colors.eink, borderRadius: 3,
                     border: `1px solid ${colors.einkBorder}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     flexShrink: 0,
@@ -477,11 +469,11 @@ export default function USPs({ onBack } = {}) {
                     <PixelIcon icon="done" color={colors.ink} size={18} />
                   </div>
                   <span style={{
-                    fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, lineHeight: 1,
+                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                    color: colors.lucyStatusText,
                   }}>POSITIONING SET</span>
                 </div>
-                <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
+                <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
                   <div style={{
                     fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
                     color: colors.lucyBodyText, lineHeight: 1.5,

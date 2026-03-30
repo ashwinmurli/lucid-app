@@ -149,15 +149,15 @@ export default function Manifesto({ onBack } = {}) {
       display: "flex", borderRadius: 3,
       background: colors.eink,
       border: `1px solid ${colors.einkBorder}`,
-      padding: 2,
+      overflow: "hidden",
     }}>
       {Object.entries(MODES).map(([key, m]) => (
         <button key={key}
           onClick={() => setAiMode(key)}
           style={{
-            padding: "4px 10px", borderRadius: 2, border: "none",
+            height: 24, padding: "0 10px", border: "none",
             cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, letterSpacing: "0.08em",
+            fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
             color: aiMode === key ? colors.eink : "#8A857E",
             background: aiMode === key ? colors.ink : "transparent",
             transition: "all 0.15s ease",
@@ -180,13 +180,13 @@ export default function Manifesto({ onBack } = {}) {
     }}>
       {/* Top strip: e-ink badge + status + mode switch */}
       <div style={{
-        padding: "8px 10px",
-        display: "flex", alignItems: "center", gap: 6,
+        padding: "10px 14px",
+        display: "flex", alignItems: "center", gap: 10,
       }}>
         {/* E-ink badge */}
         <div style={{
           width: 40, height: 30,
-          background: colors.eink, borderRadius: 2,
+          background: colors.eink, borderRadius: 3,
           border: `1px solid ${colors.einkBorder}`,
           display: "flex", alignItems: "center", justifyContent: "center",
           flexShrink: 0,
@@ -196,8 +196,8 @@ export default function Manifesto({ onBack } = {}) {
 
         {/* Status label */}
         <span style={{
-          fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-          color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+          fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+          color: colors.lucyStatusText, flex: 1,
         }}>{lucyDisplay.label}</span>
 
         {/* Mode toggle */}
@@ -206,7 +206,7 @@ export default function Manifesto({ onBack } = {}) {
 
       {/* Optional extra content */}
       {children && (
-        <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 12px" }}>
+        <div style={{ borderTop: "1px solid rgba(44,40,36,0.08)", padding: "10px 14px 14px" }}>
           {children}
         </div>
       )}
@@ -238,9 +238,6 @@ export default function Manifesto({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Strategy</span>
               <span style={{ fontSize: 9, color: "rgba(44,40,36,0.35)" }}>–</span>
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{phase === "locked" ? "Manifesto Locked" : phase === "composing" ? "Composing" : phase === "reviewing" ? "Review Draft" : "Editing"}</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: phase === "composing" ? S.accent : phase === "locked" ? S.accent : colors.manifesto, lineHeight: 1, animation: phase === "composing" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>{phase === "composing" ? "···" : wordCount}</span>
             </div>
           </div>
         </div>

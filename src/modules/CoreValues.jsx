@@ -278,18 +278,6 @@ export default function CoreValues({ onBack } = {}) {
             <span style={{ fontSize: 9, color: "rgba(44,40,36,0.15)" }}>–</span>
             <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{locked ? "Locked" : "Core Values"}</span>
           </div>
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "0 6px", borderRadius: 3, height: 24,
-            background: S.screen,
-            boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)",
-          }}>
-            <span style={{
-              fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10,
-              color: canLock || locked ? colors.values : S.lcd,
-              lineHeight: 1, fontVariantNumeric: "tabular-nums",
-            }}>{selectedValues.length}/3</span>
-          </div>
         </div>
       </div>
 
@@ -371,13 +359,13 @@ export default function CoreValues({ onBack } = {}) {
             }}>
               {/* Top strip: e-ink icon + status + segmented switch */}
               <div style={{
-                padding: "8px 10px",
-                display: "flex", alignItems: "center", gap: 6,
+                padding: "10px 14px",
+                display: "flex", alignItems: "center", gap: 10,
               }}>
                 {/* E-ink badge */}
                 <div style={{
                   width: 40, height: 30,
-                  background: colors.eink, borderRadius: 2,
+                  background: colors.eink, borderRadius: 3,
                   border: `1px solid ${colors.einkBorder}`,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
@@ -387,8 +375,8 @@ export default function CoreValues({ onBack } = {}) {
 
                 {/* Status label */}
                 <span style={{
-                  fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                  color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+                  fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                  color: colors.lucyStatusText, flex: 1,
                 }}>{lucyDisplay.label}</span>
 
                 {/* E-ink segmented switch */}
@@ -396,16 +384,14 @@ export default function CoreValues({ onBack } = {}) {
                   display: "flex", borderRadius: 3,
                   background: colors.eink,
                   border: `1px solid ${colors.einkBorder}`,
-                  padding: 2,
+                  overflow: "hidden",
                 }}>
                   {Object.entries(MODES).map(([key, m]) => (
                     <button key={key}
                       onClick={() => setAiMode(key)}
                       style={{
-                        height: 22, borderRadius: 2, border: "none",
-                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                        padding: "0 8px",
-                        fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, letterSpacing: "0.08em",
+                        height: 24, padding: "0 10px", border: "none", cursor: "pointer",
+                        fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
                         color: aiMode === key ? colors.eink : "#8A857E",
                         background: aiMode === key ? colors.ink : "transparent",
                         transition: "all 0.15s ease",
@@ -417,7 +403,7 @@ export default function CoreValues({ onBack } = {}) {
 
               {/* Guide text (when in support mode) */}
               {lucyGuide && (
-                <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "8px 12px" }}>
+                <div style={{ borderTop: "1px solid rgba(44,40,36,0.08)", padding: "10px 14px 14px" }}>
                   <div style={{
                     fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
                     color: colors.lucyStatusText, lineHeight: 1.5,
