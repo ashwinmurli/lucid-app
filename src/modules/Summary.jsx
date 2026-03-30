@@ -143,7 +143,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
           }} />
           {/* Title in DotGothic16 */}
           <span style={{
-            fontFamily: fonts.pixel,
+            fontFamily: fonts.pixel, letterSpacing: "0.08em",
             fontSize: 16,
             transform: "scale(0.5)",
             transformOrigin: "left center",
@@ -157,7 +157,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
           {/* Edit — text button */}
           <button onClick={onEdit} style={{
             background: "none", border: "none", cursor: "pointer",
-            fontFamily: fonts.pixel,
+            fontFamily: fonts.pixel, letterSpacing: "0.08em",
             fontSize: 16,
             transform: "scale(0.5)",
             transformOrigin: "right center",
@@ -185,7 +185,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
           >
             <CopyIcon size={10} />
             <span style={{
-              fontFamily: fonts.pixel,
+              fontFamily: fonts.pixel, letterSpacing: "0.08em",
               fontSize: 16,
               transform: "scale(0.5)",
               transformOrigin: "left center",
@@ -247,7 +247,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
                   display: "inline-flex", alignItems: "center",
                   padding: "2px 6px", borderRadius: 3, marginBottom: 4,
                   background: b.label === "LEAD" ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.04)",
-                  fontFamily: fonts.pixel,
+                  fontFamily: fonts.pixel, letterSpacing: "0.08em",
                   fontSize: 16,
                   transform: "scale(0.5)",
                   transformOrigin: "left center",
@@ -282,7 +282,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
             </div>
             <div style={{
               marginTop: 10,
-              fontFamily: fonts.pixel,
+              fontFamily: fonts.pixel, letterSpacing: "0.08em",
               fontSize: 16,
               transform: "scale(0.5)",
               transformOrigin: "left center",
@@ -299,7 +299,7 @@ function SectionCard({ section, copied, onCopy, onEdit, index }) {
               <div key={j}>
                 {block.label && (
                   <div style={{
-                    fontFamily: fonts.pixel,
+                    fontFamily: fonts.pixel, letterSpacing: "0.08em",
                     fontSize: 16,
                     transform: "scale(0.5)",
                     transformOrigin: "left center",
@@ -397,7 +397,7 @@ export default function Summary({ onBack } = {}) {
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
                 <PixelIcon icon="approves" color={colors.lucyAmberText} size={14} />
                 <span style={{
-                  fontFamily: fonts.pixel,
+                  fontFamily: fonts.pixel, letterSpacing: "0.08em",
                   fontSize: 16,
                   transform: "scale(0.5)",
                   transformOrigin: "left center",
@@ -429,7 +429,7 @@ export default function Summary({ onBack } = {}) {
                     border: `1px solid ${colors.einkBorder}`,
                     borderRadius: 4,
                     cursor: "pointer",
-                    fontFamily: fonts.pixel,
+                    fontFamily: fonts.pixel, letterSpacing: "0.08em",
                     fontSize: 16,
                     transform: "scale(0.5)",
                     transformOrigin: "center center",

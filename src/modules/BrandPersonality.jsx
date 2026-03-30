@@ -297,25 +297,23 @@ export default function BrandPersonality({ onBack } = {}) {
                     color: colors.lucyStatusText, lineHeight: 1, flex: 1,
                   }}>{lucyDisplay.label}</span>
 
-                  {/* Mode toggle */}
+                  {/* E-ink segmented switch */}
                   <div style={{
                     display: "flex", borderRadius: 3,
-                    background: "rgba(44,40,36,0.06)",
-                    padding: 2,
+                    background: colors.eink, border: `1px solid ${colors.einkBorder}`,
+                    overflow: "hidden",
                   }}>
                     {Object.entries(MODES).map(([key, m]) => (
                       <button key={key}
                         onClick={() => setAiMode(key)}
                         style={{
-                          width: 28, height: 22, borderRadius: 3, border: "none",
-                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                          fontFamily: fonts.primary, fontSize: 8, fontWeight: 700, letterSpacing: "0.04em",
-                          color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.25)",
-                          background: aiMode === key ? S.accent : "rgba(44,40,36,0.06)",
-                          boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
+                          height: 24, padding: "0 10px", border: "none", cursor: "pointer",
+                          fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
+                          background: aiMode === key ? colors.ink : "transparent",
+                          color: aiMode === key ? colors.eink : "#8A857E",
                           transition: "all 0.15s ease",
                         }}
-                      >{m.key}</button>
+                      >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
                     ))}
                   </div>
                 </div>
