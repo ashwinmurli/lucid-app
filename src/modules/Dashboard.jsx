@@ -88,7 +88,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
   };
 
   const filteredProjects = useMemo(() => {
-    let result = projects;
+    let result = projects || [];
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => p.name.toLowerCase().includes(q));
@@ -100,6 +100,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
   }, [projects, searchQuery, sortBy]);
 
   const { lucyContextLine, suggestions } = useMemo(() => {
+    if (!projects) return { lucyContextLine: "Ready to start something new?", suggestions: [] };
     const active = projects.filter(p => p.status !== "complete");
     if (active.length === 0) {
       return {
