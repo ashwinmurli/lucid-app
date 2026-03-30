@@ -390,7 +390,7 @@ export default function Summary({ onBack } = {}) {
               border: `1px solid ${colors.lucyBorder}`,
               boxShadow: colors.lucyShadow,
               padding: 16,
-              marginBottom: 20,
+              marginBottom: 12,
               animation: `promptIn 0.4s ${ease} both`,
             }}>
               {/* Lucy status row */}
