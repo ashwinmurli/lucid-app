@@ -6,7 +6,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, LucyMini } from "../components/ui";
+import { PixelIcon } from "../components/ui";
 
 const MODES = {
   support: { key: "S", desc: "HELP ME" },

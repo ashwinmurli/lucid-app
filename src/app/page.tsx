@@ -62,6 +62,12 @@ const INITIAL_PROJECTS = [
     modulesComplete: ["personality", "tensions"],
     currentModule: "pvm",
   },
+  {
+    id: 5, name: "Moss & Fern", status: "discovery",
+    lastEdited: "Just now",
+    modulesComplete: [],
+    currentModule: "personality",
+  },
 ];
 
 export default function LucidApp() {
