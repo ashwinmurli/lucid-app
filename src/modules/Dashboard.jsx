@@ -267,7 +267,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                 </div>
               </div>
 
-              {/* Suggestions + New project — e-ink action area */}
+              {/* Suggestions */}
               <div style={{
                 marginTop: 20, paddingTop: 16,
                 borderTop: `1px solid ${colors.lucyBorder}`,
@@ -300,6 +300,13 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                   </div>
                 ))}
 
+              </div>
+
+              {/* New project — separate group */}
+              <div style={{
+                marginTop: 14, paddingTop: 14,
+                borderTop: "1px solid rgba(44,40,36,0.08)",
+              }}>
                 {/* New project card — expands inline when clicked */}
                 {!creating ? (
                   <div onClick={startCreate} style={{
