@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
 import { PixelIcon } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const MODES = {
   support: { key: "S", desc: "HELP ME" },
@@ -171,26 +172,23 @@ export default function USPs({ onBack } = {}) {
     return defaults[aiMode] || defaults.challenge;
   }, [lucyMode, aiMode]);
 
-  const addUSP = () => {
+  const addUSP = async () => {
     if (!input.trim()) return;
     setIsExpanding(true);
     setLucyMode("thinking");
-
-    setTimeout(() => {
-      const raw = input.trim();
-      const newUSP = {
-        id: Date.now(),
-        raw,
-        claim: raw,
-        proof: "Lucy would analyze this against the brand personality work and generate a supporting argument here.",
-        contrast: "Lucy would identify what competitors typically do differently and articulate the gap here.",
-      };
-      setUsps((prev) => [...prev, newUSP]);
-      setInput("");
-      setIsExpanding(false);
-      setLucyMode("approves");
-      setTimeout(() => setLucyMode("idle"), 2000);
-    }, 1200);
+    const raw = input.trim();
+    const id = Date.now();
+    setUsps((prev) => [...prev, { id, raw, claim: raw, proof: "", contrast: "" }]);
+    setInput("");
+    try {
+      await askLucyStream(
+        { module: "usps", action: "expand_usp", userInput: raw },
+        (chunk) => setUsps((prev) => prev.map((u) => u.id === id ? { ...u, proof: chunk } : u))
+      );
+    } catch { /* silent fallback */ }
+    setIsExpanding(false);
+    setLucyMode("approves");
+    setTimeout(() => setLucyMode("idle"), 2000);
   };
 
   const removeUSP = (id) => {

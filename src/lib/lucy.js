@@ -1,11 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
    LUCID — Lucy AI
-   System prompts, API helper, and all AI interaction logic.
-   In production: these calls go through the Anthropic API.
-   In sandbox: fallbacks kick in after 15s timeout.
+   All AI calls go through /api/lucy (Next.js route → Anthropic).
    ═══════════════════════════════════════════════════════════════ */
 
-export const LUCY_SYSTEM = `You are Lucy, a senior brand strategist and creative director. You are opinionated, warm but direct, and you write with craft — no filler, no corporate language. You challenge weak thinking and reward specificity. You never use bullet points in prose. You never say "leverage", "synergy", "innovative", or any corporate cliché.`;
+/* ── Fallbacks (used if API call fails) ── */
 
 export const FALLBACK_MANIFESTO = `We believe that every detail speaks. That the way something is made matters as much as what it does. That restraint is a form of confidence, and silence can say more than noise ever will.
 
@@ -28,41 +26,61 @@ export const FALLBACK_QUESTIONS = [
   { id: 10, theme: "FUTURE", q: "What would you never do, no matter how profitable?", intent: "Defines boundaries — the negative space of the brand.", response: "" },
 ];
 
+/* ── Core streaming helper ── */
+
 /**
- * Send a prompt to Lucy via the Anthropic API.
- * Returns the response text, or null on failure.
- * 15s timeout ensures the UI never hangs.
+ * Stream a response from Lucy via /api/lucy.
+ * @param {object} params - { module, mode, action, userInput, brandState, moduleState }
+ * @param {function} onChunk - called with the accumulated text on each chunk
+ * @returns {Promise<string>} - the complete response
  */
-export async function askLucy(prompt, systemExtra = "") {
-  const sys = LUCY_SYSTEM + (systemExtra ? "\n\n" + systemExtra : "");
+export async function askLucyStream(params, onChunk) {
+  const response = await fetch("/api/lucy", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      module: params.module,
+      mode: params.mode || "support",
+      action: params.action,
+      userInput: params.userInput || "",
+      brandState: params.brandState || {},
+      moduleState: params.moduleState || {},
+    }),
+  });
+
+  if (!response.ok) throw new Error(`Lucy unavailable (${response.status})`);
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+    onChunk?.(text);
+  }
+
+  return text;
+}
+
+/* ── Non-streaming helpers (Discovery question generation) ── */
+
+async function callLucy(body) {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("/api/lucy", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: sys,
-        messages: [{ role: "user", content: prompt }],
-      }),
+      body: JSON.stringify(body),
     });
-    clearTimeout(timeout);
     if (!res.ok) return null;
-    const data = await res.json();
-    return data.content?.[0]?.text || null;
-  } catch (e) {
+    return await res.text();
+  } catch {
     return null;
   }
 }
 
-/**
- * Parse a JSON response from Lucy, stripping markdown fences.
- * Returns parsed object or null.
- */
-export function parseLucyJSON(result) {
+function parseLucyJSON(result) {
   if (!result) return null;
   try {
     const cleaned = result.replace(/```json\n?|```\n?/g, "").trim();
@@ -72,14 +90,15 @@ export function parseLucyJSON(result) {
   }
 }
 
-/* ── AI Actions ── */
-
 export async function generateDiscoveryQuestions(briefAnswers) {
   const briefText = briefAnswers.map((a) => `${a.q}\n${a.a}`).join("\n\n");
-  const result = await askLucy(
-    `Based on this client brief, generate 8 tailored discovery questions to ask in a client interview. Group them by theme (ORIGIN, AUDIENCE, COMPETITION, CULTURE, FUTURE). For each question, include the strategic intent.\n\nClient brief:\n${briefText}\n\nRespond ONLY with a JSON array, no backticks: [{"theme":"ORIGIN","q":"question text","intent":"what this uncovers"}]`,
-    "Generate discovery questions for brand strategy interviews. Be specific to this client. Always return valid JSON only."
-  );
+  const result = await callLucy({
+    module: "discovery",
+    mode: "challenge",
+    action: "generate_questions",
+    userInput: briefText,
+    moduleState: { briefAnswers },
+  });
   const parsed = parseLucyJSON(result);
   if (parsed && Array.isArray(parsed)) {
     return parsed.map((q, i) => ({ id: i + 1, ...q, response: "" }));
@@ -88,15 +107,20 @@ export async function generateDiscoveryQuestions(briefAnswers) {
 }
 
 export async function analyzeDiscoveryGaps(questions) {
-  const qText = questions.map((q) => `[${q.theme}] ${q.q}\nResponse: ${q.response.trim() || "(no response)"}`).join("\n\n");
-  const result = await askLucy(
-    `Review these discovery interview responses and identify 2-4 gaps.\n\n${qText}\n\nRespond ONLY with a JSON array: [{"area":"theme name","note":"specific actionable note"}]`,
-    "Analyze discovery responses for brand strategy gaps. Be specific and actionable."
-  );
+  const qText = questions
+    .map((q) => `[${q.theme}] ${q.q}\nResponse: ${q.response.trim() || "(no response)"}`)
+    .join("\n\n");
+  const result = await callLucy({
+    module: "discovery",
+    mode: "challenge",
+    action: "analyze_gaps",
+    userInput: qText,
+    moduleState: { questions },
+  });
   const parsed = parseLucyJSON(result);
   if (parsed && Array.isArray(parsed)) return parsed;
 
-  // Smart fallback — check which themes have no responses
+  // Fallback — check unanswered themes
   const themes = {};
   questions.forEach((q) => {
     if (!themes[q.theme]) themes[q.theme] = { total: 0, answered: 0 };
@@ -105,28 +129,8 @@ export async function analyzeDiscoveryGaps(questions) {
   });
   const gaps = [];
   Object.entries(themes).forEach(([theme, { total, answered }]) => {
-    if (answered === 0) gaps.push({ area: theme, note: `No responses captured for ${theme.toLowerCase()} questions. This area needs follow-up.` });
-    else if (answered < total) gaps.push({ area: theme, note: `Only ${answered} of ${total} ${theme.toLowerCase()} questions answered. The gaps could weaken positioning work.` });
+    if (answered === 0) gaps.push({ area: theme, note: `No responses captured for ${theme.toLowerCase()} questions.` });
+    else if (answered < total) gaps.push({ area: theme, note: `Only ${answered} of ${total} ${theme.toLowerCase()} questions answered.` });
   });
-  return gaps.length ? gaps : [{ area: "Depth", note: "All areas covered, but some responses could benefit from specific stories and examples." }];
-}
-
-export async function composeManifesto(briefAnswers, questions) {
-  const briefText = briefAnswers.map((a) => `${a.q}: ${a.a}`).join("\n");
-  const discoveryText = questions.filter((q) => q.response.trim()).map((q) => `${q.q}: ${q.response}`).join("\n");
-  const result = await askLucy(
-    `Write a brand manifesto. 3-4 paragraphs. Sound like the brand speaking — a quiet declaration of belief.\n\nClient brief:\n${briefText}\n\nDiscovery responses:\n${discoveryText}`,
-    "Write brand manifestos. Sharp, warm, crafted. Every word chosen. Write in the brand's voice. Avoid clichés."
-  );
-  return result || FALLBACK_MANIFESTO;
-}
-
-export async function rewriteManifesto(currentText, notes, generalDirection) {
-  const notesText = notes?.length ? `\n\nSpecific notes:\n${notes.map((n) => `"${n.selected}" → ${n.note}`).join("\n")}` : "";
-  const directionText = generalDirection ? `\n\nGeneral direction: ${generalDirection}` : "";
-  const result = await askLucy(
-    `Rewrite this brand manifesto. Keep 3-4 paragraphs. Address the feedback.${notesText}${directionText}\n\nCurrent manifesto:\n${currentText}`,
-    "Rewrite based on editorial feedback. Address each note. Keep the voice consistent. Just write the new version."
-  );
-  return result || null;
+  return gaps.length ? gaps : [{ area: "Depth", note: "All areas covered. Some responses could benefit from specific stories." }];
 }

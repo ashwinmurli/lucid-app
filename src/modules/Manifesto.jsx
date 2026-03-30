@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
 import { PixelIcon, TransportBtn } from "../components/ui";
+import { askLucyStream, FALLBACK_MANIFESTO } from "../lib/lucy";
 
 const MODES = {
   support: { key: "S", desc: "HELP ME" },
@@ -39,7 +40,7 @@ Our work is precise because precision is generous. It says: we thought about thi
 For the builders who know that craft isn't decoration. It's the structure. It's the thing that holds everything else together when trends fade and noise clears.`,
 ];
 
-export default function Manifesto({ onBack } = {}) {
+export default function Manifesto({ onBack, projectData } = {}) {
   const [phase, setPhase] = useState("composing");
   const [text, setText] = useState("");
   const [feedbackInput, setFeedbackInput] = useState("");
@@ -61,14 +62,24 @@ export default function Manifesto({ onBack } = {}) {
   useEffect(() => {
     if (phase !== "composing") return;
     setTransStep(0);
-    const steps = [
-      setTimeout(() => setTransStep(1), 600),
-      setTimeout(() => setTransStep(2), 2000),
-      setTimeout(() => setTransStep(3), 3400),
-      setTimeout(() => setTransStep(4), 4800),
-      setTimeout(() => { setText(LUCY_DRAFT); setLucyMode("idle"); setPhase("reviewing"); }, 6200),
-    ];
-    return () => steps.forEach(clearTimeout);
+    let cancelled = false;
+    const t1 = setTimeout(() => setTransStep(1), 600);
+    const t2 = setTimeout(() => setTransStep(2), 2000);
+    const t3 = setTimeout(() => setTransStep(3), 3400);
+    const t4 = setTimeout(() => setTransStep(4), 4800);
+    const t5 = setTimeout(async () => {
+      if (cancelled) return;
+      try {
+        await askLucyStream(
+          { module: "manifesto", action: "draft_manifesto", brandState: projectData || {} },
+          (chunk) => { if (!cancelled) setText(chunk); }
+        );
+      } catch {
+        if (!cancelled) setText(FALLBACK_MANIFESTO);
+      }
+      if (!cancelled) { setLucyMode("idle"); setPhase("reviewing"); }
+    }, 5000);
+    return () => { cancelled = true; [t1, t2, t3, t4, t5].forEach(clearTimeout); };
   }, [phase]);
 
   // Handle text selection in prose
@@ -91,38 +102,46 @@ export default function Manifesto({ onBack } = {}) {
   }, []);
 
   // Handle inline annotation
-  const handleAnnotation = () => {
+  const handleAnnotation = async () => {
     if (!annotationInput.trim() || !selection) return;
+    const feedback = `[On "${selection.text}"] ${annotationInput.trim()}`;
+    const currentText = text;
     setAnnotations((prev) => [...prev, { selected: selection.text, note: annotationInput.trim() }]);
+    setSelection(null);
+    setAnnotationInput("");
     setIsRewriting(true);
     setLucyMode("thinking");
-    setTimeout(() => {
-      setDraftVersion((v) => v + 1);
-      setText(LUCY_REWRITES[rewriteIndex % LUCY_REWRITES.length]);
-      setRewriteIndex((i) => i + 1);
-      setSelection(null);
-      setAnnotationInput("");
-      setIsRewriting(false);
-      setLucyMode("approves");
-      setTimeout(() => setLucyMode("idle"), 2000);
-    }, 1200);
+    try {
+      await askLucyStream(
+        { module: "manifesto", action: "rewrite_manifesto", userInput: feedback, moduleState: { currentManifesto: currentText } },
+        (chunk) => setText(chunk)
+      );
+    } catch { /* keep current text */ }
+    setDraftVersion((v) => v + 1);
+    setIsRewriting(false);
+    setLucyMode("approves");
+    setTimeout(() => setLucyMode("idle"), 2000);
   };
 
   // Handle full rewrite
-  const handleRewrite = () => {
+  const handleRewrite = async () => {
     if (!feedbackInput.trim()) return;
-    setAnnotations((prev) => [...prev, { selected: "(full rewrite)", note: feedbackInput.trim() }]);
+    const feedback = feedbackInput.trim();
+    const currentText = text;
+    setAnnotations((prev) => [...prev, { selected: "(full rewrite)", note: feedback }]);
+    setFeedbackInput("");
     setIsRewriting(true);
     setLucyMode("thinking");
-    setTimeout(() => {
-      setText(LUCY_REWRITES[rewriteIndex % LUCY_REWRITES.length]);
-      setRewriteIndex((i) => i + 1);
-      setDraftVersion((v) => v + 1);
-      setFeedbackInput("");
-      setIsRewriting(false);
-      setLucyMode("approves");
-      setTimeout(() => setLucyMode("idle"), 2000);
-    }, 1500);
+    try {
+      await askLucyStream(
+        { module: "manifesto", action: "rewrite_manifesto", userInput: feedback, moduleState: { currentManifesto: currentText } },
+        (chunk) => setText(chunk)
+      );
+    } catch { /* keep current text */ }
+    setDraftVersion((v) => v + 1);
+    setIsRewriting(false);
+    setLucyMode("approves");
+    setTimeout(() => setLucyMode("idle"), 2000);
   };
 
   // Close popover on click outside

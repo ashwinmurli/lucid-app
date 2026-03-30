@@ -6,6 +6,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
 import { PixelIcon } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const MODES = {
   support: { key: "S", desc: "HELP ME" },
@@ -62,14 +63,12 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
   const [refineInput, setRefineInput] = useState("");
   const [isRefining, setIsRefining] = useState(false);
 
-  const handleRefine = () => {
+  const handleRefine = async () => {
     if (!refineInput.trim()) return;
     setIsRefining(true);
-    setTimeout(() => {
-      onRefine(refineInput.trim());
-      setRefineInput("");
-      setIsRefining(false);
-    }, 800);
+    await onRefine(refineInput.trim());
+    setRefineInput("");
+    setIsRefining(false);
   };
 
   return (
@@ -188,26 +187,43 @@ export default function CoreValues({ onBack } = {}) {
   const unselectedValues = values.filter((v) => !v.selected);
   const canLock = selectedValues.length === 3 && selectedValues.every((v) => v.definition.trim());
 
-  const selectValue = (id) => {
+  const updateDef = (id, def) => {
+    setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: def } : v));
+  };
+
+  const selectValue = async (id) => {
     if (selectedValues.length >= 3) return;
     const candidate = VALUE_CANDIDATES.find((c) => c.id === id);
-    setValues((prev) => prev.map((v) => v.id === id ? { ...v, selected: true, definition: candidate?.draft || v.reason } : v));
+    setValues((prev) => prev.map((v) => v.id === id ? { ...v, selected: true, definition: "" } : v));
+    setLucyMode("thinking");
+    try {
+      await askLucyStream(
+        { module: "values", action: "draft_definition", moduleState: { value: candidate?.word, reason: candidate?.reason } },
+        (chunk) => setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: chunk } : v))
+      );
+    } catch {
+      setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: candidate?.draft || candidate?.reason || "" } : v));
+    }
+    setLucyMode("idle");
   };
 
   const removeValue = (id) => {
     setValues((prev) => prev.map((v) => v.id === id ? { ...v, selected: false, definition: "" } : v));
   };
 
-  const updateDef = (id, def) => {
-    setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: def } : v));
-  };
-
-  const refineValue = (id, userNote) => {
-    const candidate = VALUE_CANDIDATES.find((c) => c.id === id);
-    if (candidate && candidate.refines) {
-      const current = values.find((v) => v.id === id);
-      const unused = candidate.refines.find((r) => r !== current?.definition);
-      if (unused) setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: unused } : v));
+  const refineValue = async (id, userNote) => {
+    const current = values.find((v) => v.id === id);
+    try {
+      await askLucyStream(
+        { module: "values", action: "refine_definition", userInput: userNote, moduleState: { value: current?.word, currentDefinition: current?.definition } },
+        (chunk) => setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: chunk } : v))
+      );
+    } catch {
+      const candidate = VALUE_CANDIDATES.find((c) => c.id === id);
+      if (candidate?.refines) {
+        const unused = candidate.refines.find((r) => r !== current?.definition);
+        if (unused) setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: unused } : v));
+      }
     }
   };
 

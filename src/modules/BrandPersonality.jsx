@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
 import { PixelIcon } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const MODES = {
   support: { key: "S", desc: "HELP ME" },
@@ -63,17 +64,22 @@ export default function BrandPersonality({ onBack } = {}) {
     return { num: ch.prompts.findIndex((p) => p.q === prompt.q) + 1, total: ch.prompts.length };
   }, [prompt]);
 
-  const keep = useCallback(() => {
+  const keep = useCallback(async () => {
     if (!text.trim()) return;
-    const trigger = shouldLucySpeak(text, usedSpark, aiMode);
-    let lucyText = null;
-    if (aiMode === "challenge" && trigger && prompt.challenge) lucyText = prompt.challenge[trigger];
-    else if (aiMode === "support" && prompt.cocreate) lucyText = prompt.cocreate;
-    setLucyMode("thinking");
-    setTimeout(() => { setLucyMode(lucyText ? "idle" : "approves"); setTimeout(() => setLucyMode("idle"), 2000); }, lucyText ? 2000 : 800);
-    setNotes((prev) => [{ text: text.trim(), prompt: prompt.q, lucyText, lucyMode: lucyText ? aiMode : null, chapter: prompt.chapter, id: Date.now() }, ...prev]);
+    const noteId = Date.now();
+    const noteText = text.trim();
+    const notePrompt = prompt.q;
+    setNotes((prev) => [{ text: noteText, prompt: notePrompt, lucyText: null, lucyMode: aiMode, chapter: prompt.chapter, id: noteId }, ...prev]);
     setText(""); setUsedSpark(false); setCur((c) => c + 1); setAnimKey((k) => k + 1);
     setTimeout(() => { if (ref.current) ref.current.focus(); }, 200);
+    setLucyMode("thinking");
+    try {
+      await askLucyStream(
+        { module: "personality", mode: aiMode, action: "react_to_answer", userInput: noteText, moduleState: { question: notePrompt } },
+        (chunk) => setNotes((prev) => prev.map((n) => n.id === noteId ? { ...n, lucyText: chunk } : n))
+      );
+    } catch { /* silent fallback */ }
+    setLucyMode("idle");
   }, [text, usedSpark, prompt, aiMode]);
 
   const editNote = (id, t) => setNotes((p) => p.map((n) => n.id === id ? { ...n, text: t } : n));
