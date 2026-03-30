@@ -275,7 +275,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
               }}>
                 {suggestions.map((sug, i) => (
                   <div key={i} onClick={() => onOpenProject?.(sug.project)} style={{
-                    display: "flex", alignItems: "flex-start", gap: 12,
+                    display: "flex", alignItems: "center", gap: 12,
                     padding: "12px 14px", borderRadius: 6,
                     background: colors.eink,
                     border: `1px solid ${colors.einkBorder}`,
@@ -285,7 +285,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                     onMouseEnter={e => { e.currentTarget.style.background = "#C5C0B2"; e.currentTarget.style.transform = "translateX(2px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
                   >
-                    <div style={{ width: 24, height: 24, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ width: 24, height: 24, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <PixelIcon icon={sug.icon} color={colors.ink} size={16} />
                     </div>
                     <div>
@@ -310,7 +310,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                 {/* New project card — expands inline when clicked */}
                 {!creating ? (
                   <div onClick={startCreate} style={{
-                    display: "flex", alignItems: "flex-start", gap: 12,
+                    display: "flex", alignItems: "center", gap: 12,
                     padding: "12px 14px", borderRadius: 6,
                     background: colors.eink,
                     border: `1px solid ${colors.einkBorder}`,
@@ -320,7 +320,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                     onMouseEnter={e => { e.currentTarget.style.background = "#C5C0B2"; e.currentTarget.style.transform = "translateX(2px)"; }}
                     onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
                   >
-                    <div style={{ width: 24, height: 24, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ width: 24, height: 24, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <PixelIcon icon="spark" color={colors.ink} size={16} />
                     </div>
                     <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
