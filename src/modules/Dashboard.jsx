@@ -229,81 +229,115 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                 </div>
               </div>
 
-              {/* Suggestions — e-ink style cards */}
-              {suggestions.length > 0 && (
-                <div style={{
-                  marginTop: 20, paddingTop: 16,
-                  borderTop: `1px solid ${colors.lucyBorder}`,
-                  display: "flex", flexDirection: "column", gap: 8,
-                }}>
-                  {suggestions.map((sug, i) => (
-                    <div key={i} onClick={() => onOpenProject?.(sug.project)} style={{
-                      display: "flex", alignItems: "flex-start", gap: 12,
-                      padding: "12px 14px", borderRadius: 6,
-                      background: colors.eink,
-                      border: `1px solid ${colors.einkBorder}`,
-                      cursor: "pointer",
-                      transition: `all 0.15s ${ease}`,
-                    }}
-                      onMouseEnter={e => { e.currentTarget.style.background = "#C5C0B2"; e.currentTarget.style.transform = "translateX(2px)"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
-                    >
-                      <div style={{ width: 24, height: 24, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <PixelIcon icon={sug.icon} color={colors.ink} size={16} />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
-                          <strong>{sug.name}</strong> {sug.text}
-                        </div>
-                        <div style={{
-                          fontSize: 10, color: "#7A756E", marginTop: 2,
-                          fontFamily: fonts.pixel, letterSpacing: "0.08em",
-                        }}>{sug.meta}</div>
-                      </div>
+              {/* Suggestions + New project — e-ink action area */}
+              <div style={{
+                marginTop: 20, paddingTop: 16,
+                borderTop: `1px solid ${colors.lucyBorder}`,
+                display: "flex", flexDirection: "column", gap: 8,
+              }}>
+                {suggestions.map((sug, i) => (
+                  <div key={i} onClick={() => onOpenProject?.(sug.project)} style={{
+                    display: "flex", alignItems: "flex-start", gap: 12,
+                    padding: "12px 14px", borderRadius: 6,
+                    background: colors.eink,
+                    border: `1px solid ${colors.einkBorder}`,
+                    cursor: "pointer",
+                    transition: `all 0.15s ${ease}`,
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#C5C0B2"; e.currentTarget.style.transform = "translateX(2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
+                  >
+                    <div style={{ width: 24, height: 24, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <PixelIcon icon={sug.icon} color={colors.ink} size={16} />
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <div>
+                      <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
+                        <strong>{sug.name}</strong> {sug.text}
+                      </div>
+                      <div style={{
+                        fontSize: 10, color: "#7A756E", marginTop: 2,
+                        fontFamily: fonts.pixel, letterSpacing: "0.08em",
+                      }}>{sug.meta}</div>
+                    </div>
+                  </div>
+                ))}
 
-            {/* New project button / creation flow */}
-            {!creating ? (
-              <button onClick={startCreate} style={{
-                width: "100%", padding: "14px 0", marginBottom: 20, borderRadius: 6,
-                border: "1px dashed rgba(44,40,36,0.12)", cursor: "pointer",
-                fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                letterSpacing: "0.08em", textTransform: "uppercase",
-                color: "rgba(44,40,36,0.25)", background: "transparent",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                transition: `all 0.2s ${ease}`,
-              }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = S.text; e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(44,40,36,0.25)"; e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; }}
-              >
-                + NEW PROJECT
-              </button>
-            ) : (
-              <div style={{ marginBottom: 24, animation: `promptIn 0.3s ${ease} both` }}>
-                <div style={{ background: S.card, borderRadius: 6, border: "1px solid rgba(229,166,50,0.15)", boxShadow: shadows.raised, overflow: "hidden" }}>
-                  <div style={{ padding: "16px 20px" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 16 }}>
-                      <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-                      <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.5)", lineHeight: 1.5 }}>What's the client's name? Or the project name.</div>
+                {/* New project card — expands inline when clicked */}
+                {!creating ? (
+                  <div onClick={startCreate} style={{
+                    display: "flex", alignItems: "flex-start", gap: 12,
+                    padding: "12px 14px", borderRadius: 6,
+                    background: colors.eink,
+                    border: `1px solid ${colors.einkBorder}`,
+                    cursor: "pointer",
+                    transition: `all 0.15s ${ease}`,
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#C5C0B2"; e.currentTarget.style.transform = "translateX(2px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
+                  >
+                    <div style={{ width: 24, height: 24, flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <PixelIcon icon="spark" color={colors.ink} size={16} />
                     </div>
-                    <div style={{ background: S.recess, borderRadius: 4, border: `1px solid ${S.border}`, boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset", padding: "10px 12px" }}>
-                      <input ref={inputRef} value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Client or project name" onKeyDown={(e) => { if (e.key === "Enter") submitName(); if (e.key === "Escape") { setCreating(false); setNewName(""); } }} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, color: S.text, outline: "none", fontFamily: fonts.primary }} />
+                    <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
+                      <strong>New project</strong> — Start a brand strategy from scratch.
                     </div>
                   </div>
-                  <div style={{ display: "flex", userSelect: "none" }}>
-                    <button onClick={() => { setCreating(false); setNewName(""); }} style={{ flex: 1, padding: "11px 0", border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.25)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", borderRight: "1px solid rgba(44,40,36,0.06)", borderRadius: "0 0 0 6px" }}>CANCEL</button>
-                    <button onClick={submitName} disabled={!newName.trim()} style={{ flex: 1, padding: "11px 0", border: "none", cursor: newName.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: newName.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: "0 0 6px 0" }}>
-                      {newName.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}
-                      START PROJECT
-                    </button>
+                ) : (
+                  <div style={{
+                    borderRadius: 6, overflow: "hidden",
+                    background: colors.eink,
+                    border: `1px solid ${colors.einkBorder}`,
+                    animation: `promptIn 0.2s ${ease} both`,
+                  }}>
+                    <div style={{ padding: "12px 14px 10px" }}>
+                      <div style={{ fontSize: 9, color: "#C48B1E", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
+                        New project
+                      </div>
+                      <div style={{
+                        background: "rgba(44,40,36,0.06)", borderRadius: 4,
+                        border: "1px solid rgba(44,40,36,0.08)",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.04) inset",
+                        padding: "8px 10px",
+                      }}>
+                        <input
+                          ref={inputRef}
+                          value={newName}
+                          onChange={(e) => setNewName(e.target.value)}
+                          placeholder="Client or project name"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") submitName();
+                            if (e.key === "Escape") { setCreating(false); setNewName(""); }
+                          }}
+                          style={{
+                            width: "100%", background: "transparent", border: "none",
+                            fontSize: 13, fontWeight: 400, color: colors.ink,
+                            outline: "none", fontFamily: fonts.primary,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div style={{ padding: "0 14px 12px", display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                      <button onClick={() => { setCreating(false); setNewName(""); }} style={{
+                        padding: "5px 14px", borderRadius: 12,
+                        border: "1px solid rgba(44,40,36,0.14)",
+                        background: "transparent", cursor: "pointer",
+                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                        color: "rgba(44,40,36,0.4)",
+                        transition: "all 0.15s ease",
+                      }}>Cancel</button>
+                      <button onClick={submitName} disabled={!newName.trim()} style={{
+                        padding: "5px 14px", borderRadius: 12,
+                        border: `1px solid ${newName.trim() ? "rgba(44,40,36,0.3)" : "rgba(44,40,36,0.1)"}`,
+                        background: "transparent", cursor: newName.trim() ? "pointer" : "default",
+                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                        color: newName.trim() ? colors.ink : "rgba(44,40,36,0.2)",
+                        transition: "all 0.15s ease",
+                      }}>Start</button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Search + Sort */}
             {projects.length > 0 && (
