@@ -471,23 +471,26 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                     <div
                       onClick={() => onOpenProject?.(project)}
                       style={{
-                        padding: "14px 20px", display: "flex", alignItems: "center",
+                        padding: "14px 16px 14px 20px", display: "flex", alignItems: "center",
                         justifyContent: "space-between", cursor: "pointer",
                         transition: `background 0.15s ${ease}`,
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = "rgba(44,40,36,0.015)"; }}
                       onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                     >
-                      <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{project.name}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      {/* Left: name + module badge */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                        <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{project.name}</span>
                         <div style={{
                           fontSize: 8, fontWeight: 700, letterSpacing: "0.08em",
                           padding: "3px 8px", borderRadius: 3,
-                          fontFamily: fonts.pixel,
+                          fontFamily: fonts.pixel, flexShrink: 0,
                           background: bg, color: color,
                         }}>{label.toUpperCase()}</div>
-                        <span style={{ fontSize: 9, color: "rgba(44,40,36,0.15)" }}>{project.lastEdited}</span>
-                        {/* Three-dot menu trigger */}
+                      </div>
+                      {/* Right: timestamp + three-dot */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                        <span style={{ fontSize: 11, color: "rgba(44,40,36,0.3)" }}>{project.lastEdited}</span>
                         <button
                           onClick={e => {
                             e.stopPropagation();
@@ -495,14 +498,15 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
                             setRenamingId(null);
                           }}
                           style={{
-                            background: "transparent", border: "none", cursor: "pointer",
-                            padding: "2px 4px", borderRadius: 3, flexShrink: 0,
-                            color: trayOpen ? "rgba(44,40,36,0.5)" : "rgba(44,40,36,0.2)",
-                            display: "flex", alignItems: "center",
-                            transition: "color 0.15s ease",
+                            width: 28, height: 28, border: "none", cursor: "pointer",
+                            borderRadius: 6, flexShrink: 0,
+                            background: trayOpen ? "rgba(44,40,36,0.06)" : "transparent",
+                            color: trayOpen ? "rgba(44,40,36,0.4)" : "rgba(44,40,36,0.2)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            transition: "all 0.15s ease",
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.color = "rgba(44,40,36,0.5)"; }}
-                          onMouseLeave={e => { if (!trayOpen) e.currentTarget.style.color = "rgba(44,40,36,0.2)"; }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(44,40,36,0.06)"; e.currentTarget.style.color = "rgba(44,40,36,0.4)"; }}
+                          onMouseLeave={e => { if (!trayOpen) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(44,40,36,0.2)"; } }}
                         >
                           <PixelIcon icon="more" color="currentColor" size={14} />
                         </button>
