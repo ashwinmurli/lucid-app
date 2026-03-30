@@ -50,7 +50,8 @@ function hexToAlpha(hex, alpha) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function Dashboard({ onStartProject, onOpenProject, projects = [], setProjects } = {}) {
+export default function Dashboard({ onStartProject, onOpenProject, projects, setProjects } = {}) {
+  const safeProjects = projects || [];
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [lucyGreeted, setLucyGreeted] = useState(false);
@@ -126,7 +127,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
   };
 
   const filteredProjects = useMemo(() => {
-    let result = (projects || []).filter(p => !p.archived);
+    let result = safeProjects.filter(p => !p.archived);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(p => p.name.toLowerCase().includes(q));
@@ -135,10 +136,10 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
       result = [...result].sort((a, b) => a.name.localeCompare(b.name));
     }
     return result;
-  }, [projects, searchQuery, sortBy]);
+  }, [safeProjects, searchQuery, sortBy]);
 
   const { lucyContextLine, suggestions } = useMemo(() => {
-    const active = (projects || []).filter(p => p.status !== "complete");
+    const active = safeProjects.filter(p => p.status !== "complete");
     if (active.length === 0) {
       return {
         lucyContextLine: "All projects wrapped up. Ready to start something new?",
@@ -183,7 +184,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
     }
 
     return { lucyContextLine: contextLine, suggestions: sugs };
-  }, [projects]);
+  }, [safeProjects]);
 
   return (
     <div style={{ height: "100vh", overflow: "hidden", fontFamily: fonts.primary, color: S.text, position: "relative", background: S.rootBg }}>
@@ -222,7 +223,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
             fontSize: 9, fontWeight: 600, letterSpacing: "0.08em",
             textTransform: "uppercase", color: "rgba(44,40,36,0.2)",
           }}>
-            {projects.length} {projects.length === 1 ? "project" : "projects"}
+            {safeProjects.length} {safeProjects.length === 1 ? "project" : "projects"}
           </span>
         </div>
 
@@ -384,7 +385,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects = []
             </div>
 
             {/* Search + Sort */}
-            {projects.length > 0 && (
+            {safeProjects.length > 0 && (
               <div style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 marginBottom: 14, padding: "0 2px",
