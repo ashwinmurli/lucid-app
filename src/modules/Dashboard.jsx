@@ -50,7 +50,7 @@ function hexToAlpha(hex, alpha) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function Dashboard({ onStartProject, onOpenProject, projects, setProjects } = {}) {
+export default function Dashboard({ onStartProject, onOpenProject, projects = [], setProjects } = {}) {
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
   const [lucyGreeted, setLucyGreeted] = useState(false);
