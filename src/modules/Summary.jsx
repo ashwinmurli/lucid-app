@@ -1,16 +1,20 @@
 /* ═══════════════════════════════════════════════════════════════
    LUCID — Summary
-   Expandable accordion cards with machined edit/copy buttons.
+   Expandable accordion cards with ghost edit/copy buttons.
    ═══════════════════════════════════════════════════════════════ */
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, LUCY_ICONS, LucyScreen, LucyMini, TransportBtn } from "../components/ui";
+import { PixelIcon } from "../components/ui";
 
-const MODES = {
-  guide: { key: "GDE", desc: "CONTEXT BEFORE YOU WRITE" },
-  challenge: { key: "CHL", desc: "PUSHBACK AFTER YOU WRITE" },
-  cocreate: { key: "CRT", desc: "IDEAS ALONGSIDE YOURS" },
+const MODULE_COLORS = {
+  personality: "#FF8C42",
+  tensions: "#FF8C42",
+  purpose: "#FF6B8A",
+  values: "#14B8A6",
+  tone: "#4AADFF",
+  usps: "#B86EED",
+  manifesto: "#6366F1",
 };
 
 const SECTIONS = [
@@ -95,6 +99,7 @@ function buildAllText() {
 /* ── Summary Card ── */
 function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, index }) {
   const [hover, setHover] = useState(false);
+  const moduleColor = MODULE_COLORS[section.key] || colors.accent;
 
   return (
     <div
@@ -102,9 +107,9 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isExpanded ? "rgba(229,166,50,0.12)" : "rgba(44,40,36,0.06)"}`,
+        border: `1px solid ${isExpanded ? `${moduleColor}26` : "rgba(44,40,36,0.06)"}`,
         boxShadow: hover
-          ? "0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.5) inset"
+          ? shadows.cardHover
           : S.raised,
         overflow: "hidden",
         transition: `all 0.2s ${ease}`,
@@ -112,48 +117,71 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
         animation: `promptIn 0.4s ${ease} ${index * 0.05}s both`,
       }}
     >
-      {/* Header row — title left, button bar flush right */}
+      {/* Header row — color bar + title left, button bar flush right */}
       <div style={{ display: "flex", alignItems: "stretch" }}>
         {/* Title area — clickable to expand */}
         <div onClick={onToggle} style={{
-          flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8,
+          flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 10,
           padding: "0 16px", cursor: "pointer", userSelect: "none",
         }}>
-          {/* Chevron as rotating indicator */}
+          {/* Module color bar */}
+          <div style={{
+            width: 4, height: 16, borderRadius: 2, flexShrink: 0,
+            background: moduleColor,
+            opacity: isExpanded ? 1 : 0.5,
+            transition: `opacity 0.2s ${ease}`,
+          }} />
+          {/* Chevron */}
           <span style={{
-            fontSize: 14, color: isExpanded ? S.accent : "rgba(44,40,36,0.35)",
+            fontSize: 14, color: isExpanded ? moduleColor : "rgba(44,40,36,0.35)",
             display: "inline-block", flexShrink: 0,
-            fontFamily: "'DM Sans', sans-serif",
+            fontFamily: fonts.primary,
             transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
             transition: `transform 0.25s ${ease}, color 0.2s ease`,
           }}>›</span>
           <span style={{ fontSize: 12, fontWeight: 600, color: S.text, letterSpacing: "-0.01em" }}>{section.title}</span>
+
+          {/* Collapsed tone tags */}
+          {!isExpanded && section.tags && (
+            <div style={{ display: "flex", gap: 3, marginLeft: 4 }}>
+              {section.tags.filter(t => t.strong).map((t, j) => (
+                <span key={j} style={{
+                  display: "inline-flex", alignItems: "center",
+                  padding: "2px 6px", borderRadius: 3,
+                  background: `${colors.tone}18`,
+                  fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+                  color: colors.tone,
+                }}>{t.label}</span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Button bar — full height, flush right, machined into the card */}
-        <div style={{ display: "flex", flexShrink: 0, borderLeft: "1px solid rgba(44,40,36,0.04)" }}>
+        {/* Button bar — ghost style */}
+        <div style={{ display: "flex", flexShrink: 0, gap: 2, alignItems: "center", padding: "0 8px" }}>
           <button onClick={onEdit} style={{
             display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "14px 14px", border: "none", cursor: "pointer",
+            padding: "5px 10px",
+            border: "1px solid rgba(44,40,36,0.08)", background: "transparent",
+            borderRadius: 3, cursor: "pointer",
             fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-            color: "rgba(44,40,36,0.25)",
-            background: `linear-gradient(180deg, rgba(242,237,229,0.5) 0%, transparent 100%)`,
-            borderRight: "1px solid rgba(44,40,36,0.04)",
+            color: "rgba(44,40,36,0.3)",
             transition: "color 0.15s ease", userSelect: "none",
           }}
             onMouseEnter={(e) => e.currentTarget.style.color = S.text}
-            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.25)"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.3)"}
           >EDIT</button>
           <button onClick={() => onCopy()} style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
-            padding: "14px 14px", border: "none", cursor: "pointer",
+            padding: "5px 10px",
+            border: "1px solid rgba(44,40,36,0.08)", background: "transparent",
+            borderRadius: 3, cursor: "pointer",
             fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase",
-            color: copied ? S.lcdBright : "rgba(44,40,36,0.25)",
-            background: copied ? "rgba(229,166,50,0.04)" : `linear-gradient(180deg, rgba(242,237,229,0.5) 0%, transparent 100%)`,
+            color: copied ? S.lcdBright : "rgba(44,40,36,0.3)",
             transition: "all 0.15s ease", userSelect: "none",
           }}
             onMouseEnter={(e) => { if (!copied) e.currentTarget.style.color = S.accent; }}
-            onMouseLeave={(e) => { if (!copied) e.currentTarget.style.color = copied ? S.lcdBright : "rgba(44,40,36,0.25)"; }}
+            onMouseLeave={(e) => { if (!copied) e.currentTarget.style.color = copied ? S.lcdBright : "rgba(44,40,36,0.3)"; }}
           >
             <div style={{ width: 4, height: 4, borderRadius: "50%", background: copied ? S.lcdBright : "currentColor" }} />
             {copied ? "COPIED" : "COPY"}
@@ -191,10 +219,10 @@ function SummaryCard({ section, isExpanded, onToggle, copied, onCopy, onEdit, in
                   <div key={j} style={{
                     display: "inline-flex", alignItems: "center",
                     padding: "4px 8px", borderRadius: 4,
-                    background: t.strong ? "rgba(229,166,50,0.08)" : "rgba(44,40,36,0.04)",
+                    background: t.strong ? `${colors.tone}18` : "rgba(44,40,36,0.04)",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
                     fontSize: 8, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
-                    color: t.strong ? "rgba(229,166,50,0.55)" : "rgba(44,40,36,0.25)",
+                    color: t.strong ? colors.tone : "rgba(44,40,36,0.25)",
                   }}>{t.label}</div>
                 ))}
               </div>
@@ -220,7 +248,7 @@ export default function Summary({ onBack } = {}) {
   };
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: fonts.primary, color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
@@ -245,15 +273,12 @@ export default function Summary({ onBack } = {}) {
             <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "0 10px", borderRadius: 4, height: 24, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
               <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>Summary</span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.accent, lineHeight: 1 }}>{SECTIONS.length}</span>
-            </div>
           </div>
         </div>
 
         {/* Scrollable canvas */}
-        <div className="summary-scroll" style={{ flex: 1, overflowY: "auto", padding: "32px 48px 80px" }}>
-          <div style={{ maxWidth: 560, margin: "0 auto" }}>
+        <div className="summary-scroll" style={{ flex: 1, overflowY: "auto", padding: "40px 24px 80px" }}>
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {SECTIONS.map((section, i) => (
                 <SummaryCard
@@ -280,16 +305,16 @@ export default function Summary({ onBack } = {}) {
           boxShadow: "0 -1px 0 rgba(255,255,255,0.4) inset, 0 -1px 3px rgba(0,0,0,0.02)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          {/* Lucy mini */}
+          {/* Lucy completion badge */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{
               display: "flex", alignItems: "center", gap: 5, padding: "4px 10px",
               borderRadius: 3, background: S.screen,
               boxShadow: "0 1px 3px rgba(0,0,0,0.15) inset, 0 1px 0 rgba(255,255,255,0.04)",
             }}>
-              <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdBright }}>BRAND COMPLETE</span>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim, marginLeft: 2 }}>{SECTIONS.length} modules</span>
+              <PixelIcon icon="approves" color={S.lcdBright} size={14} />
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdBright }}>BRAND COMPLETE</span>
+              <span style={{ fontFamily: "'DotGothic16', monospace", letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim, marginLeft: 2 }}>{SECTIONS.length} modules</span>
             </div>
           </div>
 
@@ -297,7 +322,7 @@ export default function Summary({ onBack } = {}) {
           <button onClick={() => copy("all", buildAllText())} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "6px 14px",
             borderRadius: 4, border: "none", cursor: "pointer",
-            fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
+            fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
             letterSpacing: "0.08em", textTransform: "uppercase",
             color: copied === "all" ? S.lcdBright : S.text,
             background: copied === "all" ? "rgba(229,166,50,0.08)" : `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,

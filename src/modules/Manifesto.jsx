@@ -5,13 +5,39 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, LUCY_ICONS, LucyScreen, LucyMini, TransportBtn } from "../components/ui";
+import { PixelIcon, TransportBtn } from "../components/ui";
 
 const MODES = {
-  guide: { key: "GDE", desc: "CONTEXT BEFORE YOU WRITE" },
-  challenge: { key: "CHL", desc: "PUSHBACK AFTER YOU WRITE" },
-  cocreate: { key: "CRT", desc: "IDEAS ALONGSIDE YOURS" },
+  support: { key: "S", desc: "HELP ME" },
+  challenge: { key: "C", desc: "PUSH ME" },
 };
+
+/* ── Mock data ── */
+const LUCY_DRAFT = `We don't make things for everyone. We make things for the people who notice. The ones who run their thumb across a surface and feel the intention. Who understand that restraint is harder than excess, and silence says more than noise.
+
+We believe the best brands are felt before they're understood. They walk into a room and change the temperature. Not through volume, but through presence. Not through explanation, but through conviction.
+
+Every word we write, every surface we touch, every space we shape — it carries a point of view. Not a loud one. A clear one. The kind that doesn't need to convince you, because it already knows what it is.
+
+This is for the ones who build with care. Who know that craft isn't a luxury — it's a responsibility. And that the difference between good and extraordinary lives in the details most people never see.`;
+
+const LUCY_REWRITES = [
+  `We don't design for the masses. We design for the people who care enough to look twice. Who feel the weight of a decision in a typeface. Who know that what you leave out matters as much as what you put in.
+
+The best brands don't announce themselves. They arrive. Quietly, deliberately, with the kind of confidence that comes from knowing exactly who you are and refusing to be anything else.
+
+Every choice we make is a statement. Every surface, every word, every pause. Not loud statements — clear ones. The kind that earn trust not through persuasion, but through consistency.
+
+We build for people who understand that extraordinary isn't about more. It's about enough. The right amount of everything, and not a single thing extra.`,
+
+  `There's a difference between being seen and being noticed. We work for the ones who understand that difference. The ones who know that the best details are the ones you feel before you can name them.
+
+We believe brands should have the courage of their convictions. Not the manufactured courage of a tagline, but the real kind — the kind that shows up in every decision, every surface, every silence between words.
+
+Our work is precise because precision is generous. It says: we thought about this. We cared about this. We respected you enough to get this right.
+
+For the builders who know that craft isn't decoration. It's the structure. It's the thing that holds everything else together when trends fade and noise clears.`,
+];
 
 export default function Manifesto({ onBack } = {}) {
   const [phase, setPhase] = useState("composing");
@@ -24,13 +50,11 @@ export default function Manifesto({ onBack } = {}) {
   const [annotationInput, setAnnotationInput] = useState("");
   const [annotations, setAnnotations] = useState([]);
   const [lucyMode, setLucyMode] = useState("thinking");
-  const [aiMode, setAiMode] = useState("guide");
-  const [hoveredAiMode, setHoveredAiMode] = useState(null);
+  const [aiMode, setAiMode] = useState("challenge");
   const [transStep, setTransStep] = useState(0);
   const proseRef = useRef(null);
   const textareaRef = useRef(null);
 
-  const hoveredModeInfo = hoveredAiMode ? MODES[hoveredAiMode] : null;
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
 
   // Composing cinematic
@@ -51,7 +75,6 @@ export default function Manifesto({ onBack } = {}) {
   const handleTextSelect = useCallback(() => {
     const sel = window.getSelection();
     if (!sel || sel.isCollapsed || !sel.toString().trim()) { return; }
-    // Only trigger for selections inside the prose content, not buttons
     const anchor = sel.anchorNode;
     if (!anchor || !proseRef.current) return;
     const proseContent = proseRef.current.querySelector("[data-prose]");
@@ -73,7 +96,6 @@ export default function Manifesto({ onBack } = {}) {
     setAnnotations((prev) => [...prev, { selected: selection.text, note: annotationInput.trim() }]);
     setIsRewriting(true);
     setLucyMode("thinking");
-    // Simulate Lucy rewriting the selected section
     setTimeout(() => {
       setDraftVersion((v) => v + 1);
       setText(LUCY_REWRITES[rewriteIndex % LUCY_REWRITES.length]);
@@ -114,8 +136,85 @@ export default function Manifesto({ onBack } = {}) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [selection]);
 
+  /* ── Lucy display state ── */
+  const lucyDisplay = (() => {
+    if (isRewriting || lucyMode === "thinking") return { icon: "thinking", label: "COMPOSING" };
+    if (lucyMode === "approves") return { icon: "approves", label: "NOTED" };
+    return { icon: aiMode === "support" ? "guide" : "challenge", label: aiMode === "support" ? "SUPPORT" : "CHALLENGE" };
+  })();
+
+  /* ── E-ink segmented switch ── */
+  const EinkSwitch = () => (
+    <div style={{
+      display: "flex", borderRadius: 3,
+      background: colors.eink,
+      border: `1px solid ${colors.einkBorder}`,
+      padding: 2,
+    }}>
+      {Object.entries(MODES).map(([key, m]) => (
+        <button key={key}
+          onClick={() => setAiMode(key)}
+          style={{
+            padding: "4px 10px", borderRadius: 2, border: "none",
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, letterSpacing: "0.08em",
+            color: aiMode === key ? colors.eink : "#8A857E",
+            background: aiMode === key ? colors.ink : "transparent",
+            transition: "all 0.15s ease",
+          }}
+        >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
+      ))}
+    </div>
+  );
+
+  /* ── Lucy module (brushed aluminum surface) ── */
+  const LucyModule = ({ children }) => (
+    <div style={{
+      marginTop: 16,
+      background: colors.lucySurface,
+      backgroundImage: colors.lucyGrain,
+      border: `1px solid ${colors.lucyBorder}`,
+      boxShadow: colors.lucyShadow,
+      borderRadius: 8,
+      overflow: "hidden",
+    }}>
+      {/* Top strip: e-ink badge + status + mode switch */}
+      <div style={{
+        padding: "8px 10px",
+        display: "flex", alignItems: "center", gap: 6,
+      }}>
+        {/* E-ink badge */}
+        <div style={{
+          width: 40, height: 30,
+          background: colors.eink, borderRadius: 2,
+          border: `1px solid ${colors.einkBorder}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
+        }}>
+          <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+        </div>
+
+        {/* Status label */}
+        <span style={{
+          fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
+          color: colors.lucyStatusText, lineHeight: 1, flex: 1,
+        }}>{lucyDisplay.label}</span>
+
+        {/* Mode toggle */}
+        <EinkSwitch />
+      </div>
+
+      {/* Optional extra content */}
+      {children && (
+        <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 12px" }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <div style={{ height: "100vh", overflow: "hidden", fontFamily: "'DM Sans', sans-serif", color: S.text, position: "relative", background: "#D8D5CE" }}>
+    <div style={{ height: "100vh", overflow: "hidden", fontFamily: fonts.primary, color: S.text, position: "relative", background: "#D8D5CE" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
@@ -141,7 +240,7 @@ export default function Manifesto({ onBack } = {}) {
               <span style={{ fontSize: 9, fontWeight: 400, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)" }}>{phase === "locked" ? "Manifesto Locked" : phase === "composing" ? "Composing" : phase === "reviewing" ? "Review Draft" : "Editing"}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 6px", borderRadius: 3, height: 24, background: S.screen, boxShadow: "0 1px 2px rgba(0,0,0,0.1) inset, 0 1px 0 rgba(255,255,255,0.06)" }}>
-              <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: phase === "composing" ? S.accent : phase === "locked" ? S.accent : S.lcd, lineHeight: 1, animation: phase === "composing" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>{phase === "composing" ? "···" : wordCount}</span>
+              <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: phase === "composing" ? S.accent : phase === "locked" ? S.accent : colors.manifesto, lineHeight: 1, animation: phase === "composing" ? "lucyPulse 1.2s ease-in-out infinite" : "none" }}>{phase === "composing" ? "···" : wordCount}</span>
             </div>
           </div>
         </div>
@@ -153,10 +252,12 @@ export default function Manifesto({ onBack } = {}) {
             const msgs = ["", "READING BRAND WORK", "FINDING THE VOICE", "CHOOSING EVERY WORD", "COMPOSING MANIFESTO"];
             const msg = msgs[transStep] || ""; const showPulse = transStep >= 1;
             return (
-              <div style={{ position: "absolute", inset: 0, background: S.screen, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.6s ease both", zIndex: 5 }}>
+              <div style={{ position: "absolute", inset: 0, background: "#1C1916", display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.6s ease both", zIndex: 5 }}>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ display: "inline-block", animation: showPulse ? "lucyPulse 1.2s ease-in-out infinite" : "none", marginBottom: 20 }}><PixelIcon pattern={LUCY_ICONS.thinking} color={S.accent} size={4} /></div>
-                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: "'DotGothic16', monospace", fontSize: 14, color: S.accent, letterSpacing: "0.05em", animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
+                  <div style={{ display: "inline-block", animation: showPulse ? "lucyPulse 1.2s ease-in-out infinite" : "none", marginBottom: 20 }}>
+                    <PixelIcon icon="thinking" color={S.accent} size={28} />
+                  </div>
+                  {transStep >= 1 && (<div key={transStep} style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 14, color: S.accent, animation: `fadeIn 0.4s ${ease} both` }}>{msg}...</div>)}
                   {transStep >= 1 && (<div style={{ display: "flex", gap: 4, justifyContent: "center", marginTop: 16 }}>{[1,2,3,4].map((s) => (<div key={s} style={{ width: 4, height: 4, background: transStep >= s ? S.accent : "rgba(229,166,50,0.15)", transition: "background 0.3s ease" }} />))}</div>)}
                 </div>
               </div>
@@ -165,225 +266,214 @@ export default function Manifesto({ onBack } = {}) {
 
           {/* ═══ REVIEWING — redline mode ═══ */}
           {phase === "reviewing" && (
-            <div style={{ padding: "40px 48px 60px", animation: `fadeIn 0.6s ${ease} both` }}>
-              <div style={{ maxWidth: 560, margin: "0 auto" }}>
-                <div style={{ textAlign: "center", marginBottom: 32 }}>
-                  <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>{draftVersion === 0 ? "Lucy's first draft." : `Draft ${draftVersion + 1}.`}</h2>
-                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Select any text to give Lucy a note.</p>
-                </div>
+            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
+              <div style={{ textAlign: "center", marginBottom: 32 }}>
+                <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>{draftVersion === 0 ? "Lucy's first draft." : `Draft ${draftVersion + 1}.`}</h2>
+                <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Select any text to give Lucy a note.</p>
+              </div>
 
-                {/* Prose with selection highlight */}
-                <div style={{ position: "relative" }}>
-                  <div key={draftVersion} ref={proseRef} onMouseUp={handleTextSelect} style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, cursor: "text", userSelect: "text", animation: `promptIn 0.5s ${ease} both`, overflow: "hidden" }}>
-                    <div data-prose style={{ padding: "28px 28px 0" }}>
-                      {text.split("\n\n").map((para, i) => (
-                        <p key={i} style={{ fontSize: 15, fontWeight: 400, color: S.text, lineHeight: 1.85, letterSpacing: "-0.01em", marginBottom: i < text.split("\n\n").length - 1 ? 18 : 14 }}>
-                          {selection ? (() => {
-                            const idx = para.indexOf(selection.text);
-                            if (idx === -1) return para;
-                            return (<>
-                              {para.slice(0, idx)}
-                              <span style={{ background: "rgba(229,166,50,0.12)", borderRadius: 2, padding: "1px 0", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>{para.slice(idx, idx + selection.text.length)}</span>
-                              {para.slice(idx + selection.text.length)}
-                            </>);
-                          })() : para}
-                        </p>
-                      ))}
-                    </div>
-                    {/* Edit + Lock — transport button style */}
-                    <div style={{ marginTop: 16 }}>
-                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                      <div style={{ display: "flex", userSelect: "none" }}>
-                        <button onClick={() => setPhase("editing")} style={{
-                          flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                          padding: "11px 0", border: "none", cursor: "pointer",
-                          fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
-                          letterSpacing: "0.08em", textTransform: "uppercase",
-                          color: "rgba(44,40,36,0.35)",
-                          background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                          boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
-                          borderRadius: "0 0 0 4px",
-                          userSelect: "none",
-                        }}>EDIT DIRECTLY</button>
-                        <div style={{ width: 1, background: "rgba(44,40,36,0.06)" }} />
-                        <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} style={{
-                          flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                          padding: "11px 0", border: "none", cursor: "pointer",
-                          fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
-                          letterSpacing: "0.08em", textTransform: "uppercase",
-                          color: S.text,
-                          background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                          boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
-                          borderRadius: "0 0 4px 0",
-                          userSelect: "none",
-                        }}>
-                          <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />
-                          LOCK MANIFESTO
-                        </button>
-                      </div>
+              {/* Prose with selection highlight */}
+              <div style={{ position: "relative" }}>
+                <div key={draftVersion} ref={proseRef} onMouseUp={handleTextSelect} style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, cursor: "text", userSelect: "text", animation: `promptIn 0.5s ${ease} both`, overflow: "hidden" }}>
+                  <div data-prose style={{ padding: "28px 28px 0" }}>
+                    {text.split("\n\n").map((para, i) => (
+                      <p key={i} style={{ fontSize: 15, fontWeight: 400, color: S.text, lineHeight: 1.85, letterSpacing: "-0.01em", marginBottom: i < text.split("\n\n").length - 1 ? 18 : 14 }}>
+                        {selection ? (() => {
+                          const idx = para.indexOf(selection.text);
+                          if (idx === -1) return para;
+                          return (<>
+                            {para.slice(0, idx)}
+                            <span style={{ background: "rgba(229,166,50,0.15)", borderRadius: 2, padding: "1px 0", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }}>{para.slice(idx, idx + selection.text.length)}</span>
+                            {para.slice(idx + selection.text.length)}
+                          </>);
+                        })() : para}
+                      </p>
+                    ))}
+                  </div>
+                  {/* Edit + Lock — transport button style */}
+                  <div style={{ marginTop: 16 }}>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                    <div style={{ display: "flex", userSelect: "none" }}>
+                      <button onClick={() => setPhase("editing")} style={{
+                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        padding: "11px 0", border: "none", cursor: "pointer",
+                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                        letterSpacing: "0.08em", textTransform: "uppercase",
+                        color: "rgba(44,40,36,0.35)",
+                        background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
+                        boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
+                        borderRadius: "0 0 0 4px",
+                        userSelect: "none",
+                      }}>EDIT DIRECTLY</button>
+                      <div style={{ width: 1, background: "rgba(44,40,36,0.06)" }} />
+                      <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} style={{
+                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                        padding: "11px 0", border: "none", cursor: "pointer",
+                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                        letterSpacing: "0.08em", textTransform: "uppercase",
+                        color: S.text,
+                        background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
+                        boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
+                        borderRadius: "0 0 4px 0",
+                        userSelect: "none",
+                      }}>
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />
+                        LOCK MANIFESTO
+                      </button>
                     </div>
                   </div>
-
-                  {/* Selection popover */}
-                  {selection && (
-                    <div data-popover style={{ position: "absolute", left: Math.max(0, Math.min(selection.x - 175, 210)), top: selection.y + 12, width: 350, animation: `promptIn 0.15s ${ease} both`, zIndex: 10 }}>
-                      <div style={{ background: S.card, borderRadius: 6, border: "1px solid rgba(44,40,36,0.1)", boxShadow: "0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.5) inset", overflow: "hidden" }}>
-                        {/* Selected text — full, in its own recessed area */}
-                        <div style={{ padding: "14px 16px 12px" }}>
-                          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.15)", marginBottom: 6 }}>SELECTED TEXT</div>
-                          <div style={{
-                            background: S.recess, borderRadius: 4, padding: "10px 12px",
-                            border: `1px solid ${S.border}`,
-                            boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset",
-                          }}>
-                            <div style={{ fontSize: 12, fontWeight: 400, fontStyle: "italic", color: "rgba(44,40,36,0.4)", lineHeight: 1.6 }}>"{selection.text}"</div>
-                          </div>
-                        </div>
-
-                        {/* Note input — its own section */}
-                        <div style={{ padding: "0 16px 14px" }}>
-                          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.15)", marginBottom: 6 }}>YOUR NOTE</div>
-                          <div style={{
-                            background: S.recess, borderRadius: 4, padding: "10px 12px",
-                            border: `1px solid ${S.border}`,
-                            boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset",
-                            display: "flex", alignItems: "center", gap: 8,
-                          }}>
-                            <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, background: isRewriting ? S.accent : "rgba(229,166,50,0.3)", animation: isRewriting ? "lucyPulse 1s ease-in-out infinite" : "none" }} />
-                            <input autoFocus value={annotationInput} onChange={(e) => setAnnotationInput(e.target.value)} placeholder="What should change here?"
-                              onKeyDown={(e) => { if (e.key === "Enter" && annotationInput.trim()) handleAnnotation(); if (e.key === "Escape") { setSelection(null); setAnnotationInput(""); } }}
-                              style={{ flex: 1, background: "transparent", border: "none", fontSize: 12, fontWeight: 400, color: S.text, outline: "none", fontFamily: "'DM Sans', sans-serif" }} />
-                          </div>
-                        </div>
-
-                        {/* Send button */}
-                        <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                        <button onClick={() => { if (annotationInput.trim()) handleAnnotation(); else { setSelection(null); setAnnotationInput(""); } }}
-                          style={{
-                            width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                            padding: "10px 0", border: "none",
-                            cursor: "pointer",
-                            fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600,
-                            letterSpacing: "0.08em", textTransform: "uppercase",
-                            color: annotationInput.trim() ? S.text : "rgba(44,40,36,0.2)",
-                            background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                            boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
-                            transition: "all 0.06s ease",
-                          }}>
-                          {annotationInput.trim() ? (
-                            <>{isRewriting ? (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent, animation: "lucyPulse 1s ease-in-out infinite" }} />SENDING...</>) : (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />SEND NOTE</>)}</>
-                          ) : "DISMISS"}
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Annotation log */}
-                {annotations.length > 0 && (
-                  <div style={{ marginTop: 16 }}>
-                    <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 8 }}>NOTES</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      {annotations.map((a, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0" }}>
-                          <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-                          <div>
-                            <span style={{ fontSize: 11, color: "rgba(44,40,36,0.25)", fontStyle: "italic" }}>"{a.selected.length > 40 ? a.selected.slice(0, 40) + "…" : a.selected}"</span>
-                            <span style={{ fontSize: 11, color: "rgba(44,40,36,0.15)", margin: "0 6px" }}>→</span>
-                            <span style={{ fontSize: 11, color: "rgba(44,40,36,0.5)" }}>{a.note}</span>
-                          </div>
+                {/* Selection popover — dark housing */}
+                {selection && (
+                  <div data-popover style={{ position: "absolute", left: Math.max(0, Math.min(selection.x - 175, 290)), top: selection.y + 12, width: 350, animation: `promptIn 0.15s ${ease} both`, zIndex: 10 }}>
+                    <div style={{ background: "#1C1916", borderRadius: 6, border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15)", overflow: "hidden" }}>
+                      {/* Selected text */}
+                      <div style={{ padding: "14px 16px 12px" }}>
+                        <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 6 }}>SELECTED TEXT</div>
+                        <div style={{
+                          background: "rgba(255,255,255,0.04)", borderRadius: 4, padding: "10px 12px",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                        }}>
+                          <div style={{ fontSize: 12, fontWeight: 400, fontStyle: "italic", color: "rgba(255,255,255,0.4)", lineHeight: 1.6 }}>"{selection.text}"</div>
                         </div>
-                      ))}
+                      </div>
+
+                      {/* Note input */}
+                      <div style={{ padding: "0 16px 14px" }}>
+                        <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", marginBottom: 6 }}>YOUR NOTE</div>
+                        <div style={{
+                          background: "rgba(255,255,255,0.04)", borderRadius: 4, padding: "10px 12px",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                          display: "flex", alignItems: "center", gap: 8,
+                        }}>
+                          <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, background: isRewriting ? S.accent : "rgba(229,166,50,0.3)", animation: isRewriting ? "lucyPulse 1s ease-in-out infinite" : "none" }} />
+                          <input autoFocus value={annotationInput} onChange={(e) => setAnnotationInput(e.target.value)} placeholder="What should change here?"
+                            onKeyDown={(e) => { if (e.key === "Enter" && annotationInput.trim()) handleAnnotation(); if (e.key === "Escape") { setSelection(null); setAnnotationInput(""); } }}
+                            style={{ flex: 1, background: "transparent", border: "none", fontSize: 12, fontWeight: 400, color: "rgba(255,255,255,0.8)", outline: "none", fontFamily: fonts.primary }} />
+                        </div>
+                      </div>
+
+                      {/* Send button */}
+                      <div style={{ height: 1, background: "rgba(255,255,255,0.06)" }} />
+                      <button onClick={() => { if (annotationInput.trim()) handleAnnotation(); else { setSelection(null); setAnnotationInput(""); } }}
+                        style={{
+                          width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                          padding: "10px 0", border: "none",
+                          cursor: "pointer",
+                          fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                          letterSpacing: "0.08em", textTransform: "uppercase",
+                          color: annotationInput.trim() ? S.accent : "rgba(255,255,255,0.15)",
+                          background: "rgba(255,255,255,0.02)",
+                          transition: "all 0.06s ease",
+                        }}>
+                        {annotationInput.trim() ? (
+                          <>{isRewriting ? (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent, animation: "lucyPulse 1s ease-in-out infinite" }} />SENDING...</>) : (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />SEND NOTE</>)}</>
+                        ) : "DISMISS"}
+                      </button>
                     </div>
                   </div>
                 )}
+              </div>
 
-                {/* General rewrite + Lucy */}
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ background: S.recess, borderRadius: "6px 6px 0 0", border: `1px solid ${S.border}`, borderBottom: "none", overflow: "hidden" }}>
-                    <div style={{ padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, marginTop: 6, background: isRewriting ? S.accent : "rgba(229,166,50,0.25)", transition: "background 0.3s ease", animation: isRewriting ? "lucyPulse 1s ease-in-out infinite" : "none" }} />
-                      <textarea value={feedbackInput} onChange={(e) => { setFeedbackInput(e.target.value); e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }} placeholder="Give a suggestion so Lucy can rewrite it for you..." onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey) handleRewrite(); }} rows={1} style={{ flex: 1, background: "transparent", border: "none", fontSize: 13, fontWeight: 400, lineHeight: 1.5, color: S.text, outline: "none", fontFamily: "'DM Sans', sans-serif", resize: "none", minHeight: 20, overflow: "hidden" }} />
-                    </div>
-                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                    <button onClick={handleRewrite} disabled={!feedbackInput.trim() || isRewriting} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: feedbackInput.trim() && !isRewriting ? "pointer" : "default", fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: isRewriting ? S.accent : feedbackInput.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
-                      {isRewriting ? (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent, animation: "lucyPulse 1s ease-in-out infinite" }} />LUCY IS REWRITING...</>) : (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: feedbackInput.trim() ? S.accent : "rgba(44,40,36,0.08)" }} />REWRITE ALL</>)}
-                    </button>
-                  </div>
-                  <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: "1px solid rgba(44,40,36,0.04)", padding: "6px 8px" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
-                      <div style={{ flex: 1, minWidth: 0 }}><LucyScreen mode={isRewriting ? "thinking" : lucyMode} hoveredModeInfo={hoveredModeInfo} aiMode={aiMode} guideText={aiMode === "guide" ? "Select any phrase to redline it. Or give me a general note to rewrite the whole thing." : null} /></div>
-                      <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
-                        {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
+              {/* Annotation log — on Lucy surface */}
+              {annotations.length > 0 && (
+                <div style={{
+                  marginTop: 16,
+                  background: colors.lucySurface,
+                  backgroundImage: colors.lucyGrain,
+                  border: `1px solid ${colors.lucyBorder}`,
+                  boxShadow: colors.lucyShadow,
+                  borderRadius: 8,
+                  padding: "12px 14px",
+                }}>
+                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.lucyStatusText, marginBottom: 8 }}>NOTES</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {annotations.map((a, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "6px 0" }}>
+                        <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 5, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
+                        <div>
+                          <span style={{ fontSize: 11, color: "rgba(44,40,36,0.25)", fontStyle: "italic" }}>"{a.selected.length > 40 ? a.selected.slice(0, 40) + "\u2026" : a.selected}"</span>
+                          <span style={{ fontSize: 11, color: "rgba(44,40,36,0.15)", margin: "0 6px" }}>\u2192</span>
+                          <span style={{ fontSize: 11, color: colors.lucyBodyText }}>{a.note}</span>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
+              )}
+
+              {/* General rewrite input */}
+              <div style={{ marginTop: 16 }}>
+                <div style={{ background: S.recess, borderRadius: 6, border: `1px solid ${S.border}`, overflow: "hidden" }}>
+                  <div style={{ padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 8 }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", flexShrink: 0, marginTop: 6, background: isRewriting ? S.accent : "rgba(229,166,50,0.25)", transition: "background 0.3s ease", animation: isRewriting ? "lucyPulse 1s ease-in-out infinite" : "none" }} />
+                    <textarea value={feedbackInput} onChange={(e) => { setFeedbackInput(e.target.value); e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }} placeholder="Give a suggestion so Lucy can rewrite it for you..." onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey) handleRewrite(); }} rows={1} style={{ flex: 1, background: "transparent", border: "none", fontSize: 13, fontWeight: 400, lineHeight: 1.5, color: S.text, outline: "none", fontFamily: fonts.primary, resize: "none", minHeight: 20, overflow: "hidden" }} />
+                  </div>
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                  <button onClick={handleRewrite} disabled={!feedbackInput.trim() || isRewriting} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: feedbackInput.trim() && !isRewriting ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: isRewriting ? S.accent : feedbackInput.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
+                    {isRewriting ? (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent, animation: "lucyPulse 1s ease-in-out infinite" }} />LUCY IS REWRITING...</>) : (<><div style={{ width: 6, height: 6, borderRadius: "50%", background: feedbackInput.trim() ? S.accent : "rgba(44,40,36,0.08)" }} />REWRITE ALL</>)}
+                  </button>
+                </div>
               </div>
+
+              {/* Lucy module */}
+              <LucyModule />
             </div>
           )}
 
           {/* ═══ EDITING — user takes the pen ═══ */}
           {phase === "editing" && (
-            <div style={{ padding: "40px 48px 60px", animation: `fadeIn 0.4s ${ease} both` }}>
-              <div style={{ maxWidth: 560, margin: "0 auto" }}>
-                <div style={{ textAlign: "center", marginBottom: 32 }}>
-                  <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Your pen now.</h2>
-                  <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Edit freely. Make it yours.</p>
-                </div>
-                <div>
-                  <div style={{ background: S.recess, borderRadius: "6px 6px 0 0", border: `1px solid ${S.border}`, borderBottom: "none", overflow: "hidden" }}>
-                    <div style={{ padding: "24px 24px 16px" }}>
-                      <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} rows={12} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, lineHeight: 1.85, color: S.text, resize: "none", outline: "none", fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.01em", minHeight: 240 }} />
-                    </div>
-                    <div style={{ padding: "0 24px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <button onClick={() => setPhase("reviewing")} style={{ fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)", background: "none", border: "none", cursor: "pointer", transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.4)"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.2)"}>← BACK TO LUCY</button>
-                      <span style={{ fontSize: 9, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "rgba(44,40,36,0.12)" }}>{wordCount} words</span>
-                    </div>
-                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                    <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} disabled={!text.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: text.trim() ? "pointer" : "default", fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: text.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
-                      {text.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}LOCK MANIFESTO
-                    </button>
+            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.4s ${ease} both` }}>
+              <div style={{ textAlign: "center", marginBottom: 32 }}>
+                <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Your pen now.</h2>
+                <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Edit freely. Make it yours.</p>
+              </div>
+              <div>
+                <div style={{ background: S.recess, borderRadius: 6, border: `1px solid ${S.border}`, overflow: "hidden" }}>
+                  <div style={{ padding: "24px 24px 16px" }}>
+                    <textarea ref={textareaRef} value={text} onChange={(e) => setText(e.target.value)} rows={12} style={{ width: "100%", background: "transparent", border: "none", fontSize: 15, fontWeight: 400, lineHeight: 1.85, color: S.text, resize: "none", outline: "none", fontFamily: fonts.primary, letterSpacing: "-0.01em", minHeight: 240 }} />
                   </div>
-                  <div style={{ background: S.recess, borderRadius: "0 0 6px 6px", border: `1px solid ${S.border}`, borderTop: "1px solid rgba(44,40,36,0.04)", padding: "6px 8px" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
-                      <div style={{ flex: 1, minWidth: 0 }}><LucyScreen mode={lucyMode} hoveredModeInfo={hoveredModeInfo} aiMode={aiMode} guideText={aiMode === "guide" ? "It's your manifesto now. Edit until it sounds like the brand — not like Lucy." : null} /></div>
-                      <div style={{ display: "flex", borderRadius: 3, flexShrink: 0, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 3px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.4)", padding: 2, marginTop: 2 }}>
-                        {Object.entries(MODES).map(([key, m]) => (<button key={key} onClick={() => setAiMode(key)} onMouseEnter={() => setHoveredAiMode(key)} onMouseLeave={() => setHoveredAiMode(null)} style={{ width: 28, height: 22, borderRadius: 2, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontSize: 7, fontWeight: 700, letterSpacing: "0.04em", color: aiMode === key ? "#EDEAE4" : "rgba(44,40,36,0.2)", background: aiMode === key ? S.accent : "transparent", boxShadow: aiMode === key ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 0 rgba(255,180,140,0.1) inset" : "none", transition: "all 0.15s ease" }}>{m.key}</button>))}
-                      </div>
-                    </div>
+                  <div style={{ padding: "0 24px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <button onClick={() => setPhase("reviewing")} style={{ fontSize: 8, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.2)", background: "none", border: "none", cursor: "pointer", fontFamily: fonts.primary, transition: "color 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.4)"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(44,40,36,0.2)"}>{"\u2190"} BACK TO LUCY</button>
+                    <span style={{ fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, fontVariantNumeric: "tabular-nums", letterSpacing: "0.08em", color: colors.manifesto }}>{wordCount} words</span>
                   </div>
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                  <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} disabled={!text.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: text.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: text.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
+                    {text.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}LOCK MANIFESTO
+                  </button>
                 </div>
               </div>
+
+              {/* Lucy module */}
+              <LucyModule />
             </div>
           )}
 
           {/* ═══ LOCKED ═══ */}
           {phase === "locked" && (
-            <div style={{ padding: "8vh 48px 60px", animation: `fadeIn 0.6s ${ease} both` }}>
-              <div style={{ maxWidth: 560, margin: "0 auto" }}>
-                <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 4, marginBottom: 16, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(229,166,50,0.3)" }} />
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.3)" }}>MANIFESTO LOCKED</span>
-                  </div>
-                  <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, letterSpacing: "-0.02em" }}>What they believe.</h2>
+            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
+              <div style={{ textAlign: "center", marginBottom: 40 }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 4, marginBottom: 16, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: S.accent, boxShadow: "0 0 6px rgba(229,166,50,0.3)" }} />
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.3)" }}>MANIFESTO LOCKED</span>
                 </div>
-                <div style={{ animation: `promptIn 0.5s ${ease} 0.2s both` }}>
-                  <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, padding: "32px 32px" }}>
-                    {text.split("\n\n").map((para, i) => (
-                      <p key={i} style={{ fontSize: 16, fontWeight: 400, color: S.text, lineHeight: 1.85, letterSpacing: "-0.01em", marginBottom: i < text.split("\n\n").length - 1 ? 20 : 0, animation: `fadeIn 0.4s ${ease} ${0.3 + i * 0.15}s both` }}>{para}</p>
-                    ))}
-                  </div>
+                <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, letterSpacing: "-0.02em" }}>What they believe.</h2>
+              </div>
+              <div style={{ animation: `promptIn 0.5s ${ease} 0.2s both` }}>
+                <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, padding: "32px 32px" }}>
+                  {text.split("\n\n").map((para, i) => (
+                    <p key={i} style={{ fontSize: 16, fontWeight: 400, color: S.text, lineHeight: 1.85, letterSpacing: "-0.01em", marginBottom: i < text.split("\n\n").length - 1 ? 20 : 0, animation: `fadeIn 0.4s ${ease} ${0.3 + i * 0.15}s both` }}>{para}</p>
+                  ))}
                 </div>
-                <div style={{ maxWidth: 300, margin: "40px auto 0" }}>
-                  <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-                      <PixelIcon pattern={LUCY_ICONS.approves} color={S.lcdBright} size={2} />
-                      <span style={{ fontFamily: "'DotGothic16', monospace", fontSize: 10, color: S.lcdBright }}>MANIFESTO COMPLETE</span>
-                    </div>
-                    <div style={{ fontFamily: "'DotGothic16', monospace", fontSize: 9, color: S.lcdDim }}>{wordCount} words · {text.split("\n\n").length} paragraphs</div>
+              </div>
+              <div style={{ maxWidth: 300, margin: "40px auto 0" }}>
+                <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+                    <PixelIcon icon="approves" color={S.lcdBright} size={14} />
+                    <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: S.lcdBright }}>MANIFESTO COMPLETE</span>
                   </div>
+                  <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim }}>{wordCount} words · {text.split("\n\n").length} paragraphs</div>
                 </div>
               </div>
             </div>

@@ -24,6 +24,15 @@ export const colors = {
   einkBorder: "#B0AB9C",
   ink: "#2C2824",
   lucyText: "#C8C3BA",
+  // Lucy surface
+  lucySurface: "#D6D2C9",
+  lucyGrain: "repeating-linear-gradient(90deg, rgba(0,0,0,0.012) 0px, rgba(0,0,0,0) 1px, rgba(255,255,255,0.018) 2px, rgba(0,0,0,0) 3px)",
+  lucyShadow: "0 1px 2px rgba(0,0,0,0.04) inset, 0 1px 0 rgba(255,255,255,0.5)",
+  lucyBorder: "rgba(44,40,36,0.08)",
+  lucyStatusText: "#5A5550",
+  lucyBodyText: "#4A4640",
+  lucyAmberText: "#C48B1E",
+  lucyEmphasis: "#B07A18",
   // Module colors
   purpose: "#FF6B8A",
   values: "#14B8A6",
