@@ -78,7 +78,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isSelected ? `${colors.values}22` : "rgba(44,40,36,0.06)"}`,
+        border: "1px solid rgba(44,40,36,0.06)",
         boxShadow: isSelected
           ? "0 2px 10px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,0.5) inset"
           : hover
@@ -98,7 +98,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
 
       {/* Unselected: short reason */}
       {!isSelected && (
-        <div style={{ padding: "6px 16px 14px", display: "flex", alignItems: "flex-start", gap: 8 }}>
+        <div style={{ padding: "6px 16px 14px", marginTop: 12, display: "flex", alignItems: "flex-start", gap: 8 }}>
           <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: colors.values, boxShadow: `0 0 4px ${colors.values}4D` }} />
           <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: `${colors.values}73`, lineHeight: 1.5 }}>{value.reason}</div>
         </div>
@@ -106,7 +106,7 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
 
       {/* Selected: Lucy's definition on brushed aluminum + refinement input */}
       {isSelected && (
-        <div style={{ animation: `fadeIn 0.3s ${ease} both` }}>
+        <div style={{ marginTop: 12, animation: `fadeIn 0.3s ${ease} both` }}>
           {/* Lucy's draft definition — brushed aluminum surface */}
           <div style={{
             margin: "0 12px 12px", padding: "10px 12px", borderRadius: 4,
@@ -126,39 +126,46 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
             />
           </div>
 
-          {/* Refinement area — recessed input with ghost pill button */}
+          {/* Refinement area — Lucy e-ink badge + input */}
           <div style={{ padding: "0 12px 12px" }}>
             <div style={{
-              background: S.recess, borderRadius: 4,
+              display: "flex", alignItems: "center", gap: 8,
+              background: S.recess, borderRadius: 6,
               border: `1px solid ${S.border}`,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.03) inset",
-              overflow: "hidden",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.02) inset",
+              padding: "8px 12px",
             }}>
-              <div style={{ padding: "8px 10px", display: "flex", alignItems: "center", gap: 8 }}>
-                <input
-                  value={refineInput}
-                  onChange={(e) => setRefineInput(e.target.value)}
-                  placeholder="Tell Lucy how to refine this..."
-                  onKeyDown={(e) => { if (e.key === "Enter") handleRefine(); }}
-                  style={{
-                    flex: 1, background: "transparent", border: "none",
-                    fontSize: 11, fontWeight: 400, color: S.text,
-                    outline: "none", fontFamily: fonts.primary,
-                  }}
-                />
-                {refineInput.trim() && (
-                  <button onClick={handleRefine} style={{
-                    fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
-                    color: isRefining ? "rgba(44,40,36,0.2)" : colors.values,
-                    background: "none", border: `1px solid ${isRefining ? "rgba(44,40,36,0.08)" : `${colors.values}40`}`,
-                    borderRadius: 12, padding: "3px 10px",
-                    cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0,
-                    fontFamily: fonts.primary,
-                  }}>
-                    {isRefining ? "REFINING..." : "REFINE"}
-                  </button>
-                )}
+              <div style={{
+                width: 24, height: 18, background: colors.eink, borderRadius: 2,
+                border: `1px solid ${colors.einkBorder}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <PixelIcon icon="guide" color={colors.ink} size={10} />
               </div>
+              <input
+                value={refineInput}
+                onChange={(e) => setRefineInput(e.target.value)}
+                placeholder="Tell Lucy how to refine this..."
+                onKeyDown={(e) => { if (e.key === "Enter") handleRefine(); }}
+                style={{
+                  flex: 1, background: "transparent", border: "none",
+                  fontSize: 13, color: S.text, fontFamily: fonts.primary,
+                  outline: "none",
+                }}
+              />
+              {refineInput.trim() && (
+                <button onClick={handleRefine} style={{
+                  fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase",
+                  color: isRefining ? "rgba(44,40,36,0.2)" : colors.values,
+                  background: "none", border: `1px solid ${isRefining ? "rgba(44,40,36,0.08)" : `${colors.values}40`}`,
+                  borderRadius: 12, padding: "3px 10px",
+                  cursor: "pointer", transition: "all 0.15s ease", flexShrink: 0,
+                  fontFamily: fonts.primary,
+                }}>
+                  {isRefining ? "REFINING..." : "REFINE"}
+                </button>
+              )}
             </div>
           </div>
         </div>
