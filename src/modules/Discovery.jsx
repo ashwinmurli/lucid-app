@@ -248,22 +248,46 @@ export default function Discovery({ onBack } = {}) {
                     </div>
                   </div>
 
-                  {/* Next button — ghost pill style */}
-                  <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-                    <button onClick={submitBriefAnswer} disabled={!currentAnswer.trim()} style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      padding: "8px 20px", borderRadius: 20,
-                      border: `1px solid ${currentAnswer.trim() ? "rgba(44,40,36,0.12)" : "rgba(44,40,36,0.06)"}`,
-                      cursor: currentAnswer.trim() ? "pointer" : "default",
-                      fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                      letterSpacing: "0.08em", textTransform: "uppercase",
-                      color: currentAnswer.trim() ? colors.text : "rgba(44,40,36,0.15)",
-                      background: "transparent",
-                      boxShadow: currentAnswer.trim() ? "0 1px 3px rgba(0,0,0,0.04)" : "none",
-                      transition: "all 0.15s ease",
-                    }}>
-                      {currentAnswer.trim() && <div style={{ width: 5, height: 5, borderRadius: "50%", background: colors.accent }} />}
-                      {briefStep < BRIEF_QUESTIONS.length - 1 ? "NEXT" : "GENERATE QUESTIONS"}
+                  {/* Footer row: ⌘+Enter hint left, ghost-pill action right */}
+                  <div style={{
+                    marginTop: 8,
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "0 4px",
+                  }}>
+                    <div style={{ fontSize: 11, color: "rgba(44,40,36,0.25)" }}>
+                      <kbd style={{
+                        background: colors.panel, border: `1px solid ${colors.border}`,
+                        borderRadius: 3, padding: "1px 5px",
+                        fontFamily: fonts.primary, fontSize: 10,
+                      }}>⌘</kbd>
+                      {" + "}
+                      <kbd style={{
+                        background: colors.panel, border: `1px solid ${colors.border}`,
+                        borderRadius: 3, padding: "1px 5px",
+                        fontFamily: fonts.primary, fontSize: 10,
+                      }}>Enter</kbd>
+                      <span style={{ marginLeft: 4 }}>to continue</span>
+                    </div>
+                    <button
+                      onClick={submitBriefAnswer}
+                      disabled={!currentAnswer.trim()}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 5,
+                        padding: "5px 12px",
+                        background: "transparent",
+                        border: `1px solid ${currentAnswer.trim() ? "rgba(44,40,36,0.12)" : "rgba(44,40,36,0.06)"}`,
+                        borderRadius: 16,
+                        fontSize: 11, fontWeight: 500,
+                        color: currentAnswer.trim() ? "rgba(44,40,36,0.5)" : "rgba(44,40,36,0.2)",
+                        cursor: currentAnswer.trim() ? "pointer" : "default",
+                        fontFamily: fonts.primary,
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {currentAnswer.trim() && (
+                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: colors.accent }} />
+                      )}
+                      {briefStep < BRIEF_QUESTIONS.length - 1 ? "Next" : "Generate"}
                     </button>
                   </div>
 
@@ -366,7 +390,20 @@ export default function Discovery({ onBack } = {}) {
                                 />
                                 {i < questions.length - 1 && (
                                   <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
-                                    <span style={{ fontSize: 9, fontWeight: 500, color: "rgba(44,40,36,0.12)", fontFamily: fonts.primary }}>⌘+Enter for next</span>
+                                    <span style={{ fontSize: 9, fontWeight: 500, color: "rgba(44,40,36,0.12)", fontFamily: fonts.primary }}>
+                                      <kbd style={{
+                                        background: colors.panel, border: `1px solid ${colors.border}`,
+                                        borderRadius: 3, padding: "1px 4px",
+                                        fontFamily: fonts.primary, fontSize: 8,
+                                      }}>⌘</kbd>
+                                      {" + "}
+                                      <kbd style={{
+                                        background: colors.panel, border: `1px solid ${colors.border}`,
+                                        borderRadius: 3, padding: "1px 4px",
+                                        fontFamily: fonts.primary, fontSize: 8,
+                                      }}>Enter</kbd>
+                                      <span style={{ marginLeft: 3 }}>for next</span>
+                                    </span>
                                   </div>
                                 )}
                               </div>

@@ -66,7 +66,7 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: `1px solid ${isPrimary ? "rgba(229,166,50,0.15)" : "rgba(44,40,36,0.06)"}`,
+        border: "1px solid rgba(44,40,36,0.06)",
         boxShadow: hover && !isLocked
           ? shadows.cardHover
           : shadows.raised,

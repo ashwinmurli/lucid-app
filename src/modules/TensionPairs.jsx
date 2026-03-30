@@ -70,7 +70,7 @@ function TensionCard({ pair, isSelected, onToggle, disabled }) {
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{
         background: colors.card, borderRadius: 4,
-        border: `1px solid ${isSelected ? "rgba(255,140,66,0.15)" : colors.border}`,
+        border: "1px solid rgba(44,40,36,0.06)",
         boxShadow: hover && canToggle ? shadows.cardHover : shadows.raised,
         overflow: "hidden", transition: `all 0.15s ${ease}`,
         transform: hover && canToggle && !isSelected ? "translateY(-1px)" : "translateY(0)",
