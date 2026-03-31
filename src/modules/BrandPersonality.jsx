@@ -97,12 +97,12 @@ export default function BrandPersonality({ onBack } = {}) {
   const lucyActions = useMemo(() => {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
-      { icon: "sparkle", label: "HELP ME REWRITE", onClick: () => handleLucyAction("rewrite") },
+      { icon: "pen-square", label: "HELP ME REWRITE", onClick: () => handleLucyAction("rewrite") },
       { icon: "check", label: "GOT IT", onClick: () => handleLucyAction("happy") },
     ];
     if (text.trim()) return [
       { icon: "warning-diamond", label: "CHALLENGE THIS", onClick: () => handleLucyAction("challenge") },
-      { icon: "sparkle", label: "SHARPEN IT", onClick: () => handleLucyAction("sharpen") },
+      { icon: "target", label: "SHARPEN IT", onClick: () => handleLucyAction("sharpen") },
       { icon: "zap", label: "GO DEEPER", onClick: () => handleLucyAction("deeper") },
     ];
     return [

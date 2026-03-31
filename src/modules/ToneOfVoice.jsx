@@ -350,9 +350,9 @@ export default function ToneOfVoice({ onBack, navigateTo } = {}) {
       ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (setFadersCount > 0) return [
-      { icon: "pen-square", label: "EXPLAIN POSITIONS", onClick: () => handleToneAction("explain") },
+      { icon: "book-open", label: "EXPLAIN POSITIONS", onClick: () => handleToneAction("explain") },
       { icon: "warning-diamond", label: "CHALLENGE POSITIONS", onClick: () => handleToneAction("challenge_positions") },
-      { icon: "sparkle", label: "EXAMPLE COPY", onClick: () => handleToneAction("example_copy") },
+      { icon: "clipboard-note", label: "EXAMPLE COPY", onClick: () => handleToneAction("example_copy") },
     ];
     return [];
   })();

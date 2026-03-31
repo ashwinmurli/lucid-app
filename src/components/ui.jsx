@@ -37,6 +37,8 @@ export const LUCY_ICONS_SVG = {
   target: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 2h2v4h-2zm0 16h2v4h-2zM2 11h4v2H2zm16 0h4v2h-2zM8 7h8v2H8zM6 9h2v6H6zm10 0h2v6h-2zM8 15h8v2H8zM10 10h4v4h-4z"/></svg>,
   lightbulb: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M9 2h6v2H9zM7 4h2v6H7zm8 0h2v6h-2zM9 10h6v2H9zM9 14h6v2H9zm0 2h6v2H9z"/></svg>,
   zap: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 2h4v2h-4zm-1 2h2v4h-2zm2 0h2v2h-2zM9 8h2v2H9zM7 10h6v2H7zm4 2h2v4h-2zm1 4h2v2h-2zm-1 2h4v2h-4z"/></svg>,
+  "book-open": (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 4h9v2H2zm0 14h9v2H2zM2 6h2v12H2zm7 0h2v12H9zm2-2h2v18h-2zM13 4h9v2h-9zm0 14h9v2h-9zm0-12h2v12h-2zm7 0h2v12h-2z"/></svg>,
+  "clipboard-note": (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M9 1h6v2H9zM7 3h2v2H7zm8 0h2v2h-2zM5 5h14v2H5zM3 7h2v14H3zm16 0h2v14h-2zM5 21h14v2H5zM7 10h10v2H7zm0 4h10v2H7zm0 4h6v2H7z"/></svg>,
 };
 
 /* ── Backward compat: keep old LUCY_ICONS for any remaining references ── */

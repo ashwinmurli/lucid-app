@@ -197,11 +197,11 @@ export default function USPs({ onBack, navigateTo } = {}) {
       ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (input.trim()) return [
-      { icon: "pen-square", label: "EXPAND WITH PROOF", onClick: () => handleUspAction("expand_usp") },
+      { icon: "clipboard-note", label: "EXPAND WITH PROOF", onClick: () => handleUspAction("expand_usp") },
       { icon: "warning-diamond", label: "IS THIS UNIQUE?", onClick: () => handleUspAction("challenge_usp") },
     ];
     return [
-      { icon: "sparkle", label: "SUGGEST A USP", onClick: () => handleUspAction("suggest") },
+      { icon: "lightbulb", label: "SUGGEST A USP", onClick: () => handleUspAction("suggest") },
     ];
   }, [lucyState, lucyResponse, input]);
 

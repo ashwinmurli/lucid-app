@@ -161,11 +161,11 @@ export default function TensionPairs({ onComplete, onBack, navigateTo }) {
       ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (count === 0) return [
-      { icon: "sparkle", label: "SUGGEST TENSIONS", onClick: () => handleLucyAction("suggest") },
+      { icon: "lightbulb", label: "SUGGEST TENSIONS", onClick: () => handleLucyAction("suggest") },
     ];
     if (count > 0) return [
       { icon: "warning-diamond", label: "ARE THESE DISTINCTIVE?", onClick: () => handleLucyAction("challenge_tensions") },
-      { icon: "sparkle", label: "SUGGEST ANOTHER", onClick: () => handleLucyAction("suggest") },
+      { icon: "lightbulb", label: "SUGGEST ANOTHER", onClick: () => handleLucyAction("suggest") },
     ];
     return [];
   })();

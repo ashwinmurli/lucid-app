@@ -211,7 +211,7 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
     if (text) return [
       { icon: "warning-diamond", label: "CHALLENGE DRAFT", onClick: () => handleManifestoAction("Make it more provocative and less safe") },
       { icon: "zap", label: "MAKE IT BOLDER", onClick: () => handleManifestoAction("Make it bolder — bigger swings, more conviction") },
-      { icon: "sparkle", label: "TIGHTEN IT", onClick: () => handleManifestoAction("Tighten it — fewer words, more punch") },
+      { icon: "target", label: "TIGHTEN IT", onClick: () => handleManifestoAction("Tighten it — fewer words, more punch") },
       { icon: "pen-square", label: "REWRITE", onClick: () => handleManifestoAction("Rewrite from scratch with a completely different angle") },
       ...getPrereqActions(lucyResponse, navigateTo),
     ];

@@ -270,7 +270,7 @@ export default function CoreValues({ onBack, navigateTo } = {}) {
     ];
     const sel = selectedValues.find(v => v.definition.trim());
     if (sel) return [
-      { icon: "sparkle", label: "MORE SPECIFIC", onClick: () => handleValueAction(sel.id, "specific") },
+      { icon: "target", label: "MORE SPECIFIC", onClick: () => handleValueAction(sel.id, "specific") },
       { icon: "warning-diamond", label: "IS THIS DISTINCTIVE?", onClick: () => handleValueAction(sel.id, "distinctive") },
       { icon: "pen-square", label: "DIFFERENT ANGLE", onClick: () => handleValueAction(sel.id, "different_angle") },
     ];
