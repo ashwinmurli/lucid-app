@@ -5,13 +5,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon } from "../components/ui";
+import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
 
 const VALUE_CANDIDATES = [
   { id: 1, word: "Intentionality", reason: "Every detail is chosen, never accidental.", draft: "We choose carefully — every decision, every detail, every word has a reason behind it.", refines: ["We act with purpose. Nothing is accidental, nothing is filler.", "Every choice we make is deliberate — from what we build to what we refuse to build."] },
@@ -179,8 +174,8 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
 export default function CoreValues({ onBack } = {}) {
   const [values, setValues] = useState(VALUE_CANDIDATES.map((v) => ({ ...v, definition: "", selected: false })));
   const [customWord, setCustomWord] = useState("");
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
   const [locked, setLocked] = useState(false);
 
   const selectedValues = values.filter((v) => v.selected);
@@ -195,7 +190,7 @@ export default function CoreValues({ onBack } = {}) {
     if (selectedValues.length >= 3) return;
     const candidate = VALUE_CANDIDATES.find((c) => c.id === id);
     setValues((prev) => prev.map((v) => v.id === id ? { ...v, selected: true, definition: "" } : v));
-    setLucyMode("thinking");
+    setLucyState("thinking");
     try {
       await askLucyStream(
         { module: "values", action: "draft_definition", moduleState: { value: candidate?.word, reason: candidate?.reason } },
@@ -204,7 +199,7 @@ export default function CoreValues({ onBack } = {}) {
     } catch {
       setValues((prev) => prev.map((v) => v.id === id ? { ...v, definition: candidate?.draft || candidate?.reason || "" } : v));
     }
-    setLucyMode("idle");
+    setLucyState("idle");
   };
 
   const removeValue = (id) => {
@@ -227,27 +222,46 @@ export default function CoreValues({ onBack } = {}) {
     }
   };
 
+  const handleValueAction = async (id, action) => {
+    setLucyState("thinking"); setLucyResponse("");
+    const current = values.find(v => v.id === id);
+    try {
+      await askLucyStream(
+        { module: "values", action, userInput: action, moduleState: { value: current?.word, currentDefinition: current?.definition } },
+        (chunk) => setLucyResponse(chunk)
+      );
+      setLucyState(action === "distinctive" ? "challenge" : "spark");
+    } catch { setLucyState("idle"); }
+  };
+
   const addCustom = () => {
     if (!customWord.trim()) return;
     setValues((prev) => [...prev, { id: 100 + prev.length, word: customWord.trim(), reason: "Your own value — you know this brand best.", definition: "", selected: true }]);
     setCustomWord("");
   };
 
-  // Lucy display state
-  const lucyDisplay = useMemo(() => {
-    const defaults = {
-      support: { icon: "guide", label: "SUPPORT" },
-      challenge: { icon: "challenge", label: "CHALLENGE" },
-    };
-    if (lucyMode === "thinking") return { icon: "challenge", label: "THINKING" };
-    if (lucyMode === "approves") return { icon: "done", label: "NOTED" };
-    return defaults[aiMode] || defaults.challenge;
-  }, [lucyMode, aiMode]);
+  const oneLiner = useMemo(() => {
+    if (lucyState === "thinking") return "Composing...";
+    if (lucyState === "done") return "Noted.";
+    if (selectedValues.length === 0) return "Pick three values that feel true.";
+    if (selectedValues.length < 3) return `${selectedValues.length} of 3 selected.`;
+    if (selectedValues.every(v => v.definition.trim())) return `${selectedValues.length} values defined. Looking strong.`;
+    return `${selectedValues.length} of 3 selected.`;
+  }, [lucyState, selectedValues]);
 
-  // Lucy guide text for support mode
-  const lucyGuide = aiMode === "support"
-    ? "Pick the values that feel essential — not aspirational. What does this brand already live by?"
-    : null;
+  const lucyActions = useMemo(() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "check", label: "I'M HAPPY", onClick: () => { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); } },
+    ];
+    const sel = selectedValues.find(v => v.definition.trim());
+    if (sel) return [
+      { icon: "sparkle", label: "MORE SPECIFIC", onClick: () => handleValueAction(sel.id, "specific") },
+      { icon: "warning-diamond", label: "IS THIS DISTINCTIVE?", onClick: () => handleValueAction(sel.id, "distinctive") },
+      { icon: "pen-square", label: "DIFFERENT ANGLE", onClick: () => handleValueAction(sel.id, "different_angle") },
+    ];
+    return [];
+  }, [lucyState, lucyResponse, selectedValues]);
 
   return (
     <div style={{
@@ -363,7 +377,7 @@ export default function CoreValues({ onBack } = {}) {
               </div>
             </div>
 
-            {/* Lucy Module — brushed aluminum surface */}
+            {/* Lucy Module */}
             <div style={{
               marginTop: 24,
               background: colors.lucySurface,
@@ -373,57 +387,34 @@ export default function CoreValues({ onBack } = {}) {
               borderRadius: 8,
               overflow: "hidden",
             }}>
-              {/* Top strip: e-ink icon + status + segmented switch */}
-              <div style={{
-                padding: "10px 14px",
-                display: "flex", alignItems: "center", gap: 10,
-              }}>
-                {/* E-ink badge */}
+              <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{
-                  width: 40, height: 30,
-                  background: colors.eink, borderRadius: 3,
+                  width: 40, height: 30, background: colors.eink, borderRadius: 3,
                   border: `1px solid ${colors.einkBorder}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
                 }}>
-                  <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+                  <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
                 </div>
-
-                {/* Status label */}
                 <span style={{
                   fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                  color: colors.lucyStatusText, flex: 1,
-                }}>{lucyDisplay.label}</span>
-
-                {/* E-ink segmented switch */}
-                <div style={{
-                  display: "flex", borderRadius: 3,
-                  background: colors.eink,
-                  border: `1px solid ${colors.einkBorder}`,
-                  overflow: "hidden",
-                }}>
-                  {Object.entries(MODES).map(([key, m]) => (
-                    <button key={key}
-                      onClick={() => setAiMode(key)}
-                      style={{
-                        height: 24, padding: "0 10px", border: "none", cursor: "pointer",
-                        fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                        color: aiMode === key ? colors.eink : "#8A857E",
-                        background: aiMode === key ? colors.ink : "transparent",
-                        transition: "all 0.15s ease",
-                      }}
-                    >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-                  ))}
-                </div>
+                  color: "#5A5550", flex: 1, lineHeight: 1.4,
+                }}>{oneLiner}</span>
               </div>
-
-              {/* Guide text (when in support mode) */}
-              {lucyGuide && (
-                <div style={{ borderTop: "1px solid rgba(44,40,36,0.08)", padding: "10px 14px 14px" }}>
-                  <div style={{
-                    fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, lineHeight: 1.5,
-                  }}>{lucyGuide}</div>
+              {lucyResponse && (
+                <>
+                  <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                    <div style={{
+                      fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                      color: "#4A4640", lineHeight: 1.6,
+                    }}>{lucyResponse}</div>
+                  </div>
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+                </>
+              )}
+              {lucyState !== "thinking" && lucyActions.length > 0 && (
+                <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                 </div>
               )}
             </div>

@@ -5,12 +5,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon } from "../components/ui";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
+import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const SPECTRUMS = [
   { id: 1, left: "Formal", right: "Casual", default: 0.35, reason: "They speak in short sentences with long pauses — not stiff, but not sloppy.", examples: [{ at: 0.0, say: "We wish to inform you of the following update.", not: "Hey, quick heads up!" }, { at: 0.25, say: "Here's what you need to know.", not: "Yo, check this out." }, { at: 0.5, say: "A few things worth knowing.", not: "FYI — stuff happened." }, { at: 0.75, say: "Quick update for you.", not: "Per our previous correspondence..." }, { at: 1.0, say: "Hey — wanted you to see this.", not: "Dear valued stakeholder..." }] },
@@ -288,8 +284,8 @@ export default function ToneOfVoice({ onBack } = {}) {
   const allSpectrums = [...SPECTRUMS, ...customSpectrums];
   const [values, setValues] = useState(SPECTRUMS.map((s) => s.default));
   const [locked, setLocked] = useState(false);
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
 
   const addCustomSpectrum = () => {
     if (!customLeft.trim() || !customRight.trim()) return;
@@ -312,11 +308,39 @@ export default function ToneOfVoice({ onBack } = {}) {
     setValues((prev) => { const next = [...prev]; next[index] = val; return next; });
   };
 
-  // Lucy display state
-  const lucyDisplay = (() => {
-    if (lucyMode === "thinking") return { icon: "thinking", label: "COMPOSING" };
-    if (aiMode === "support") return { icon: "guide", label: "READY" };
-    return { icon: "idle", label: "READY" };
+  const setFadersCount = values.filter((v, i) => v !== SPECTRUMS[i]?.default).length;
+
+  const handleToneAction = async (action) => {
+    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    setLucyState("thinking"); setLucyResponse("");
+    try {
+      const positions = allSpectrums.map((s, i) => `${s.left} ←→ ${s.right}: ${Math.round(values[i] * 100)}%`).join("; ");
+      await askLucyStream(
+        { module: "tone", action, userInput: positions, moduleState: { positions } },
+        (chunk) => setLucyResponse(chunk)
+      );
+      setLucyState(action === "challenge_positions" ? "challenge" : "spark");
+    } catch { setLucyState("idle"); }
+  };
+
+  const oneLiner = (() => {
+    if (lucyState === "thinking") return "Composing...";
+    if (lucyState === "done") return "Noted.";
+    if (setFadersCount > 0) return `${setFadersCount} spectrums set.`;
+    return "Drag the faders. Trust your instincts.";
+  })();
+
+  const lucyActions = (() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "check", label: "I'M HAPPY", onClick: () => handleToneAction("happy") },
+    ];
+    if (setFadersCount > 0) return [
+      { icon: "pen-square", label: "EXPLAIN POSITIONS", onClick: () => handleToneAction("explain") },
+      { icon: "warning-diamond", label: "CHALLENGE POSITIONS", onClick: () => handleToneAction("challenge_positions") },
+      { icon: "sparkle", label: "EXAMPLE COPY", onClick: () => handleToneAction("example_copy") },
+    ];
+    return [];
   })();
 
   return (
@@ -381,7 +405,7 @@ export default function ToneOfVoice({ onBack } = {}) {
                   </div>
                 </div>
 
-                {/* Lucy Module — standalone */}
+                {/* Lucy Module */}
                 <div style={{
                   marginTop: 16,
                   background: colors.lucySurface,
@@ -391,55 +415,35 @@ export default function ToneOfVoice({ onBack } = {}) {
                   borderRadius: 8,
                   overflow: "hidden",
                 }}>
-                  <div style={{
-                    padding: "10px 14px",
-                    display: "flex", alignItems: "center", gap: 10,
-                  }}>
+                  <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{
                       width: 40, height: 30, background: colors.eink, borderRadius: 3,
                       border: `1px solid ${colors.einkBorder}`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
                     }}>
-                      <PixelIcon icon={aiMode === "support" ? "guide" : "challenge"} color={colors.ink} size={18} />
+                      <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
                     </div>
-                    <div style={{
-                      fontFamily: fonts.pixel, fontSize: 11,
-                      color: colors.lucyStatusText, letterSpacing: "0.08em",
-                      flex: 1,
-                    }}>
-                      {aiMode === "support" ? "SUPPORT" : "CHALLENGE"}
-                    </div>
-                    <div style={{
-                      display: "flex", borderRadius: 3,
-                      background: colors.eink, border: `1px solid ${colors.einkBorder}`,
-                      overflow: "hidden",
-                    }}>
-                      <button onClick={() => setAiMode("support")} style={{
-                        height: 24, padding: "0 10px", border: "none", cursor: "pointer",
-                        fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                        background: aiMode === "support" ? colors.ink : "transparent",
-                        color: aiMode === "support" ? colors.eink : "#8A857E",
-                        transition: "all 0.15s ease",
-                      }}>SUPPORT</button>
-                      <button onClick={() => setAiMode("challenge")} style={{
-                        height: 24, padding: "0 10px", border: "none", cursor: "pointer",
-                        fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                        background: aiMode === "challenge" ? colors.ink : "transparent",
-                        color: aiMode === "challenge" ? colors.eink : "#8A857E",
-                        transition: "all 0.15s ease",
-                      }}>CHALLENGE</button>
-                    </div>
+                    <span style={{
+                      fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                      color: "#5A5550", flex: 1, lineHeight: 1.4,
+                    }}>{oneLiner}</span>
                   </div>
-                  {aiMode === "support" && (
+                  {lucyResponse && (
                     <>
                       <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
-                        <div style={{ fontSize: 9, color: colors.lucyAmberText, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4 }}>guide</div>
-                        <div style={{ fontSize: 13, color: colors.lucyBodyText, lineHeight: 1.6 }}>
-                          These starting positions come from the personality work. Adjust them — but trust your gut over the center.
-                        </div>
+                        <div style={{
+                          fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                          color: "#4A4640", lineHeight: 1.6,
+                        }}>{lucyResponse}</div>
                       </div>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
                     </>
+                  )}
+                  {lucyState !== "thinking" && lucyActions.length > 0 && (
+                    <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
+                    </div>
                   )}
                 </div>
 

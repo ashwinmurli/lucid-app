@@ -6,13 +6,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon } from "../components/ui";
+import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
 
 const CHAPTERS = [
   { title: "WHO THEY ARE", prompts: [
@@ -49,8 +44,8 @@ export default function BrandPersonality({ onBack } = {}) {
   const [notes, setNotes] = useState([]);
   const [animKey, setAnimKey] = useState(0);
   const [usedSpark, setUsedSpark] = useState(false);
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
   const ref = useRef(null);
   const canvasRef = useRef(null);
@@ -64,64 +59,57 @@ export default function BrandPersonality({ onBack } = {}) {
     return { num: ch.prompts.findIndex((p) => p.q === prompt.q) + 1, total: ch.prompts.length };
   }, [prompt]);
 
-  const keep = useCallback(async () => {
+  const keep = useCallback(() => {
     if (!text.trim()) return;
-    const noteId = Date.now();
-    const noteText = text.trim();
-    const notePrompt = prompt.q;
-    setNotes((prev) => [{ text: noteText, prompt: notePrompt, lucyText: null, lucyMode: aiMode, chapter: prompt.chapter, id: noteId }, ...prev]);
-    setText(""); setUsedSpark(false); setCur((c) => c + 1); setAnimKey((k) => k + 1);
+    setNotes((prev) => [{ text: text.trim(), prompt: prompt.q, lucyText: lucyResponse || null, chapter: prompt.chapter, id: Date.now() }, ...prev]);
+    setText(""); setUsedSpark(false); setLucyResponse(""); setLucyState("idle");
+    setCur((c) => c + 1); setAnimKey((k) => k + 1);
     setTimeout(() => { if (ref.current) ref.current.focus(); }, 200);
-    setLucyMode("thinking");
+  }, [text, prompt, lucyResponse]);
+
+  const handleLucyAction = useCallback(async (action) => {
+    if (action === "spark") { spark(); return; }
+    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    setLucyState("thinking"); setLucyResponse("");
     try {
       await askLucyStream(
-        { module: "personality", mode: aiMode, action: "react_to_answer", userInput: noteText, moduleState: { question: notePrompt } },
-        (chunk) => setNotes((prev) => prev.map((n) => n.id === noteId ? { ...n, lucyText: chunk } : n))
+        { module: "personality", action, userInput: text.trim(), moduleState: { question: prompt?.q } },
+        (chunk) => setLucyResponse(chunk)
       );
-    } catch { /* silent fallback */ }
-    setLucyMode("idle");
-  }, [text, usedSpark, prompt, aiMode]);
+      setLucyState(action === "challenge" || action === "deeper" ? "challenge" : "spark");
+    } catch { setLucyState("idle"); }
+  }, [text, prompt]);
 
   const editNote = (id, t) => setNotes((p) => p.map((n) => n.id === id ? { ...n, text: t } : n));
   const spark = () => { if (prompt) { setText(prompt.spark); setUsedSpark(true); if (ref.current) ref.current.focus(); } };
   useEffect(() => { if (ref.current && !done) ref.current.focus(); if (canvasRef.current) canvasRef.current.scrollTop = 0; }, [cur, done]);
 
-  const typingStatus = useMemo(() => {
-    if (!text.trim() || lucyMode === "thinking" || lucyMode === "approves") return null;
-    const t = text.trim(); const lower = t.toLowerCase();
-    const vague = ["good","nice","professional","quality","great","best","innovative","passionate","unique"];
-    if (aiMode === "support") return t.length < 30 ? "listening" : "composing";
-    if (t.length < 30) return "listening";
-    if (vague.some((v) => lower.includes(v))) return "vague";
-    if (t.length < 55) return "weak";
-    if (t.length >= 80) return "strong";
-    return "listening";
-  }, [text, aiMode, lucyMode]);
+  // Lucy one-liner
+  const oneLiner = useMemo(() => {
+    if (lucyState === "thinking") return "Composing...";
+    if (lucyState === "done") return "Noted. Moving on.";
+    if (lucyState === "challenge" || lucyState === "spark") return lucyResponse ? "Read my response below." : "Done.";
+    if (text.trim()) return "I've read this. What do you want me to do?";
+    return "This one sets the tone. Take your time.";
+  }, [lucyState, text, lucyResponse]);
 
-  // Derive Lucy's display state
-  const lucyDisplay = useMemo(() => {
-    if (lucyMode === "thinking") return { icon: "challenge", label: "READING" };
-    if (lucyMode === "approves") return { icon: "done", label: "NOTED" };
-    if (typingStatus === "weak") return { icon: "challenge", label: "PUSH MORE" };
-    if (typingStatus === "vague") return { icon: "challenge", label: "BE SPECIFIC" };
-    if (typingStatus === "strong") return { icon: "done", label: "LOOKING GOOD" };
-    if (typingStatus === "composing") return { icon: "spark", label: "COMPOSING" };
-    if (typingStatus === "listening") return { icon: aiMode === "support" ? "guide" : "challenge", label: "LISTENING" };
-    const defaults = {
-      support: { icon: "guide", label: "SUPPORT" },
-      challenge: { icon: "challenge", label: "CHALLENGE" },
-    };
-    return defaults[aiMode] || defaults.challenge;
-  }, [lucyMode, aiMode, typingStatus]);
-
-  // Lucy's feedback text from the last kept note
-  const lastNote = notes.length > 0 ? notes[0] : null;
-  const lucyFeedback = lastNote?.lucyText || null;
-  const lucyFeedbackMode = lastNote?.lucyMode || null;
-
-  // Determine if Lucy has content to show beyond the top strip
-  const lucyGuide = aiMode === "support" && prompt ? prompt.guide : null;
-  const lucyHasContent = !!lucyFeedback || !!lucyGuide;
+  // Lucy contextual actions
+  const lucyActions = useMemo(() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "sparkle", label: "HELP ME REWRITE", onClick: () => handleLucyAction("rewrite") },
+      { icon: "check", label: "I'M HAPPY", onClick: () => handleLucyAction("happy") },
+    ];
+    if (text.trim()) return [
+      { icon: "warning-diamond", label: "CHALLENGE THIS", onClick: () => handleLucyAction("challenge") },
+      { icon: "sparkle", label: "SHARPEN IT", onClick: () => handleLucyAction("sharpen") },
+      { icon: "zap", label: "GO DEEPER", onClick: () => handleLucyAction("deeper") },
+    ];
+    return [
+      { icon: "sparkle", label: "SPARK AN IDEA", onClick: () => handleLucyAction("spark") },
+      { icon: "lightbulb", label: "STARTING POINT", onClick: () => handleLucyAction("starting_point") },
+    ];
+  }, [lucyState, text, lucyResponse, handleLucyAction]);
 
   return (
     <div style={{
@@ -268,78 +256,39 @@ export default function BrandPersonality({ onBack } = {}) {
                 borderRadius: 8,
                 overflow: "hidden",
               }}>
-                {/* Top strip: e-ink icon + status + mode buttons */}
-                <div style={{
-                  padding: "10px 14px",
-                  display: "flex", alignItems: "center", gap: 10,
-                }}>
-                  {/* E-ink badge */}
+                {/* Top strip: e-ink badge + one-liner */}
+                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{
-                    width: 40, height: 30,
-                    background: colors.eink, borderRadius: 3,
+                    width: 40, height: 30, background: colors.eink, borderRadius: 3,
                     border: `1px solid ${colors.einkBorder}`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
                   }}>
-                    <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+                    <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
                   </div>
-
-                  {/* Status label */}
                   <span style={{
                     fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, flex: 1,
-                  }}>{lucyDisplay.label}</span>
-
-                  {/* E-ink segmented switch */}
-                  <div style={{
-                    display: "flex", borderRadius: 3,
-                    background: colors.eink, border: `1px solid ${colors.einkBorder}`,
-                    overflow: "hidden",
-                  }}>
-                    {Object.entries(MODES).map(([key, m]) => (
-                      <button key={key}
-                        onClick={() => setAiMode(key)}
-                        style={{
-                          height: 24, padding: "0 10px", border: "none", cursor: "pointer",
-                          fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                          background: aiMode === key ? colors.ink : "transparent",
-                          color: aiMode === key ? colors.eink : "#8A857E",
-                          transition: "all 0.15s ease",
-                        }}
-                      >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-                    ))}
-                  </div>
+                    color: "#5A5550", flex: 1, lineHeight: 1.4,
+                  }}>{oneLiner}</span>
                 </div>
 
-                {/* Lucy's feedback (from last kept note) */}
-                {lucyFeedback && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
-                    <div style={{
-                      fontSize: 9, color: colors.lucyAmberText, fontWeight: 500,
-                      textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4,
-                    }}>{lucyFeedbackMode === "support" ? "support" : "challenge"}</div>
-                    <div style={{
-                      fontSize: 13, color: colors.lucyBodyText, lineHeight: 1.6,
-                    }}>
-                      {lucyFeedback}
-                      {lucyMode === "thinking" && (
-                        <span style={{
-                          display: "inline-block", width: 1.5, height: 13,
-                          background: S.accent, marginLeft: 2, verticalAlign: "middle",
-                          animation: "blink 1s steps(1) infinite",
-                        }} />
-                      )}
+                {/* Lucy's response */}
+                {lucyResponse && (
+                  <>
+                    <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                      <div style={{
+                        fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                        color: "#4A4640", lineHeight: 1.6,
+                      }}>{lucyResponse}</div>
                     </div>
-                  </div>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+                  </>
                 )}
 
-                {/* Guide text (when in support mode) */}
-                {lucyGuide && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
-                    <div style={{
-                      fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                      color: colors.lucyStatusText, lineHeight: 1.5,
-                    }}>{lucyGuide}</div>
+                {/* Contextual action cards */}
+                {lucyState !== "thinking" && lucyActions.length > 0 && (
+                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                   </div>
                 )}
               </div>

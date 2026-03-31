@@ -5,7 +5,8 @@
 
 import { useState, useEffect } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, TransportBtn } from "../components/ui";
+import { PixelIcon, TransportBtn, getLucyIcon, LucyActionCard } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const TENSION_CANDIDATES = [
   { id: 1, quality: "Intentional", excess: "Rigid", reason: "They choose carefully — but never box themselves in." },
@@ -17,10 +18,6 @@ const TENSION_CANDIDATES = [
   { id: 7, quality: "Understated", excess: "Invisible", reason: "They let work speak — but still make sure it's heard." },
 ];
 
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
 
 /* ── Fader-style toggle switch ── */
 function FaderToggle({ isOn, onToggle, disabled }) {
@@ -101,8 +98,8 @@ export default function TensionPairs({ onComplete, onBack }) {
   const [customPairs, setCustomPairs] = useState([]);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [locked, setLocked] = useState(false);
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
 
   const allCandidates = [...TENSION_CANDIDATES, ...customPairs];
   const selected = allCandidates.filter((c) => selectedIds.has(c.id));
@@ -123,6 +120,42 @@ export default function TensionPairs({ onComplete, onBack }) {
     setCustomPairs((prev) => [...prev, { id: 100 + prev.length, quality: customQuality.trim(), excess: customExcess.trim(), reason: "Your own tension — you know this brand best." }]);
     setCustomQuality(""); setCustomExcess("");
   };
+
+  const handleLucyAction = async (action) => {
+    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    setLucyState("thinking"); setLucyResponse("");
+    try {
+      const pairs = selected.map(p => `${p.quality} / ${p.excess}`).join(", ");
+      await askLucyStream(
+        { module: "tensions", action, userInput: pairs, moduleState: { selectedPairs: pairs } },
+        (chunk) => setLucyResponse(chunk)
+      );
+      setLucyState(action === "challenge_tensions" ? "challenge" : "spark");
+    } catch { setLucyState("idle"); }
+  };
+
+  const oneLiner = (() => {
+    if (lucyState === "thinking") return "Composing...";
+    if (lucyState === "done") return "Noted.";
+    if (count === 0) return "Pick three tensions that define the edges.";
+    if (count < 3) return `${count} of 3. What's missing?`;
+    return "Three tensions locked.";
+  })();
+
+  const lucyActions = (() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "check", label: "I'M HAPPY", onClick: () => handleLucyAction("happy") },
+    ];
+    if (count === 0) return [
+      { icon: "sparkle", label: "SUGGEST TENSIONS", onClick: () => handleLucyAction("suggest") },
+    ];
+    if (count > 0) return [
+      { icon: "warning-diamond", label: "ARE THESE DISTINCTIVE?", onClick: () => handleLucyAction("challenge_tensions") },
+      { icon: "sparkle", label: "SUGGEST ANOTHER", onClick: () => handleLucyAction("suggest") },
+    ];
+    return [];
+  })();
 
   const getData = () => selected.map((p) => ({ quality: p.quality, excess: p.excess }));
 
@@ -245,7 +278,7 @@ export default function TensionPairs({ onComplete, onBack }) {
             </div>
           </div>
 
-          {/* Lucy Module — brushed warm aluminum */}
+          {/* Lucy Module */}
           <div style={{
             marginTop: 24,
             background: colors.lucySurface,
@@ -255,59 +288,34 @@ export default function TensionPairs({ onComplete, onBack }) {
             borderRadius: 8,
             overflow: "hidden",
           }}>
-            {/* Top strip: e-ink icon + status + mode switch */}
-            <div style={{
-              padding: "10px 14px",
-              display: "flex", alignItems: "center", gap: 10,
-            }}>
-              {/* E-ink badge */}
+            <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{
-                width: 40, height: 30,
-                background: colors.eink, borderRadius: 3,
+                width: 40, height: 30, background: colors.eink, borderRadius: 3,
                 border: `1px solid ${colors.einkBorder}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
               }}>
-                <PixelIcon icon={lucyMode === "thinking" ? "thinking" : aiMode === "support" ? "guide" : "idle"} color={colors.ink} size={18} />
+                <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
               </div>
-
-              {/* Status label */}
               <span style={{
                 fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                color: colors.lucyStatusText, flex: 1,
-              }}>{lucyMode === "thinking" ? "COMPOSING" : aiMode === "support" ? "SUPPORT" : "READY"}</span>
-
-              {/* E-ink segmented switch */}
-              <div style={{
-                display: "flex", borderRadius: 3,
-                background: colors.eink,
-                border: `1px solid ${colors.einkBorder}`,
-                overflow: "hidden",
-              }}>
-                {Object.entries(MODES).map(([key, m]) => (
-                  <button key={key}
-                    onClick={() => setAiMode(key)}
-                    style={{
-                      height: 24, border: "none",
-                      cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                      padding: "0 10px",
-                      fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                      color: aiMode === key ? colors.eink : "#8A857E",
-                      background: aiMode === key ? colors.ink : "transparent",
-                      transition: "all 0.15s ease",
-                    }}
-                  >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-                ))}
-              </div>
+                color: "#5A5550", flex: 1, lineHeight: 1.4,
+              }}>{oneLiner}</span>
             </div>
-
-            {/* Guide text (when in support mode) */}
-            {aiMode === "support" && (
-              <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
-                <div style={{
-                  fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                  color: colors.lucyStatusText, lineHeight: 1.5,
-                }}>What quality defines this brand — and what's the line it should never cross?</div>
+            {lucyResponse && (
+              <>
+                <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                  <div style={{
+                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                    color: "#4A4640", lineHeight: 1.6,
+                  }}>{lucyResponse}</div>
+                </div>
+                <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+              </>
+            )}
+            {lucyState !== "thinking" && lucyActions.length > 0 && (
+              <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
               </div>
             )}
           </div>

@@ -26,6 +26,17 @@ export const LUCY_ICONS_SVG = {
   copy: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M4 2h11v2H4zm0 18h11v2H4zM2 4h2v16H2zm13 0h2v16h-2zM7 6h2v2H7zm0 4h2v2H7zm0 4h2v2H7zm4-8h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z"/></svg>,
   archive: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 3h20v4H2zm0 4h2v14H2zm18 0h2v14h-2zM4 21h16v2H4zM8 11h8v2H8z"/></svg>,
   trash: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M9 1h6v2H9zM3 3h18v2H3zM5 5h2v14H5zM9 5h2v14H9zM13 5h2v14h-2zM17 5h2v14h-2zM5 19h14v2H5z"/></svg>,
+  /* ── New contextual Lucy icons ── */
+  eye: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M8 7h8v2H8zM6 9h2v4H6zm10 0h2v4h-2zM8 13h8v2H8zM10 9h4v4h-4z"/></svg>,
+  "ai-scan": (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M2 11h4v2H2zm16 0h4v2h-4zM8 7h8v2H8zM6 9h2v4H6zm10 0h2v4h-2zM8 13h8v2H8zM11 10h2v2h-2z"/></svg>,
+  loader: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M6 4h12v2H6zm0 14h12v2H6zM8 6h2v2H8zm6 0h2v2h-2zM10 8h4v2h-4zm0 6h4v2h-4zM8 14h2v2H8zm6 0h2v2h-2z"/></svg>,
+  "warning-diamond": (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 2h2v2h-2zM9 4h2v2H9zm4 0h2v2h-2zM7 6h2v2H7zm8 0h2v2h-2zM5 8h2v2H5zm12 0h2v2h-2zM3 10h2v4H3zm16 0h2v4h-2zM5 14h2v2H5zm12 0h2v2h-2zM7 16h2v2H7zm8 0h2v2h-2zM9 18h2v2H9zm4 0h2v2h-2zM11 20h2v2h-2zM11 7h2v5h-2zm0 7h2v2h-2z"/></svg>,
+  sparkle: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 1h2v4h-2zm0 18h2v4h-2zM9 5h2v4H9zm4 0h2v4h-2zM9 15h2v4H9zm4 0h2v4h-2zM5 9h4v2H5zm10 0h4v2h-4zM1 11h4v2H1zm18 0h4v2h-4zM5 13h4v2H5zm10 0h4v2h-4z"/></svg>,
+  check: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M10 18H8v-2h2v2Zm-2-2H6v-2h2v2Zm4-2v2h-2v-2h2Zm-6 0H4v-2h2v2Zm8 0h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2V8h2v2Zm2-2h-2V6h2v2Z"/></svg>,
+  "pen-square": (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M3 3h18v2H3zm0 2h2v14H3zm16 0h2v14h-2zM3 19h18v2H3zM8 15h2v2H8zm2-2h2v2h-2zm2-2h2v2h-2zm2-2h2v2h-2zm2-2h2v2h-2z"/></svg>,
+  target: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 2h2v4h-2zm0 16h2v4h-2zM2 11h4v2H2zm16 0h4v2h-2zM8 7h8v2H8zM6 9h2v6H6zm10 0h2v6h-2zM8 15h8v2H8zM10 10h4v4h-4z"/></svg>,
+  lightbulb: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M9 2h6v2H9zM7 4h2v6H7zm8 0h2v6h-2zM9 10h6v2H9zM9 14h6v2H9zm0 2h6v2H9z"/></svg>,
+  zap: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M11 2h4v2h-4zm-1 2h2v4h-2zm2 0h2v2h-2zM9 8h2v2H9zM7 10h6v2H7zm4 2h2v4h-2zm1 4h2v2h-2zm-1 2h4v2h-4z"/></svg>,
 };
 
 /* ── Backward compat: keep old LUCY_ICONS for any remaining references ── */
@@ -64,6 +75,39 @@ export function PixelIcon({ icon, pattern, color, size = 14, style }) {
     );
   }
   return null;
+}
+
+/* ── Lucy icon state mapping ── */
+export function getLucyIcon(state) {
+  const map = {
+    idle: "eye", observing: "ai-scan", thinking: "loader",
+    challenge: "warning-diamond", spark: "sparkle", done: "check",
+    writing: "pen-square", calibrating: "target",
+  };
+  return map[state] || "eye";
+}
+
+/* ── Lucy contextual action card ── */
+export function LucyActionCard({ icon, label, onClick }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: hover ? "#C5C0B2" : colors.eink,
+        border: `1px solid ${colors.einkBorder}`,
+        borderRadius: 4, padding: "6px 12px", cursor: "pointer",
+        display: "inline-flex", alignItems: "center", gap: 6,
+        fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
+        color: colors.ink, transition: "all 0.15s ease",
+      }}
+    >
+      <PixelIcon icon={icon} color={colors.ink} size={12} />
+      {label}
+    </button>
+  );
 }
 
 /* ── Lucy Screen (full interactive version with hover grid) ── */

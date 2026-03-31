@@ -30,7 +30,7 @@ export const FALLBACK_QUESTIONS = [
 
 /**
  * Stream a response from Lucy via /api/lucy.
- * @param {object} params - { module, mode, action, userInput, brandState, moduleState }
+ * @param {object} params - { module, action, userInput, brandState, moduleState }
  * @param {function} onChunk - called with the accumulated text on each chunk
  * @returns {Promise<string>} - the complete response
  */
@@ -40,7 +40,6 @@ export async function askLucyStream(params, onChunk) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       module: params.module,
-      mode: params.mode || "support",
       action: params.action,
       userInput: params.userInput || "",
       brandState: params.brandState || {},
@@ -94,7 +93,6 @@ export async function generateDiscoveryQuestions(briefAnswers) {
   const briefText = briefAnswers.map((a) => `${a.q}\n${a.a}`).join("\n\n");
   const result = await callLucy({
     module: "discovery",
-    mode: "challenge",
     action: "generate_questions",
     userInput: briefText,
     moduleState: { briefAnswers },
@@ -112,7 +110,6 @@ export async function analyzeDiscoveryGaps(questions) {
     .join("\n\n");
   const result = await callLucy({
     module: "discovery",
-    mode: "challenge",
     action: "analyze_gaps",
     userInput: qText,
     moduleState: { questions },

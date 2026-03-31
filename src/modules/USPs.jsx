@@ -5,13 +5,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon } from "../components/ui";
+import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
 
 const STARTER_USPS = [
   { id: 1, raw: "We make brands feel like real people, not corporate personas.", claim: "We build brands as characters — not identities, not guidelines, but people you'd recognise in a room.", proof: "Every brand we build starts with a personality exercise that most agencies skip entirely. The result is a voice that sounds human because it was built from human instincts.", contrast: "Most agencies start with a logo and a colour palette. We start with how the brand walks into a room." },
@@ -154,28 +149,50 @@ export default function USPs({ onBack } = {}) {
   const [input, setInput] = useState("");
   const [isExpanding, setIsExpanding] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
   const inputRef = useRef(null);
 
   const supporting = usps.filter((u) => u.id !== primaryId);
   const primary = usps.find((u) => u.id === primaryId);
   const canLock = primaryId && usps.length >= 3;
 
-  const lucyDisplay = useMemo(() => {
-    if (lucyMode === "thinking") return { icon: "challenge", label: "EXPANDING" };
-    if (lucyMode === "approves") return { icon: "done", label: "EXPANDED" };
-    const defaults = {
-      support: { icon: "guide", label: "SUPPORT" },
-      challenge: { icon: "challenge", label: "CHALLENGE" },
-    };
-    return defaults[aiMode] || defaults.challenge;
-  }, [lucyMode, aiMode]);
+  const handleUspAction = async (action) => {
+    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    setLucyState("thinking"); setLucyResponse("");
+    try {
+      await askLucyStream(
+        { module: "usps", action, userInput: input.trim() || usps.map(u => u.claim).join("; ") },
+        (chunk) => setLucyResponse(chunk)
+      );
+      setLucyState(action === "challenge_usp" ? "challenge" : "spark");
+    } catch { setLucyState("idle"); }
+  };
+
+  const oneLiner = useMemo(() => {
+    if (lucyState === "thinking") return "Expanding...";
+    if (lucyState === "done") return "Noted.";
+    return "What makes this brand impossible to copy?";
+  }, [lucyState]);
+
+  const lucyActions = useMemo(() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "check", label: "I'M HAPPY", onClick: () => handleUspAction("happy") },
+    ];
+    if (input.trim()) return [
+      { icon: "pen-square", label: "EXPAND WITH PROOF", onClick: () => handleUspAction("expand_usp") },
+      { icon: "warning-diamond", label: "IS THIS UNIQUE?", onClick: () => handleUspAction("challenge_usp") },
+    ];
+    return [
+      { icon: "sparkle", label: "SUGGEST A USP", onClick: () => handleUspAction("suggest") },
+    ];
+  }, [lucyState, lucyResponse, input]);
 
   const addUSP = async () => {
     if (!input.trim()) return;
     setIsExpanding(true);
-    setLucyMode("thinking");
+    setLucyState("thinking");
     const raw = input.trim();
     const id = Date.now();
     setUsps((prev) => [...prev, { id, raw, claim: raw, proof: "", contrast: "" }]);
@@ -187,8 +204,8 @@ export default function USPs({ onBack } = {}) {
       );
     } catch { /* silent fallback */ }
     setIsExpanding(false);
-    setLucyMode("approves");
-    setTimeout(() => setLucyMode("idle"), 2000);
+    setLucyState("done");
+    setTimeout(() => setLucyState("idle"), 2000);
   };
 
   const removeUSP = (id) => {
@@ -314,7 +331,7 @@ export default function USPs({ onBack } = {}) {
                 </div>
               </div>
 
-              {/* Lucy Module — brushed warm aluminum */}
+              {/* Lucy Module */}
               <div style={{
                 marginTop: 16,
                 background: colors.lucySurface,
@@ -324,59 +341,34 @@ export default function USPs({ onBack } = {}) {
                 borderRadius: 8,
                 overflow: "hidden",
               }}>
-                {/* Top strip: e-ink icon + status + mode switch */}
-                <div style={{
-                  padding: "10px 14px",
-                  display: "flex", alignItems: "center", gap: 10,
-                }}>
-                  {/* E-ink badge */}
+                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{
-                    width: 40, height: 30,
-                    background: colors.eink, borderRadius: 3,
+                    width: 40, height: 30, background: colors.eink, borderRadius: 3,
                     border: `1px solid ${colors.einkBorder}`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                    animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
                   }}>
-                    <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+                    <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
                   </div>
-
-                  {/* Status label */}
                   <span style={{
                     fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                    color: colors.lucyStatusText, flex: 1,
-                  }}>{lucyDisplay.label}</span>
-
-                  {/* E-ink segmented switch */}
-                  <div style={{
-                    display: "flex", borderRadius: 3,
-                    background: colors.eink,
-                    border: `1px solid ${colors.einkBorder}`,
-                    overflow: "hidden",
-                  }}>
-                    {Object.entries(MODES).map(([key, m]) => (
-                      <button key={key}
-                        onClick={() => setAiMode(key)}
-                        style={{
-                          height: 24, border: "none",
-                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                          padding: "0 10px",
-                          fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                          color: aiMode === key ? colors.eink : "#8A857E",
-                          background: aiMode === key ? colors.ink : "transparent",
-                          transition: "all 0.15s ease",
-                        }}
-                      >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-                    ))}
-                  </div>
+                    color: "#5A5550", flex: 1, lineHeight: 1.4,
+                  }}>{oneLiner}</span>
                 </div>
-
-                {/* Guide text (support mode) */}
-                {aiMode === "support" && (
-                  <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
-                    <div style={{
-                      fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-                      color: colors.lucyBodyText, lineHeight: 1.5,
-                    }}>Write what makes them different in plain language. Lucy will structure it into claim, proof, and contrast.</div>
+                {lucyResponse && (
+                  <>
+                    <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                      <div style={{
+                        fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                        color: "#4A4640", lineHeight: 1.6,
+                      }}>{lucyResponse}</div>
+                    </div>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+                  </>
+                )}
+                {lucyState !== "thinking" && lucyActions.length > 0 && (
+                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                   </div>
                 )}
               </div>

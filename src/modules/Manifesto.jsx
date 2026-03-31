@@ -5,13 +5,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, TransportBtn } from "../components/ui";
+import { PixelIcon, TransportBtn, getLucyIcon, LucyActionCard } from "../components/ui";
 import { askLucyStream, FALLBACK_MANIFESTO } from "../lib/lucy";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
 
 /* ── Mock data ── */
 const LUCY_DRAFT = `We don't make things for everyone. We make things for the people who notice. The ones who run their thumb across a surface and feel the intention. Who understand that restraint is harder than excess, and silence says more than noise.
@@ -50,8 +45,8 @@ export default function Manifesto({ onBack, projectData } = {}) {
   const [selection, setSelection] = useState(null);
   const [annotationInput, setAnnotationInput] = useState("");
   const [annotations, setAnnotations] = useState([]);
-  const [lucyMode, setLucyMode] = useState("thinking");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("thinking");
+  const [lucyResponse, setLucyResponse] = useState("");
   const [transStep, setTransStep] = useState(0);
   const proseRef = useRef(null);
   const textareaRef = useRef(null);
@@ -77,7 +72,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
       } catch {
         if (!cancelled) setText(FALLBACK_MANIFESTO);
       }
-      if (!cancelled) { setLucyMode("idle"); setPhase("reviewing"); }
+      if (!cancelled) { setLucyState("idle"); setPhase("reviewing"); }
     }, 5000);
     return () => { cancelled = true; [t1, t2, t3, t4, t5].forEach(clearTimeout); };
   }, [phase]);
@@ -110,7 +105,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
     setSelection(null);
     setAnnotationInput("");
     setIsRewriting(true);
-    setLucyMode("thinking");
+    setLucyState("thinking");
     try {
       await askLucyStream(
         { module: "manifesto", action: "rewrite_manifesto", userInput: feedback, moduleState: { currentManifesto: currentText } },
@@ -119,8 +114,8 @@ export default function Manifesto({ onBack, projectData } = {}) {
     } catch { /* keep current text */ }
     setDraftVersion((v) => v + 1);
     setIsRewriting(false);
-    setLucyMode("approves");
-    setTimeout(() => setLucyMode("idle"), 2000);
+    setLucyState("done");
+    setTimeout(() => setLucyState("idle"), 2000);
   };
 
   // Handle full rewrite
@@ -131,7 +126,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
     setAnnotations((prev) => [...prev, { selected: "(full rewrite)", note: feedback }]);
     setFeedbackInput("");
     setIsRewriting(true);
-    setLucyMode("thinking");
+    setLucyState("thinking");
     try {
       await askLucyStream(
         { module: "manifesto", action: "rewrite_manifesto", userInput: feedback, moduleState: { currentManifesto: currentText } },
@@ -140,8 +135,8 @@ export default function Manifesto({ onBack, projectData } = {}) {
     } catch { /* keep current text */ }
     setDraftVersion((v) => v + 1);
     setIsRewriting(false);
-    setLucyMode("approves");
-    setTimeout(() => setLucyMode("idle"), 2000);
+    setLucyState("done");
+    setTimeout(() => setLucyState("idle"), 2000);
   };
 
   // Close popover on click outside
@@ -155,39 +150,57 @@ export default function Manifesto({ onBack, projectData } = {}) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [selection]);
 
-  /* ── Lucy display state ── */
-  const lucyDisplay = (() => {
-    if (isRewriting || lucyMode === "thinking") return { icon: "thinking", label: "COMPOSING" };
-    if (lucyMode === "approves") return { icon: "approves", label: "NOTED" };
-    return { icon: aiMode === "support" ? "guide" : "challenge", label: aiMode === "support" ? "SUPPORT" : "CHALLENGE" };
+  const oneLiner = (() => {
+    if (lucyState === "thinking" || isRewriting) return phase === "composing" ? "Writing..." : "Composing...";
+    if (lucyState === "done") return "Noted.";
+    if (!text) return "I have everything. Ready when you are.";
+    return "Draft ready. Direct me.";
   })();
 
-  /* ── E-ink segmented switch ── */
-  const EinkSwitch = () => (
-    <div style={{
-      display: "flex", borderRadius: 3,
-      background: colors.eink,
-      border: `1px solid ${colors.einkBorder}`,
-      overflow: "hidden",
-    }}>
-      {Object.entries(MODES).map(([key, m]) => (
-        <button key={key}
-          onClick={() => setAiMode(key)}
-          style={{
-            height: 24, padding: "0 10px", border: "none",
-            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-            color: aiMode === key ? colors.eink : "#8A857E",
-            background: aiMode === key ? colors.ink : "transparent",
-            transition: "all 0.15s ease",
-          }}
-        >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-      ))}
-    </div>
-  );
+  const handleManifestoAction = async (action) => {
+    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyState("idle"); }, 1000); return; }
+    if (action === "write_myself") { setText(""); setPhase("reviewing"); setLucyState("idle"); return; }
+    if (action === "draft_manifesto") {
+      setLucyState("thinking"); setIsRewriting(true);
+      try {
+        await askLucyStream(
+          { module: "manifesto", action: "draft_manifesto", brandState: projectData || {} },
+          (chunk) => setText(chunk)
+        );
+      } catch { setText(FALLBACK_MANIFESTO); }
+      setIsRewriting(false); setLucyState("idle"); setPhase("reviewing");
+      return;
+    }
+    // All other actions are rewrites
+    setLucyState("thinking"); setIsRewriting(true);
+    const currentText = text;
+    try {
+      await askLucyStream(
+        { module: "manifesto", action: "rewrite_manifesto", userInput: action, moduleState: { currentManifesto: currentText } },
+        (chunk) => setText(chunk)
+      );
+    } catch { /* keep current text */ }
+    setDraftVersion(v => v + 1);
+    setIsRewriting(false); setLucyState("done");
+    setTimeout(() => setLucyState("idle"), 1500);
+  };
 
-  /* ── Lucy module (brushed aluminum surface) ── */
-  const LucyModule = ({ children }) => (
+  const lucyActions = (() => {
+    if (lucyState === "thinking" || isRewriting) return [];
+    if (!text && phase !== "composing") return [
+      { icon: "pen-square", label: "WRITE FIRST DRAFT", onClick: () => handleManifestoAction("draft_manifesto") },
+      { icon: "eye", label: "I'LL WRITE IT MYSELF", onClick: () => handleManifestoAction("write_myself") },
+    ];
+    if (text) return [
+      { icon: "warning-diamond", label: "CHALLENGE DRAFT", onClick: () => handleManifestoAction("Make it more provocative and less safe") },
+      { icon: "zap", label: "MAKE IT BOLDER", onClick: () => handleManifestoAction("Make it bolder — bigger swings, more conviction") },
+      { icon: "sparkle", label: "TIGHTEN IT", onClick: () => handleManifestoAction("Tighten it — fewer words, more punch") },
+      { icon: "pen-square", label: "REWRITE", onClick: () => handleManifestoAction("Rewrite from scratch with a completely different angle") },
+    ];
+    return [];
+  })();
+
+  const ManifestoLucyModule = ({ children }) => (
     <div style={{
       marginTop: 16,
       background: colors.lucySurface,
@@ -197,36 +210,28 @@ export default function Manifesto({ onBack, projectData } = {}) {
       borderRadius: 8,
       overflow: "hidden",
     }}>
-      {/* Top strip: e-ink badge + status + mode switch */}
-      <div style={{
-        padding: "10px 14px",
-        display: "flex", alignItems: "center", gap: 10,
-      }}>
-        {/* E-ink badge */}
+      <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{
-          width: 40, height: 30,
-          background: colors.eink, borderRadius: 3,
+          width: 40, height: 30, background: colors.eink, borderRadius: 3,
           border: `1px solid ${colors.einkBorder}`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
         }}>
-          <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+          <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
         </div>
-
-        {/* Status label */}
         <span style={{
           fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-          color: colors.lucyStatusText, flex: 1,
-        }}>{lucyDisplay.label}</span>
-
-        {/* Mode toggle */}
-        <EinkSwitch />
+          color: "#5A5550", flex: 1, lineHeight: 1.4,
+        }}>{oneLiner}</span>
       </div>
-
-      {/* Optional extra content */}
       {children && (
         <div style={{ borderTop: "1px solid rgba(44,40,36,0.08)", padding: "10px 14px 14px" }}>
           {children}
+        </div>
+      )}
+      {lucyState !== "thinking" && lucyActions.length > 0 && (
+        <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
         </div>
       )}
     </div>
@@ -322,7 +327,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
                         userSelect: "none",
                       }}>EDIT DIRECTLY</button>
                       <div style={{ width: 1, background: "rgba(44,40,36,0.06)" }} />
-                      <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} style={{
+                      <button onClick={() => { setPhase("locked"); setLucyState("done"); }} style={{
                         flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                         padding: "11px 0", border: "none", cursor: "pointer",
                         fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
@@ -434,7 +439,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
               </div>
 
               {/* Lucy module */}
-              <LucyModule />
+              <ManifestoLucyModule />
             </div>
           )}
 
@@ -455,14 +460,14 @@ export default function Manifesto({ onBack, projectData } = {}) {
                     <span style={{ fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, fontVariantNumeric: "tabular-nums", letterSpacing: "0.08em", color: colors.manifesto }}>{wordCount} words</span>
                   </div>
                   <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                  <button onClick={() => { setPhase("locked"); setLucyMode("approves"); }} disabled={!text.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: text.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: text.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
+                  <button onClick={() => { setPhase("locked"); setLucyState("done"); }} disabled={!text.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: text.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: text.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
                     {text.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}LOCK MANIFESTO
                   </button>
                 </div>
               </div>
 
               {/* Lucy module */}
-              <LucyModule />
+              <ManifestoLucyModule />
             </div>
           )}
 

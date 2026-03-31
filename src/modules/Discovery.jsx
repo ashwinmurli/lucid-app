@@ -5,12 +5,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, TransportBtn } from "../components/ui";
-
-const MODES = {
-  support: { key: "S", desc: "HELP ME" },
-  challenge: { key: "C", desc: "PUSH ME" },
-};
+import { PixelIcon, TransportBtn, getLucyIcon, LucyActionCard } from "../components/ui";
+import { askLucyStream } from "../lib/lucy";
 
 const BRIEF_QUESTIONS = [
   { q: "What's the client's name and what do they do?", hint: "Company name, industry, core business." },
@@ -49,8 +45,8 @@ export default function Discovery({ onBack } = {}) {
   const [questions, setQuestions] = useState(GENERATED_QUESTIONS);
   const [expandedQ, setExpandedQ] = useState({});
   const [transStep, setTransStep] = useState(0);
-  const [lucyMode, setLucyMode] = useState("idle");
-  const [aiMode, setAiMode] = useState("challenge");
+  const [lucyState, setLucyState] = useState("idle");
+  const [lucyResponse, setLucyResponse] = useState("");
   const inputRef = useRef(null);
 
   const answeredCount = questions.filter((q) => q.response.trim()).length;
@@ -87,7 +83,7 @@ export default function Discovery({ onBack } = {}) {
       setTimeout(() => setTransStep(1), 600),
       setTimeout(() => setTransStep(2), 1800),
       setTimeout(() => setTransStep(3), 3000),
-      setTimeout(() => { setPhase("questions"); setLucyMode("idle"); }, 4200),
+      setTimeout(() => { setPhase("questions"); setLucyState("idle"); }, 4200),
     ];
     return () => steps.forEach(clearTimeout);
   }, [phase]);
@@ -100,22 +96,31 @@ export default function Discovery({ onBack } = {}) {
       setBriefStep((s) => s + 1);
     } else {
       setBriefStep((s) => s + 1);
-      setLucyMode("thinking");
+      setLucyState("thinking");
       setTimeout(() => setPhase("generating"), 800);
     }
   };
 
   const headerPhase = { brief: "Client Brief", generating: "Generating", questions: "Questions", analysis: "Gap Analysis" };
 
-  /* ── Lucy display state for the module ── */
-  const lucyDisplay = useMemo(() => {
-    if (lucyMode === "thinking") return { icon: "thinking", label: "COMPOSING" };
-    if (lucyMode === "approves") return { icon: "approves", label: "NOTED" };
-    return { icon: aiMode === "support" ? "guide" : "challenge", label: aiMode === "support" ? "SUPPORT" : "CHALLENGE" };
-  }, [lucyMode, aiMode]);
+  const oneLiner = useMemo(() => {
+    if (lucyState === "thinking") return "Composing...";
+    if (lucyState === "done") return "Noted.";
+    if (phase === "brief") return `Tell me about the client.`;
+    if (phase === "questions") return `${answeredCount} of ${questions.length} answered.`;
+    return "Tell me about the client.";
+  }, [lucyState, phase, answeredCount, questions.length]);
+
+  const lucyActions = useMemo(() => {
+    if (lucyState === "thinking") return [];
+    if (lucyResponse) return [
+      { icon: "check", label: "I'M HAPPY", onClick: () => { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); } },
+    ];
+    return [];
+  }, [lucyState, lucyResponse]);
 
   /* ── Lucy module component ── */
-  const LucyModule = ({ guideText }) => (
+  const LucyModule = () => (
     <div style={{
       marginTop: 16,
       background: colors.lucySurface,
@@ -125,56 +130,34 @@ export default function Discovery({ onBack } = {}) {
       borderRadius: 8,
       overflow: "hidden",
     }}>
-      {/* Top strip: e-ink icon + status + mode toggle */}
-      <div style={{
-        padding: "10px 14px",
-        display: "flex", alignItems: "center", gap: 10,
-      }}>
-        {/* E-ink badge */}
+      <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{
-          width: 40, height: 30,
-          background: colors.eink, borderRadius: 3,
+          width: 40, height: 30, background: colors.eink, borderRadius: 3,
           border: `1px solid ${colors.einkBorder}`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
         }}>
-          <PixelIcon icon={lucyDisplay.icon} color={colors.ink} size={18} />
+          <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
         </div>
-
-        {/* Status label */}
         <span style={{
           fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-          color: colors.lucyStatusText, flex: 1,
-        }}>{lucyDisplay.label}</span>
-
-        {/* E-ink segmented switch */}
-        <div style={{
-          display: "flex", borderRadius: 3,
-          background: colors.eink, border: `1px solid ${colors.einkBorder}`,
-          overflow: "hidden",
-        }}>
-          {Object.entries(MODES).map(([key, m]) => (
-            <button key={key}
-              onClick={() => setAiMode(key)}
-              style={{
-                height: 24, padding: "0 10px", border: "none", cursor: "pointer",
-                fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.08em",
-                background: aiMode === key ? colors.ink : "transparent",
-                color: aiMode === key ? colors.eink : "#8A857E",
-                transition: "all 0.15s ease",
-              }}
-            >{key === "support" ? "SUPPORT" : "CHALLENGE"}</button>
-          ))}
-        </div>
+          color: "#5A5550", flex: 1, lineHeight: 1.4,
+        }}>{oneLiner}</span>
       </div>
-
-      {/* Guide text */}
-      {guideText && (
-        <div style={{ borderTop: `1px solid ${colors.lucyBorder}`, padding: "10px 14px 14px" }}>
-          <div style={{
-            fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em",
-            color: colors.lucyStatusText, lineHeight: 1.5,
-          }}>{guideText}</div>
+      {lucyResponse && (
+        <>
+          <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+            <div style={{
+              fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+              color: "#4A4640", lineHeight: 1.6,
+            }}>{lucyResponse}</div>
+          </div>
+          <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+        </>
+      )}
+      {lucyState !== "thinking" && lucyActions.length > 0 && (
+        <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
         </div>
       )}
     </div>
@@ -284,7 +267,7 @@ export default function Discovery({ onBack } = {}) {
                   </div>
 
                   {/* Lucy module below active question */}
-                  <LucyModule guideText={aiMode === "support" ? "Tell me what you know. I'll use this to tailor the discovery questions." : null} />
+                  <LucyModule />
                 </div>
               )}
             </div>
@@ -414,7 +397,7 @@ export default function Discovery({ onBack } = {}) {
               {/* Analyze gaps button */}
               {answeredCount >= 3 && (
                 <div style={{ marginTop: 24, animation: `fadeIn 0.4s ${ease} both` }}>
-                  <button onClick={() => { setLucyMode("thinking"); setTimeout(() => { setPhase("analysis"); setLucyMode("idle"); }, 1500); }} style={{ width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text, background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <button onClick={() => { setLucyState("thinking"); setTimeout(() => { setPhase("analysis"); setLucyState("idle"); }, 1500); }} style={{ width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text, background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                     <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.accent }} />ANALYZE GAPS
                   </button>
                 </div>
