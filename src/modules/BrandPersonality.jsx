@@ -6,7 +6,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
+import { PixelIcon, getLucyIcon, LucyActionCard, LucyPill } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
 
 const CHAPTERS = [
@@ -50,6 +50,7 @@ export default function BrandPersonality({ onBack } = {}) {
   const [showCompleted, setShowCompleted] = useState(false);
   const ref = useRef(null);
   const canvasRef = useRef(null);
+  const lucyModuleRef = useRef(null);
   const done = cur >= ALL_PROMPTS.length;
   const prompt = done ? null : ALL_PROMPTS[cur];
 
@@ -173,7 +174,7 @@ export default function BrandPersonality({ onBack } = {}) {
         {!done && prompt && (
           <>
             {/* Sticky Lucy */}
-            <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+            <div ref={lucyModuleRef} style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
               <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
                 {/* Lucy Module — brushed warm aluminum */}
                 <div style={{
@@ -369,6 +370,13 @@ export default function BrandPersonality({ onBack } = {}) {
           </div>
         )}
       </div>
+      <LucyPill
+        moduleRef={lucyModuleRef}
+        lucyState={lucyState}
+        lucyResponse={lucyResponse}
+        lucyActions={lucyActions}
+        oneLiner={oneLiner}
+      />
     </div>
   );
 }

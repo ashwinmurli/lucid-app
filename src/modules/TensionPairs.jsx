@@ -3,9 +3,9 @@
    Toggle to select. Selected float to top. Max 3.
    ═══════════════════════════════════════════════════════════════ */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, TransportBtn, getLucyIcon, LucyActionCard } from "../components/ui";
+import { PixelIcon, TransportBtn, getLucyIcon, LucyActionCard, LucyPill } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
 
 const TENSION_CANDIDATES = [
@@ -105,6 +105,7 @@ function getPrereqActions(response, navigateTo) {
 }
 
 export default function TensionPairs({ onComplete, onBack, navigateTo }) {
+  const lucyModuleRef = useRef(null);
   const [customQuality, setCustomQuality] = useState("");
   const [customExcess, setCustomExcess] = useState("");
   const [customPairs, setCustomPairs] = useState([]);
@@ -266,7 +267,7 @@ export default function TensionPairs({ onComplete, onBack, navigateTo }) {
 
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Sticky Lucy */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+        <div ref={lucyModuleRef} style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
           <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
             {/* Lucy Module */}
             <div style={{
@@ -366,6 +367,13 @@ export default function TensionPairs({ onComplete, onBack, navigateTo }) {
 
         </div>
       </div>
+      <LucyPill
+        moduleRef={lucyModuleRef}
+        lucyState={lucyState}
+        lucyResponse={lucyResponse}
+        lucyActions={lucyActions}
+        oneLiner={oneLiner}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@
    Reusable UI components used across all modules.
    ═══════════════════════════════════════════════════════════════ */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, createPortal } from "react";
 import { S, colors, shadows, ease, fonts } from "../lib/tokens";
 
 /* ── Lucy's SVG icons (pixelarticons style) ── */
@@ -375,4 +375,130 @@ export function Canvas({ children, padding = "32px 48px 60px", maxWidth = 560 })
       </div>
     </div>
   );
+}
+
+/* ── Lucy Floating Pill + Toast ── */
+export function LucyPill({ moduleRef, lucyState, lucyResponse, lucyActions, oneLiner }) {
+  const [presence, setPresence] = useState('inline');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!moduleRef?.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          setPresence(p => (p === 'inline' ? 'pill-entering' : p));
+        } else {
+          setPresence(p => {
+            if (p === 'inline') return 'inline';
+            return 'pill-exiting';
+          });
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(moduleRef.current);
+    return () => observer.disconnect();
+  }, [moduleRef]);
+
+  useEffect(() => {
+    if (lucyResponse && (presence === 'pill-idle' || presence === 'pill-active')) {
+      setPresence('toast-visible');
+    }
+  }, [lucyResponse]);
+
+  const handlePillAnimEnd = (e) => {
+    if (e.animationName === 'lucyPillEnter') setPresence('pill-idle');
+    if (e.animationName === 'lucyPillExit') setPresence('inline');
+  };
+
+  const handleToastAnimEnd = (e) => {
+    if (e.animationName === 'lucyToastExit') setPresence('pill-idle');
+  };
+
+  const scrollToLucy = () => {
+    moduleRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const dismissToast = () => setPresence('toast-exiting');
+
+  if (!mounted || presence === 'inline') return null;
+
+  const showToast = presence === 'toast-visible' || presence === 'toast-exiting';
+  const isExiting = presence === 'toast-exiting';
+  const pillIsActive = !!lucyResponse;
+
+  let pillAnim = 'none';
+  if (presence === 'pill-entering') pillAnim = 'lucyPillEnter 500ms cubic-bezier(0.34,1.56,0.64,1) forwards';
+  if (presence === 'pill-exiting') pillAnim = 'lucyPillExit 300ms cubic-bezier(0.55,0,1,0.45) forwards';
+  if (presence === 'pill-idle') pillAnim = 'lucyBreathe 2400ms ease-in-out 3';
+
+  const pill = (
+    <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 200 }}>
+      {showToast && (
+        <div
+          onAnimationEnd={handleToastAnimEnd}
+          style={{
+            position: 'absolute', bottom: 52, right: 0, width: 300,
+            background: colors.lucySurface, backgroundImage: colors.lucyGrain,
+            border: `1px solid ${colors.lucyBorder}`,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+            borderRadius: 12, overflow: 'hidden',
+            animation: isExiting
+              ? 'lucyToastExit 200ms cubic-bezier(0.55,0,1,0.45) forwards'
+              : 'lucyToastEnter 350ms cubic-bezier(0.34,1.4,0.64,1) both',
+          }}
+        >
+          <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 40, height: 30, background: colors.eink, borderRadius: 3, border: `1px solid ${colors.einkBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, animation: lucyState === 'thinking' ? 'lucyPulse 1.2s ease-in-out infinite' : 'none' }}>
+              <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
+            </div>
+            <span style={{ fontFamily: fonts.pixel, fontSize: 11, letterSpacing: '0.08em', color: '#5A5550', flex: 1, lineHeight: 1.4 }}>{oneLiner}</span>
+          </div>
+          {lucyResponse && (
+            <>
+              <div style={{ padding: '10px 14px 10px', borderTop: '1px solid rgba(44,40,36,0.08)' }}>
+                <div style={{ fontFamily: fonts.pixel, fontSize: 11, letterSpacing: '0.08em', color: '#4A4640', lineHeight: 1.6, maxHeight: 160, overflowY: 'auto' }}>{lucyResponse}</div>
+              </div>
+              <div style={{ height: 1, background: 'rgba(44,40,36,0.06)', margin: '0 10px' }} />
+            </>
+          )}
+          {lucyState !== 'thinking' && lucyActions.length > 0 && (
+            <div style={{ padding: '8px 10px 6px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {lucyActions.map(a => (
+                <LucyActionCard key={a.label} icon={a.icon} label={a.label} onClick={() => { a.onClick(); if (!['TRY AGAIN', 'DISMISS'].includes(a.label)) dismissToast(); }} />
+              ))}
+            </div>
+          )}
+          <div style={{ padding: '2px 10px 8px' }}>
+            <button onClick={dismissToast} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: fonts.pixel, fontSize: 9, letterSpacing: '0.08em', color: 'rgba(44,40,36,0.3)', padding: '4px 0', transition: 'color 0.15s ease' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'rgba(44,40,36,0.55)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(44,40,36,0.3)'}
+            >DISMISS</button>
+          </div>
+        </div>
+      )}
+      <div
+        onClick={scrollToLucy}
+        onAnimationEnd={handlePillAnimEnd}
+        style={{
+          width: 40, height: 40, borderRadius: '50%',
+          background: pillIsActive ? '#C4A44A' : colors.lucySurface,
+          backgroundImage: colors.lucyGrain,
+          border: '0.5px solid rgba(0,0,0,0.1)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer',
+          animation: pillAnim,
+          transition: `background 0.2s ${ease}`,
+        }}
+      >
+        <PixelIcon icon={pillIsActive ? 'sparkle' : getLucyIcon(lucyState)} color={colors.ink} size={18} />
+      </div>
+    </div>
+  );
+
+  return createPortal(pill, document.body);
 }

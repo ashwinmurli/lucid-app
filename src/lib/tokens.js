@@ -72,6 +72,38 @@ export const globalStyles = `
   @keyframes promptIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
   @keyframes lucyPulse { 0%, 100% { opacity:0.7; } 50% { opacity:1; } }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes lucyPillEnter {
+      0%   { transform: translateX(40px) scale(0.3); opacity: 0; }
+      50%  { transform: translateX(-4px) scale(1.08); opacity: 1; }
+      70%  { transform: translateX(2px) scale(0.97); }
+      100% { transform: translateX(0) scale(1); opacity: 1; }
+    }
+    @keyframes lucyPillExit {
+      0%   { transform: translateX(0) scale(1); opacity: 1; }
+      30%  { transform: translateX(-4px) scale(1.05); opacity: 1; }
+      100% { transform: translateX(40px) scale(0.3); opacity: 0; }
+    }
+    @keyframes lucyBreathe {
+      0%, 100% { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0 0 0 rgba(196,164,74,0); }
+      50%      { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0 0 6px rgba(196,164,74,0.15); }
+    }
+    @keyframes lucyToastEnter {
+      0%   { transform: translateY(8px) scale(0.95); opacity: 0; }
+      60%  { transform: translateY(-2px) scale(1.01); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes lucyToastExit {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(4px) scale(0.9); opacity: 0; }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes lucyPillEnter { from { opacity:0; } to { opacity:1; } }
+    @keyframes lucyPillExit  { from { opacity:1; } to { opacity:0; } }
+    @keyframes lucyToastEnter { from { opacity:0; } to { opacity:1; } }
+    @keyframes lucyToastExit  { from { opacity:1; } to { opacity:0; } }
+  }
   @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 8px rgba(240,192,80,0.15), 0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.04); } 50% { box-shadow: 0 0 28px rgba(240,192,80,0.35), 0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.04); } }
   textarea:focus, input:focus { outline:none; }
   ::selection { background:rgba(229,166,50,0.12); }

@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { S, ease, colors, fonts, shadows } from "../lib/tokens";
-import { PixelIcon, getLucyIcon, LucyActionCard } from "../components/ui";
+import { PixelIcon, getLucyIcon, LucyActionCard, LucyPill } from "../components/ui";
 import { askLucyStream } from "../lib/lucy";
 
 const VALUE_CANDIDATES = [
@@ -185,6 +185,7 @@ function getPrereqActions(response, navigateTo) {
 }
 
 export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
+  const lucyModuleRef = useRef(null);
   const [values, setValues] = useState(VALUE_CANDIDATES.map((v) => ({ ...v, definition: "", selected: false })));
   const [customWord, setCustomWord] = useState("");
   const [lucyState, setLucyState] = useState("idle");
@@ -336,7 +337,7 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
         {!locked && (
           <>
             {/* Sticky Lucy */}
-            <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+            <div ref={lucyModuleRef} style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
               <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
                 {/* Lucy Module */}
                 <div style={{
@@ -534,6 +535,13 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
           </div>
         )}
       </div>
+      <LucyPill
+        moduleRef={lucyModuleRef}
+        lucyState={lucyState}
+        lucyResponse={lucyResponse}
+        lucyActions={lucyActions}
+        oneLiner={oneLiner}
+      />
     </div>
   );
 }
