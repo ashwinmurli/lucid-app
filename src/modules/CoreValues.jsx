@@ -184,7 +184,7 @@ function getPrereqActions(response, navigateTo) {
     .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
 }
 
-export default function CoreValues({ onBack, navigateTo } = {}) {
+export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
   const [values, setValues] = useState(VALUE_CANDIDATES.map((v) => ({ ...v, definition: "", selected: false })));
   const [customWord, setCustomWord] = useState("");
   const [lucyState, setLucyState] = useState("idle");
@@ -477,30 +477,32 @@ export default function CoreValues({ onBack, navigateTo } = {}) {
               </div>
             ))}
 
-            {/* Lucy summary — brushed aluminum */}
-            <div style={{ maxWidth: 340, margin: "40px auto 0" }}>
-              <div style={{
-                background: colors.lucySurface,
-                backgroundImage: colors.lucyGrain,
-                border: `1px solid ${colors.lucyBorder}`,
-                boxShadow: colors.lucyShadow,
-                borderRadius: 8, padding: "10px 14px",
-                display: "flex", alignItems: "center", gap: 8,
-              }}>
-                <div style={{
-                  width: 40, height: 30,
-                  background: colors.eink, borderRadius: 2,
-                  border: `1px solid ${colors.einkBorder}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                }}>
-                  <PixelIcon icon="done" color={colors.ink} size={18} />
+            {/* Lucy module */}
+            <div style={{ marginTop: 40, background: colors.lucySurface, backgroundImage: colors.lucyGrain, border: `1px solid ${colors.lucyBorder}`, boxShadow: colors.lucyShadow, borderRadius: 8, overflow: "hidden" }}>
+              <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 40, height: 30, background: colors.eink, borderRadius: 3, border: `1px solid ${colors.einkBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <PixelIcon icon="check" color={colors.ink} size={18} />
                 </div>
-                <div>
-                  <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: colors.lucyStatusText }}>VALUES COMPLETE</div>
-                  <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 9, color: "#8A857E", marginTop: 2 }}>3 values defined</div>
-                </div>
+                <span style={{ fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em", color: "#5A5550", flex: 1, lineHeight: 1.4 }}>
+                  Values locked. {selectedValues.length} defined.
+                </span>
               </div>
+              {onComplete && (
+                <>
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                  <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div onClick={() => onComplete({ values: selectedValues })} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                      onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                    >
+                      <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <PixelIcon icon="push" color={colors.ink} size={16} />
+                      </div>
+                      <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>CONTINUE TO TONE</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

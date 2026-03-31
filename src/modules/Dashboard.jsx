@@ -415,6 +415,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                     }}
                     onFocus={(e) => { e.target.style.width = "120px"; const span = e.target.parentElement.querySelector("span"); if (span) span.style.display = "none"; }}
                     onBlur={(e) => { if (!searchQuery) { e.target.style.width = "0"; const span = e.target.parentElement.querySelector("span"); if (span) span.style.display = ""; } }}
+                    onKeyDown={(e) => { if (e.key === "Escape") { setSearchQuery(""); e.currentTarget.blur(); } }}
                   />
                   {searchQuery && (
                     <span onClick={(e) => { e.stopPropagation(); setSearchQuery(""); }}

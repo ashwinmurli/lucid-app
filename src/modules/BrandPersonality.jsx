@@ -212,7 +212,7 @@ export default function BrandPersonality({ onBack } = {}) {
                 </div>
               </div>
 
-              {/* Footer — keyboard hint + spark/keep button */}
+              {/* Footer — keyboard hint + keep button */}
               <div style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "8px 4px 0",
@@ -230,20 +230,16 @@ export default function BrandPersonality({ onBack } = {}) {
                   }}>Enter</kbd>
                   <span style={{ marginLeft: 4 }}>to continue</span>
                 </div>
-                <button onClick={text.trim() ? keep : spark} style={{
-                  display: "inline-flex", alignItems: "center", gap: 5,
-                  padding: "5px 12px", background: "transparent",
-                  border: `1px solid ${S.border}`, borderRadius: 16,
-                  fontSize: 11, fontWeight: 500,
-                  color: text.trim() ? S.text : "rgba(44,40,36,0.35)",
-                  cursor: "pointer", fontFamily: fonts.primary,
-                  transition: `all 0.15s ${ease}`,
-                }}>
-                  {text.trim() ? "Keep ↵" : (<>
-                    <PixelIcon icon="spark" color="currentColor" size={13} />
-                    Spark
-                  </>)}
-                </button>
+                {text.trim() && (
+                  <button onClick={keep} style={{
+                    display: "inline-flex", alignItems: "center", gap: 5,
+                    padding: "5px 12px", background: "transparent",
+                    border: `1px solid ${S.border}`, borderRadius: 16,
+                    fontSize: 11, fontWeight: 500, color: S.text,
+                    cursor: "pointer", fontFamily: fonts.primary,
+                    transition: `all 0.15s ${ease}`,
+                  }}>Keep →</button>
+                )}
               </div>
 
               {/* Lucy Module — brushed warm aluminum */}

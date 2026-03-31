@@ -22,9 +22,9 @@ function FaderToggle({ on, onToggle }) {
       style={{
         width: 44, height: 22, borderRadius: 4, border: "none",
         cursor: "pointer", position: "relative", flexShrink: 0,
-        background: on ? colors.usps : "#D0CDC5",
+        background: on ? S.accent : "#D0CDC5",
         boxShadow: on
-          ? "0 1px 3px rgba(184,110,237,0.25), 0 1px 2px rgba(0,0,0,0.06)"
+          ? "0 1px 3px rgba(212,115,74,0.25), 0 1px 2px rgba(0,0,0,0.06)"
           : "0 1px 2px rgba(0,0,0,0.06) inset, 0 1px 0 rgba(255,255,255,0.3)",
         transition: `all 0.15s ${ease}`,
         padding: 0,
@@ -50,7 +50,7 @@ function FaderToggle({ on, onToggle }) {
 }
 
 /* ── USP Card ── */
-function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
+function USPCard({ usp, isPrimary, isSupporting, onSetPrimary, onRemove, isLocked }) {
   const [hover, setHover] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -62,13 +62,12 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
       onMouseLeave={() => setHover(false)}
       style={{
         background: S.card, borderRadius: 4,
-        border: "1px solid rgba(44,40,36,0.06)",
-        boxShadow: hover && !isLocked
-          ? shadows.cardHover
-          : shadows.raised,
+        border: isSupporting ? "1px solid rgba(44,40,36,0.04)" : "1px solid rgba(44,40,36,0.06)",
+        boxShadow: hover && !isLocked ? shadows.cardHover : shadows.raised,
         overflow: "hidden",
         transition: `all 0.2s ${ease}`,
         transform: hover && !isLocked ? "translateY(-1px)" : "translateY(0)",
+        opacity: isSupporting ? 0.65 : 1,
       }}
     >
       {/* Claim + fader toggle */}
@@ -100,8 +99,8 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
       {/* Lucy annotation */}
       <div style={{ height: 1, background: "rgba(229,166,50,0.06)" }} />
       <div style={{ padding: "8px 16px", display: "flex", alignItems: "flex-start", gap: 8 }}>
-        <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: S.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-        <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{usp.raw}</div>
+        <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: "rgba(44,40,36,0.2)" }} />
+        <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: "rgba(44,40,36,0.4)", lineHeight: 1.5 }}>{usp.raw}</div>
       </div>
 
       {/* Proof & contrast — expandable */}
@@ -289,13 +288,14 @@ export default function USPs({ onBack, navigateTo } = {}) {
                 <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Toggle lead USP on. The rest will support it.</p>
               </div>
 
-              {/* All USP cards */}
+              {/* All USP cards — lead first */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {usps.map((usp, i) => (
+                {[...usps].sort((a, b) => (b.id === primaryId ? 1 : 0) - (a.id === primaryId ? 1 : 0)).map((usp, i) => (
                   <div key={usp.id} style={{ animation: `promptIn 0.4s ${ease} ${i * 0.08}s both` }}>
                     <USPCard
                       usp={usp}
                       isPrimary={usp.id === primaryId}
+                      isSupporting={!!primaryId && usp.id !== primaryId}
                       onSetPrimary={() => setPrimaryId(usp.id === primaryId ? null : usp.id)}
                       onRemove={() => removeUSP(usp.id)}
                     />
