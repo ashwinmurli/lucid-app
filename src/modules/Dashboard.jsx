@@ -172,7 +172,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
       sugs.push({
         project: earliest,
         name: earliest.name,
-        icon: "spark",
+        icon: "push",
         text: `is ready for ${modLabel}. A fresh start with lots of potential.`,
         meta: earliest.lastEdited,
       });
@@ -316,7 +316,7 @@ export default function Dashboard({ onStartProject, onOpenProject, projects, set
                     onMouseLeave={e => { e.currentTarget.style.background = colors.eink; e.currentTarget.style.transform = "translateX(0)"; }}
                   >
                     <div style={{ width: 24, height: 24, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <PixelIcon icon="spark" color={colors.ink} size={16} />
+                      <PixelIcon icon="lightbulb" color={colors.ink} size={16} />
                     </div>
                     <div style={{ fontSize: 12, color: colors.ink, lineHeight: 1.5 }}>
                       <strong>New project</strong> — Start a brand strategy from scratch.

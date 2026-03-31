@@ -266,10 +266,10 @@ export default function Discovery({ onBack } = {}) {
                     </button>
                   </div>
 
-                  {/* Lucy module below active question */}
-                  <LucyModule />
                 </div>
               )}
+              {/* Lucy module — at bottom of brief */}
+              <LucyModule />
             </div>
           )}
 
@@ -387,12 +387,13 @@ export default function Discovery({ onBack } = {}) {
                         </div>
                       </div>
 
-                      {/* Lucy module below the active/expanded question */}
-                      {isExpanded && <LucyModule />}
                     </div>
                   );
                 });
               })()}
+
+              {/* Lucy module — fixed at bottom, below all questions */}
+              <LucyModule />
 
               {/* Analyze gaps button */}
               {answeredCount >= 3 && (
@@ -422,7 +423,7 @@ export default function Discovery({ onBack } = {}) {
                 {GAPS.map((gap, i) => (
                   <div key={i} style={{ background: colors.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: shadows.raised, padding: "14px 16px", animation: `promptIn 0.4s ${ease} ${i * 0.1}s both` }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.lucyAmberText }}>{gap.area}</div>
+                      <div style={{ fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.4)" }}>{gap.area}</div>
                       <button onClick={() => goToThemeQuestion(gap.area)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.25)", padding: "2px 8px", borderRadius: 3, transition: "all 0.15s ease" }}
                         onMouseEnter={(e) => { e.currentTarget.style.color = colors.lucyAmberText; e.currentTarget.style.background = "rgba(229,166,50,0.06)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(44,40,36,0.25)"; e.currentTarget.style.background = "none"; }}
@@ -433,23 +434,63 @@ export default function Discovery({ onBack } = {}) {
                 ))}
               </div>
 
-              {/* Actions */}
-              <div style={{ display: "flex", gap: 0, marginTop: 24, borderRadius: 6, overflow: "hidden", boxShadow: shadows.raised }}>
-                <button onClick={() => setPhase("questions")} style={{ flex: 1, padding: "12px 0", border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)", background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`, borderRight: "1px solid rgba(44,40,36,0.06)", userSelect: "none" }}>BACK TO QUESTIONS</button>
-                <button style={{ flex: 1, padding: "12px 0", border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text, background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, userSelect: "none" }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.accent }} />START SYNTHESIS
-                </button>
+              {/* Lucy module — completion message */}
+              <div style={{
+                marginTop: 24,
+                background: colors.lucySurface,
+                backgroundImage: colors.lucyGrain,
+                border: `1px solid ${colors.lucyBorder}`,
+                boxShadow: colors.lucyShadow,
+                borderRadius: 8,
+                overflow: "hidden",
+              }}>
+                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{
+                    width: 40, height: 30, background: colors.eink, borderRadius: 3,
+                    border: `1px solid ${colors.einkBorder}`,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    <PixelIcon icon="check" color={colors.ink} size={18} />
+                  </div>
+                  <span style={{
+                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                    color: "#5A5550", flex: 1, lineHeight: 1.4,
+                  }}>Discovery reviewed. {answeredCount} captured · {GAPS.length} gaps found.</span>
+                </div>
               </div>
 
-              {/* Lucy summary */}
-              <div style={{ maxWidth: 300, margin: "32px auto 0" }}>
-                <div style={{ background: colors.screen, borderRadius: 4, padding: "10px 14px", boxShadow: shadows.screenDeep, textAlign: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-                    <PixelIcon icon="approves" color={colors.lcdBright} size={14} />
-                    <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: colors.lcdBright }}>DISCOVERY REVIEWED</span>
-                  </div>
-                  <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 9, color: colors.lcdDim }}>{answeredCount} captured · {GAPS.length} gaps</div>
-                </div>
+              {/* Actions */}
+              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                <button onClick={() => setPhase("questions")} style={{
+                  flex: 1, padding: "8px 0",
+                  background: "transparent",
+                  border: `1px solid rgba(44,40,36,0.12)`,
+                  borderRadius: 16,
+                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                  color: "rgba(44,40,36,0.45)",
+                  transition: "all 0.15s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; e.currentTarget.style.color = "rgba(44,40,36,0.7)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; e.currentTarget.style.color = "rgba(44,40,36,0.45)"; }}
+                >BACK TO QUESTIONS</button>
+                <button style={{
+                  flex: 1, padding: "8px 0",
+                  background: "transparent",
+                  border: `1px solid rgba(44,40,36,0.12)`,
+                  borderRadius: 16,
+                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                  color: colors.text,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  transition: "all 0.15s ease",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; }}
+                >
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: colors.accent }} />
+                  START SYNTHESIS
+                </button>
               </div>
             </div>
           )}
