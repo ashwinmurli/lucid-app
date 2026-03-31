@@ -226,7 +226,16 @@ export default function Discovery({ onBack } = {}) {
 
           {/* ═══ BRIEF — Lucy asks about the client ═══ */}
           {phase === "brief" && (
-            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px" }}>
+            <>
+              {/* Sticky Lucy */}
+              <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+                <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                  <LucyModule />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 24px 80px" }}>
               {/* Previous answers */}
               {briefAnswers.map((ba, i) => (
                 <div key={i} style={{ marginBottom: 20, animation: `fadeIn 0.3s ${ease} both` }}>
@@ -294,9 +303,8 @@ export default function Discovery({ onBack } = {}) {
 
                 </div>
               )}
-              {/* Lucy module — at bottom of brief */}
-              <LucyModule />
-            </div>
+              </div>
+            </>
           )}
 
           {/* ═══ GENERATING — cinematic ═══ */}
@@ -316,7 +324,16 @@ export default function Discovery({ onBack } = {}) {
 
           {/* ═══ QUESTIONS — unified view with inline responses ═══ */}
           {phase === "questions" && (
-            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `promptIn 0.5s ${ease} both` }}>
+            <>
+              {/* Sticky Lucy */}
+              <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+                <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                  <LucyModule />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 24px 80px", animation: `promptIn 0.5s ${ease} both` }}>
               <div style={{ textAlign: "center", marginBottom: 32 }}>
                 <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Your discovery questions.</h2>
                 <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Record client responses directly. ⌘+Enter to move to the next question.</p>
@@ -417,15 +434,61 @@ export default function Discovery({ onBack } = {}) {
                 });
               })()}
 
-              {/* Lucy module — fixed at bottom, below all questions */}
-              <LucyModule />
-
-            </div>
+              </div>
+            </>
           )}
 
           {/* ═══ ANALYSIS — Lucy's gap findings ═══ */}
           {phase === "analysis" && (
-            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
+            <>
+              {/* Sticky Lucy */}
+              <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+                <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                  {/* Lucy module — completion message */}
+                  <div style={{
+                    background: colors.lucySurface,
+                    backgroundImage: colors.lucyGrain,
+                    border: `1px solid ${colors.lucyBorder}`,
+                    boxShadow: colors.lucyShadow,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                  }}>
+                    <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{
+                        width: 40, height: 30, background: colors.eink, borderRadius: 3,
+                        border: `1px solid ${colors.einkBorder}`,
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      }}>
+                        <PixelIcon icon="check" color={colors.ink} size={18} />
+                      </div>
+                      <span style={{
+                        fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                        color: "#5A5550", flex: 1, lineHeight: 1.4,
+                      }}>Discovery reviewed. {answeredCount} captured · {GAPS.length} gaps found.</span>
+                    </div>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                    <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                      {[
+                        { icon: "probe", label: "BACK TO QUESTIONS", onClick: () => setPhase("questions") },
+                        { icon: "done", label: "START SYNTHESIS", onClick: () => onComplete?.({}) },
+                      ].map(a => (
+                        <div key={a.label} onClick={a.onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon={a.icon} color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>{a.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
               <div style={{ textAlign: "center", marginBottom: 40 }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 4, marginBottom: 16, background: "rgba(44,40,36,0.04)", boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)" }}>
                   <div style={{ width: 5, height: 5, borderRadius: "50%", background: colors.accent, boxShadow: "0 0 6px rgba(229,166,50,0.3)" }} />
@@ -450,49 +513,8 @@ export default function Discovery({ onBack } = {}) {
                   </div>
                 ))}
               </div>
-
-              {/* Lucy module — completion message */}
-              <div style={{
-                marginTop: 24,
-                background: colors.lucySurface,
-                backgroundImage: colors.lucyGrain,
-                border: `1px solid ${colors.lucyBorder}`,
-                boxShadow: colors.lucyShadow,
-                borderRadius: 8,
-                overflow: "hidden",
-              }}>
-                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{
-                    width: 40, height: 30, background: colors.eink, borderRadius: 3,
-                    border: `1px solid ${colors.einkBorder}`,
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <PixelIcon icon="check" color={colors.ink} size={18} />
-                  </div>
-                  <span style={{
-                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                    color: "#5A5550", flex: 1, lineHeight: 1.4,
-                  }}>Discovery reviewed. {answeredCount} captured · {GAPS.length} gaps found.</span>
-                </div>
-              <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
-              <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
-                {[
-                  { icon: "probe", label: "BACK TO QUESTIONS", onClick: () => setPhase("questions") },
-                  { icon: "done", label: "START SYNTHESIS", onClick: () => onComplete?.({}) },
-                ].map(a => (
-                  <div key={a.label} onClick={a.onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
-                    onMouseLeave={e => e.currentTarget.style.background = colors.eink}
-                  >
-                    <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <PixelIcon icon={a.icon} color={colors.ink} size={16} />
-                    </div>
-                    <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>{a.label}</span>
-                  </div>
-                ))}
               </div>
-              </div>
-            </div>
+            </>
           )}
         </div>
       </div>

@@ -333,7 +333,72 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
 
         {/* ═══ WORKSPACE ═══ */}
         {!locked && (
-          <div style={{ padding: "40px 24px 80px", maxWidth: 640, margin: "0 auto", animation: `promptIn 0.5s ${ease} both` }}>
+          <>
+            {/* Sticky Lucy */}
+            <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                {/* Lucy Module */}
+                <div style={{
+                  background: colors.lucySurface,
+                  backgroundImage: colors.lucyGrain,
+                  border: `1px solid ${colors.lucyBorder}`,
+                  boxShadow: colors.lucyShadow,
+                  borderRadius: 8,
+                  overflow: "hidden",
+                }}>
+                  <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{
+                      width: 40, height: 30, background: colors.eink, borderRadius: 3,
+                      border: `1px solid ${colors.einkBorder}`,
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
+                    }}>
+                      <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
+                    </div>
+                    <span style={{
+                      fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                      color: "#5A5550", flex: 1, lineHeight: 1.4,
+                    }}>{oneLiner}</span>
+                  </div>
+                  {lucyResponse && (
+                    <>
+                      <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                        <div style={{
+                          fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                          color: "#4A4640", lineHeight: 1.6,
+                        }}>{lucyResponse}</div>
+                      </div>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+                    </>
+                  )}
+                  {lucyState !== "thinking" && lucyActions.length > 0 && (
+                    <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
+                      {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
+                    </div>
+                  )}
+                  {lucyState !== "thinking" && canLock && (
+                    <>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                      <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div onClick={() => setLocked(true)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon="lock" color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>LOCK VALUES</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: "24px 24px 80px", animation: `promptIn 0.5s ${ease} both` }}>
+            <div style={{ maxWidth: 640, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Define the values</h2>
               <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Toggle three values and write what each one means for this brand.</p>
@@ -391,64 +456,9 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
               </div>
             </div>
 
-            {/* Lucy Module */}
-            <div style={{
-              marginTop: 24,
-              background: colors.lucySurface,
-              backgroundImage: colors.lucyGrain,
-              border: `1px solid ${colors.lucyBorder}`,
-              boxShadow: colors.lucyShadow,
-              borderRadius: 8,
-              overflow: "hidden",
-            }}>
-              <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{
-                  width: 40, height: 30, background: colors.eink, borderRadius: 3,
-                  border: `1px solid ${colors.einkBorder}`,
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
-                }}>
-                  <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
-                </div>
-                <span style={{
-                  fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                  color: "#5A5550", flex: 1, lineHeight: 1.4,
-                }}>{oneLiner}</span>
-              </div>
-              {lucyResponse && (
-                <>
-                  <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
-                    <div style={{
-                      fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                      color: "#4A4640", lineHeight: 1.6,
-                    }}>{lucyResponse}</div>
-                  </div>
-                  <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
-                </>
-              )}
-              {lucyState !== "thinking" && lucyActions.length > 0 && (
-                <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
-                  {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
-                </div>
-              )}
-              {lucyState !== "thinking" && canLock && (
-                <>
-                  <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
-                  <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
-                    <div onClick={() => setLocked(true)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
-                      onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
-                      onMouseLeave={e => e.currentTarget.style.background = colors.eink}
-                    >
-                      <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <PixelIcon icon="lock" color={colors.ink} size={16} />
-                      </div>
-                      <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>LOCK VALUES</span>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
-          </div>
+            </div>
+          </>
         )}
 
         {/* ═══ LOCKED — final composition ═══ */}

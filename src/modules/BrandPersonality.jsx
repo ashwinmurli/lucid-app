@@ -169,7 +169,60 @@ export default function BrandPersonality({ onBack } = {}) {
         background: `linear-gradient(180deg, ${S.gradientTop} 0%, ${S.gradientBottom} 100%)`,
       }}>
         {!done && prompt && (
-          <div style={{ padding: "40px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
+          <>
+            {/* Sticky Lucy */}
+            <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                {/* Lucy Module — brushed warm aluminum */}
+                <div style={{
+                  background: colors.lucySurface,
+                  backgroundImage: colors.lucyGrain,
+                  border: `1px solid ${colors.lucyBorder}`,
+                  boxShadow: colors.lucyShadow,
+                  borderRadius: 8,
+                  overflow: "hidden",
+                }}>
+                  {/* Top strip: e-ink badge + one-liner */}
+                  <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{
+                      width: 40, height: 30, background: colors.eink, borderRadius: 3,
+                      border: `1px solid ${colors.einkBorder}`,
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
+                    }}>
+                      <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
+                    </div>
+                    <span style={{
+                      fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                      color: "#5A5550", flex: 1, lineHeight: 1.4,
+                    }}>{oneLiner}</span>
+                  </div>
+
+                  {/* Lucy's response */}
+                  {lucyResponse && (
+                    <>
+                      <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
+                        <div style={{
+                          fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
+                          color: "#4A4640", lineHeight: 1.6,
+                        }}>{lucyResponse}</div>
+                      </div>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
+                    </>
+                  )}
+
+                  {/* Contextual action cards */}
+                  {lucyState !== "thinking" && lucyActions.length > 0 && (
+                    <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
+                      {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: "24px 24px 80px", maxWidth: 640, margin: "0 auto" }}>
             <div key={animKey} style={{ animation: `promptIn 0.4s ${ease} both` }}>
 
               {/* Progress dots */}
@@ -242,53 +295,6 @@ export default function BrandPersonality({ onBack } = {}) {
                 )}
               </div>
 
-              {/* Lucy Module — brushed warm aluminum */}
-              <div style={{
-                marginTop: 16,
-                background: colors.lucySurface,
-                backgroundImage: colors.lucyGrain,
-                border: `1px solid ${colors.lucyBorder}`,
-                boxShadow: colors.lucyShadow,
-                borderRadius: 8,
-                overflow: "hidden",
-              }}>
-                {/* Top strip: e-ink badge + one-liner */}
-                <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{
-                    width: 40, height: 30, background: colors.eink, borderRadius: 3,
-                    border: `1px solid ${colors.einkBorder}`,
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                    animation: lucyState === "thinking" ? "lucyPulse 1.2s ease-in-out infinite" : "none",
-                  }}>
-                    <PixelIcon icon={getLucyIcon(lucyState)} color={colors.ink} size={18} />
-                  </div>
-                  <span style={{
-                    fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                    color: "#5A5550", flex: 1, lineHeight: 1.4,
-                  }}>{oneLiner}</span>
-                </div>
-
-                {/* Lucy's response */}
-                {lucyResponse && (
-                  <>
-                    <div style={{ padding: "10px 14px 14px", borderTop: "1px solid rgba(44,40,36,0.08)" }}>
-                      <div style={{
-                        fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em",
-                        color: "#4A4640", lineHeight: 1.6,
-                      }}>{lucyResponse}</div>
-                    </div>
-                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
-                  </>
-                )}
-
-                {/* Contextual action cards */}
-                {lucyState !== "thinking" && lucyActions.length > 0 && (
-                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
-                    {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
-                  </div>
-                )}
-              </div>
-
               {/* Completed notes — inline collapsed section */}
               {notes.length > 0 && (
                 <div style={{ marginTop: 32 }}>
@@ -334,7 +340,8 @@ export default function BrandPersonality({ onBack } = {}) {
                 </div>
               )}
             </div>
-          </div>
+            </div>
+          </>
         )}
 
         {/* Completion screen */}

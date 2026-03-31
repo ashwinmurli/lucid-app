@@ -321,7 +321,16 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
 
           {/* ═══ REVIEWING — redline mode ═══ */}
           {phase === "reviewing" && (
-            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
+            <>
+              {/* Sticky Lucy */}
+              <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+                <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                  <ManifestoLucyModule />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
               <div style={{ textAlign: "center", marginBottom: 32 }}>
                 <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>{draftVersion === 0 ? "Lucy's first draft." : `Draft ${draftVersion + 1}.`}</h2>
                 <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Select any text to give Lucy a note.</p>
@@ -455,14 +464,22 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
                 </div>
               </div>
 
-              {/* Lucy module */}
-              <ManifestoLucyModule />
-            </div>
+              </div>
+            </>
           )}
 
           {/* ═══ EDITING — user takes the pen ═══ */}
           {phase === "editing" && (
-            <div style={{ maxWidth: 640, margin: "0 auto", padding: "40px 24px 80px", animation: `fadeIn 0.4s ${ease} both` }}>
+            <>
+              {/* Sticky Lucy */}
+              <div style={{ position: "sticky", top: 0, zIndex: 100, background: colors.gradientTop, borderBottom: "1px solid rgba(44,40,36,0.06)" }}>
+                <div style={{ maxWidth: 640, margin: "0 auto", padding: "12px 24px" }}>
+                  <ManifestoLucyModule />
+                </div>
+              </div>
+
+              {/* Content */}
+              <div style={{ maxWidth: 640, margin: "0 auto", padding: "24px 24px 80px", animation: `fadeIn 0.4s ${ease} both` }}>
               <div style={{ textAlign: "center", marginBottom: 32 }}>
                 <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, marginBottom: 8, letterSpacing: "-0.02em" }}>Your pen now.</h2>
                 <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Edit freely. Make it yours.</p>
@@ -480,9 +497,8 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
                 </div>
               </div>
 
-              {/* Lucy module */}
-              <ManifestoLucyModule />
-            </div>
+              </div>
+            </>
           )}
 
           {/* ═══ LOCKED ═══ */}
