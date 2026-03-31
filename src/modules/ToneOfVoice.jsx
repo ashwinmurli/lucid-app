@@ -395,33 +395,9 @@ export default function ToneOfVoice({ onBack, onComplete, navigateTo } = {}) {
                   <p style={{ fontSize: 12, fontWeight: 400, color: "rgba(44,40,36,0.3)", lineHeight: 1.6 }}>Position each fader where this brand sits. Lucy set the starting points — adjust them.</p>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {allSpectrums.map((spec, i) => (
-                    <div key={spec.id} style={{ animation: `promptIn 0.4s ${ease} ${i * 0.08}s both` }}>
-                      <Fader spectrum={spec} value={values[i]} onChange={(v) => updateValue(i, v)} isLocked={locked} />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Add your own spectrum + Lucy module */}
-                <div style={{ marginTop: 24 }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 8 }}>ADD A SPECTRUM</div>
-                  <div>
-                    <div style={{ background: S.recess, borderRadius: 6, border: `1px solid ${S.border}`, overflow: "hidden" }}>
-                      <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-                        <input value={customLeft} onChange={(e) => setCustomLeft(e.target.value)} placeholder="Left end..." style={{ flex: 1, background: "transparent", border: "none", fontSize: 14, fontWeight: 400, color: S.text, outline: "none", fontFamily: fonts.primary, minWidth: 0 }} />
-                        <div style={{ width: 24, height: 2, borderRadius: 1, background: "rgba(44,40,36,0.1)", flexShrink: 0 }} />
-                        <input value={customRight} onChange={(e) => setCustomRight(e.target.value)} placeholder="Right end..." style={{ flex: 1, background: "transparent", border: "none", fontSize: 14, fontWeight: 400, color: S.text, outline: "none", fontFamily: fonts.primary, minWidth: 0, textAlign: "right" }} onKeyDown={(e) => { if (e.key === "Enter") addCustomSpectrum(); }} />
-                      </div>
-                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                      <button onClick={addCustomSpectrum} disabled={!customLeft.trim() || !customRight.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: customLeft.trim() && customRight.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: customLeft.trim() && customRight.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>ADD SPECTRUM</button>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Lucy Module */}
                 <div style={{
-                  marginTop: 16,
+                  marginBottom: 24,
                   background: colors.lucySurface,
                   backgroundImage: colors.lucyGrain,
                   border: `1px solid ${colors.lucyBorder}`,
@@ -475,6 +451,27 @@ export default function ToneOfVoice({ onBack, onComplete, navigateTo } = {}) {
                       </div>
                     </>
                   )}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {allSpectrums.map((spec, i) => (
+                    <div key={spec.id} style={{ animation: `promptIn 0.4s ${ease} ${i * 0.08}s both` }}>
+                      <Fader spectrum={spec} value={values[i]} onChange={(v) => updateValue(i, v)} isLocked={locked} />
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: 24 }}>
+                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: S.muted, marginBottom: 8 }}>ADD A SPECTRUM</div>
+                  <div style={{ background: S.recess, borderRadius: 6, border: `1px solid ${S.border}`, overflow: "hidden" }}>
+                    <div style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+                      <input value={customLeft} onChange={(e) => setCustomLeft(e.target.value)} placeholder="Left end..." style={{ flex: 1, background: "transparent", border: "none", fontSize: 14, fontWeight: 400, color: S.text, outline: "none", fontFamily: fonts.primary, minWidth: 0 }} />
+                      <div style={{ width: 24, height: 2, borderRadius: 1, background: "rgba(44,40,36,0.1)", flexShrink: 0 }} />
+                      <input value={customRight} onChange={(e) => setCustomRight(e.target.value)} placeholder="Right end..." style={{ flex: 1, background: "transparent", border: "none", fontSize: 14, fontWeight: 400, color: S.text, outline: "none", fontFamily: fonts.primary, minWidth: 0, textAlign: "right" }} onKeyDown={(e) => { if (e.key === "Enter") addCustomSpectrum(); }} />
+                    </div>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
+                    <button onClick={addCustomSpectrum} disabled={!customLeft.trim() || !customRight.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: customLeft.trim() && customRight.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: customLeft.trim() && customRight.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>ADD SPECTRUM</button>
+                  </div>
                 </div>
               </div>
             </div>
