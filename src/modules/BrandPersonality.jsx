@@ -46,6 +46,7 @@ export default function BrandPersonality({ onBack } = {}) {
   const [usedSpark, setUsedSpark] = useState(false);
   const [lucyState, setLucyState] = useState("idle");
   const [lucyResponse, setLucyResponse] = useState("");
+  const [isRewriteMode, setIsRewriteMode] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
   const ref = useRef(null);
   const canvasRef = useRef(null);
@@ -62,14 +63,15 @@ export default function BrandPersonality({ onBack } = {}) {
   const keep = useCallback(() => {
     if (!text.trim()) return;
     setNotes((prev) => [{ text: text.trim(), prompt: prompt.q, lucyText: lucyResponse || null, chapter: prompt.chapter, id: Date.now() }, ...prev]);
-    setText(""); setUsedSpark(false); setLucyResponse(""); setLucyState("idle");
+    setText(""); setUsedSpark(false); setLucyResponse(""); setIsRewriteMode(false); setLucyState("idle");
     setCur((c) => c + 1); setAnimKey((k) => k + 1);
     setTimeout(() => { if (ref.current) ref.current.focus(); }, 200);
   }, [text, prompt, lucyResponse]);
 
   const handleLucyAction = useCallback(async (action) => {
     if (action === "spark") { spark(); return; }
-    if (action === "happy") { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    if (action === "happy") { setIsRewriteMode(false); setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); return; }
+    if (action === "rewrite") setIsRewriteMode(true);
     setLucyState("thinking"); setLucyResponse("");
     try {
       await askLucyStream(
@@ -211,8 +213,31 @@ export default function BrandPersonality({ onBack } = {}) {
                     </>
                   )}
 
+                  {/* Rewrite actions: Use this / Try again / Dismiss */}
+                  {isRewriteMode && lucyResponse && lucyState !== "thinking" && (
+                    <>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                      <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div onClick={() => { setText(lucyResponse); setLucyResponse(""); setIsRewriteMode(false); setLucyState("idle"); }}
+                          style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon="check" color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>USE THIS</span>
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <LucyActionCard icon="probe" label="TRY AGAIN" onClick={() => handleLucyAction("rewrite")} />
+                          <LucyActionCard icon="eye" label="DISMISS" onClick={() => { setLucyResponse(""); setIsRewriteMode(false); setLucyState("idle"); }} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {/* Contextual action cards */}
-                  {lucyState !== "thinking" && lucyActions.length > 0 && (
+                  {!isRewriteMode && lucyState !== "thinking" && lucyActions.length > 0 && (
                     <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                       {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                     </div>

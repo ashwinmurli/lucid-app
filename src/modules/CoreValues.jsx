@@ -189,6 +189,7 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
   const [customWord, setCustomWord] = useState("");
   const [lucyState, setLucyState] = useState("idle");
   const [lucyResponse, setLucyResponse] = useState("");
+  const [rewriteTargetId, setRewriteTargetId] = useState(null);
   const [locked, setLocked] = useState(false);
 
   const selectedValues = values.filter((v) => v.selected);
@@ -272,7 +273,7 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
     if (sel) return [
       { icon: "target", label: "MORE SPECIFIC", onClick: () => handleValueAction(sel.id, "specific") },
       { icon: "warning-diamond", label: "IS THIS DISTINCTIVE?", onClick: () => handleValueAction(sel.id, "distinctive") },
-      { icon: "pen-square", label: "DIFFERENT ANGLE", onClick: () => handleValueAction(sel.id, "different_angle") },
+      { icon: "pen-square", label: "DIFFERENT ANGLE", onClick: () => { setRewriteTargetId(sel.id); handleValueAction(sel.id, "different_angle"); } },
     ];
     return [];
   }, [lucyState, lucyResponse, selectedValues]);
@@ -371,7 +372,34 @@ export default function CoreValues({ onBack, onComplete, navigateTo } = {}) {
                       <div style={{ height: 1, background: "rgba(44,40,36,0.06)", margin: "0 10px" }} />
                     </>
                   )}
-                  {lucyState !== "thinking" && lucyActions.length > 0 && (
+                  {/* Rewrite actions: Use this / Try again / Dismiss */}
+                  {rewriteTargetId && lucyResponse && lucyState !== "thinking" && (
+                    <>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                      <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div onClick={() => {
+                          setValues(prev => prev.map(v => v.id === rewriteTargetId ? { ...v, definition: lucyResponse } : v));
+                          setLucyResponse(""); setRewriteTargetId(null); setLucyState("idle");
+                        }}
+                          style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon="check" color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>USE THIS</span>
+                        </div>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <LucyActionCard icon="probe" label="TRY AGAIN" onClick={() => handleValueAction(rewriteTargetId, "different_angle")} />
+                          <LucyActionCard icon="eye" label="DISMISS" onClick={() => { setLucyResponse(""); setRewriteTargetId(null); setLucyState("idle"); }} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Contextual action cards */}
+                  {!rewriteTargetId && lucyState !== "thinking" && lucyActions.length > 0 && (
                     <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                       {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                     </div>
