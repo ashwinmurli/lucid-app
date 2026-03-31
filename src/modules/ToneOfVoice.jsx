@@ -277,7 +277,20 @@ function Fader({ spectrum, value, onChange, isLocked, moduleColor }) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function ToneOfVoice({ onBack } = {}) {
+const PREREQ_NAV = [
+  { keywords: ["personality", "brand personality"], target: "personality", label: "GO TO PERSONALITY" },
+  { keywords: ["tension", "tensions"], target: "tensions", label: "GO TO TENSIONS" },
+];
+
+function getPrereqActions(response, navigateTo) {
+  if (!response || !navigateTo) return [];
+  const lower = response.toLowerCase();
+  const seen = new Set();
+  return PREREQ_NAV.filter(p => !seen.has(p.target) && p.keywords.some(k => lower.includes(k)) && (seen.add(p.target), true))
+    .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
+}
+
+export default function ToneOfVoice({ onBack, navigateTo } = {}) {
   const [customSpectrums, setCustomSpectrums] = useState([]);
   const [customLeft, setCustomLeft] = useState("");
   const [customRight, setCustomRight] = useState("");
@@ -334,6 +347,7 @@ export default function ToneOfVoice({ onBack } = {}) {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
       { icon: "check", label: "GOT IT", onClick: () => handleToneAction("happy") },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (setFadersCount > 0) return [
       { icon: "pen-square", label: "EXPLAIN POSITIONS", onClick: () => handleToneAction("explain") },

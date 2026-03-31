@@ -92,7 +92,19 @@ function TensionCard({ pair, isSelected, onToggle, disabled }) {
   );
 }
 
-export default function TensionPairs({ onComplete, onBack }) {
+const PREREQ_NAV = [
+  { keywords: ["personality", "brand personality"], target: "personality", label: "GO TO PERSONALITY" },
+];
+
+function getPrereqActions(response, navigateTo) {
+  if (!response || !navigateTo) return [];
+  const lower = response.toLowerCase();
+  const seen = new Set();
+  return PREREQ_NAV.filter(p => !seen.has(p.target) && p.keywords.some(k => lower.includes(k)) && (seen.add(p.target), true))
+    .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
+}
+
+export default function TensionPairs({ onComplete, onBack, navigateTo }) {
   const [customQuality, setCustomQuality] = useState("");
   const [customExcess, setCustomExcess] = useState("");
   const [customPairs, setCustomPairs] = useState([]);
@@ -146,6 +158,7 @@ export default function TensionPairs({ onComplete, onBack }) {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
       { icon: "check", label: "GOT IT", onClick: () => handleLucyAction("happy") },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (count === 0) return [
       { icon: "sparkle", label: "SUGGEST TENSIONS", onClick: () => handleLucyAction("suggest") },

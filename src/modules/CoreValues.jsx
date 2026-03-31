@@ -171,7 +171,20 @@ function ValueCard({ value, isSelected, onSelect, onUpdateDef, onRefine, onRemov
 /* ══════════════════════════════════════════════════════════════
    MAIN
    ══════════════════════════════════════════════════════════════ */
-export default function CoreValues({ onBack } = {}) {
+const PREREQ_NAV = [
+  { keywords: ["personality", "brand personality"], target: "personality", label: "GO TO PERSONALITY" },
+  { keywords: ["tension", "tensions"], target: "tensions", label: "GO TO TENSIONS" },
+];
+
+function getPrereqActions(response, navigateTo) {
+  if (!response || !navigateTo) return [];
+  const lower = response.toLowerCase();
+  const seen = new Set();
+  return PREREQ_NAV.filter(p => !seen.has(p.target) && p.keywords.some(k => lower.includes(k)) && (seen.add(p.target), true))
+    .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
+}
+
+export default function CoreValues({ onBack, navigateTo } = {}) {
   const [values, setValues] = useState(VALUE_CANDIDATES.map((v) => ({ ...v, definition: "", selected: false })));
   const [customWord, setCustomWord] = useState("");
   const [lucyState, setLucyState] = useState("idle");
@@ -253,6 +266,7 @@ export default function CoreValues({ onBack } = {}) {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
       { icon: "check", label: "GOT IT", onClick: () => { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); } },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     const sel = selectedValues.find(v => v.definition.trim());
     if (sel) return [

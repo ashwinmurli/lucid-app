@@ -143,7 +143,22 @@ function USPCard({ usp, isPrimary, onSetPrimary, onRemove, isLocked }) {
 }
 
 /* ══════════════════════════════════════════════════════════════ */
-export default function USPs({ onBack } = {}) {
+const PREREQ_NAV = [
+  { keywords: ["personality", "brand personality"], target: "personality", label: "GO TO PERSONALITY" },
+  { keywords: ["tension", "tensions"], target: "tensions", label: "GO TO TENSIONS" },
+  { keywords: ["values", "core values"], target: "values", label: "GO TO VALUES" },
+  { keywords: ["tone", "tone of voice"], target: "tone", label: "GO TO TONE" },
+];
+
+function getPrereqActions(response, navigateTo) {
+  if (!response || !navigateTo) return [];
+  const lower = response.toLowerCase();
+  const seen = new Set();
+  return PREREQ_NAV.filter(p => !seen.has(p.target) && p.keywords.some(k => lower.includes(k)) && (seen.add(p.target), true))
+    .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
+}
+
+export default function USPs({ onBack, navigateTo } = {}) {
   const [usps, setUsps] = useState(STARTER_USPS);
   const [primaryId, setPrimaryId] = useState(null);
   const [input, setInput] = useState("");
@@ -179,6 +194,7 @@ export default function USPs({ onBack } = {}) {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
       { icon: "check", label: "GOT IT", onClick: () => handleUspAction("happy") },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (input.trim()) return [
       { icon: "pen-square", label: "EXPAND WITH PROOF", onClick: () => handleUspAction("expand_usp") },

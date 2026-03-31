@@ -35,7 +35,23 @@ Our work is precise because precision is generous. It says: we thought about thi
 For the builders who know that craft isn't decoration. It's the structure. It's the thing that holds everything else together when trends fade and noise clears.`,
 ];
 
-export default function Manifesto({ onBack, projectData } = {}) {
+const PREREQ_NAV = [
+  { keywords: ["personality", "brand personality"], target: "personality", label: "GO TO PERSONALITY" },
+  { keywords: ["tension", "tensions"], target: "tensions", label: "GO TO TENSIONS" },
+  { keywords: ["values", "core values"], target: "values", label: "GO TO VALUES" },
+  { keywords: ["tone", "tone of voice"], target: "tone", label: "GO TO TONE" },
+  { keywords: ["usp", "usps", "unique selling"], target: "usps", label: "GO TO USPS" },
+];
+
+function getPrereqActions(response, navigateTo) {
+  if (!response || !navigateTo) return [];
+  const lower = response.toLowerCase();
+  const seen = new Set();
+  return PREREQ_NAV.filter(p => !seen.has(p.target) && p.keywords.some(k => lower.includes(k)) && (seen.add(p.target), true))
+    .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
+}
+
+export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
   const [phase, setPhase] = useState("composing");
   const [text, setText] = useState("");
   const [feedbackInput, setFeedbackInput] = useState("");
@@ -190,12 +206,14 @@ export default function Manifesto({ onBack, projectData } = {}) {
     if (!text && phase !== "composing") return [
       { icon: "pen-square", label: "WRITE FIRST DRAFT", onClick: () => handleManifestoAction("draft_manifesto") },
       { icon: "eye", label: "I'LL WRITE IT MYSELF", onClick: () => handleManifestoAction("write_myself") },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     if (text) return [
       { icon: "warning-diamond", label: "CHALLENGE DRAFT", onClick: () => handleManifestoAction("Make it more provocative and less safe") },
       { icon: "zap", label: "MAKE IT BOLDER", onClick: () => handleManifestoAction("Make it bolder — bigger swings, more conviction") },
       { icon: "sparkle", label: "TIGHTEN IT", onClick: () => handleManifestoAction("Tighten it — fewer words, more punch") },
       { icon: "pen-square", label: "REWRITE", onClick: () => handleManifestoAction("Rewrite from scratch with a completely different angle") },
+      ...getPrereqActions(lucyResponse, navigateTo),
     ];
     return [];
   })();

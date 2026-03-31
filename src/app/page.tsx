@@ -184,6 +184,7 @@ export default function LucidApp() {
               navigateTo("values");
             }}
             onBack={() => setCurrentModule("dashboard")}
+            navigateTo={navigateTo}
           />
         )}
 
@@ -194,6 +195,7 @@ export default function LucidApp() {
               navigateTo("tone");
             }}
             onBack={() => setCurrentModule("dashboard")}
+            navigateTo={navigateTo}
           />
         )}
 
@@ -204,6 +206,7 @@ export default function LucidApp() {
               navigateTo("usps");
             }}
             onBack={() => setCurrentModule("dashboard")}
+            navigateTo={navigateTo}
           />
         )}
 
@@ -218,6 +221,7 @@ export default function LucidApp() {
               ]);
             }}
             onBack={() => setCurrentModule("dashboard")}
+            navigateTo={navigateTo}
           />
         )}
 
@@ -229,6 +233,7 @@ export default function LucidApp() {
               navigateTo("summary");
             }}
             onBack={() => setCurrentModule("dashboard")}
+            navigateTo={navigateTo}
           />
         )}
 
