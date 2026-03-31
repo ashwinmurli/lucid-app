@@ -333,7 +333,7 @@ export default function ToneOfVoice({ onBack } = {}) {
   const lucyActions = (() => {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
-      { icon: "check", label: "I'M HAPPY", onClick: () => handleToneAction("happy") },
+      { icon: "check", label: "GOT IT", onClick: () => handleToneAction("happy") },
     ];
     if (setFadersCount > 0) return [
       { icon: "pen-square", label: "EXPLAIN POSITIONS", onClick: () => handleToneAction("explain") },
@@ -441,7 +441,7 @@ export default function ToneOfVoice({ onBack } = {}) {
                     </>
                   )}
                   {lucyState !== "thinking" && lucyActions.length > 0 && (
-                    <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                       {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                     </div>
                   )}

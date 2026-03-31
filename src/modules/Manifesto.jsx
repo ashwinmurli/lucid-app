@@ -230,7 +230,7 @@ export default function Manifesto({ onBack, projectData } = {}) {
         </div>
       )}
       {lucyState !== "thinking" && lucyActions.length > 0 && (
-        <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
           {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
         </div>
       )}

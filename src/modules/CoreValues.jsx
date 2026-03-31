@@ -252,7 +252,7 @@ export default function CoreValues({ onBack } = {}) {
   const lucyActions = useMemo(() => {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
-      { icon: "check", label: "I'M HAPPY", onClick: () => { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); } },
+      { icon: "check", label: "GOT IT", onClick: () => { setLucyState("done"); setTimeout(() => { setLucyResponse(""); setLucyState("idle"); }, 1000); } },
     ];
     const sel = selectedValues.find(v => v.definition.trim());
     if (sel) return [
@@ -413,7 +413,7 @@ export default function CoreValues({ onBack } = {}) {
                 </>
               )}
               {lucyState !== "thinking" && lucyActions.length > 0 && (
-                <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                   {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                 </div>
               )}

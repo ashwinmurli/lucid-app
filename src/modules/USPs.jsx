@@ -178,7 +178,7 @@ export default function USPs({ onBack } = {}) {
   const lucyActions = useMemo(() => {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
-      { icon: "check", label: "I'M HAPPY", onClick: () => handleUspAction("happy") },
+      { icon: "check", label: "GOT IT", onClick: () => handleUspAction("happy") },
     ];
     if (input.trim()) return [
       { icon: "pen-square", label: "EXPAND WITH PROOF", onClick: () => handleUspAction("expand_usp") },
@@ -367,7 +367,7 @@ export default function USPs({ onBack } = {}) {
                   </>
                 )}
                 {lucyState !== "thinking" && lucyActions.length > 0 && (
-                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                     {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                   </div>
                 )}

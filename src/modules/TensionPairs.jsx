@@ -145,7 +145,7 @@ export default function TensionPairs({ onComplete, onBack }) {
   const lucyActions = (() => {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
-      { icon: "check", label: "I'M HAPPY", onClick: () => handleLucyAction("happy") },
+      { icon: "check", label: "GOT IT", onClick: () => handleLucyAction("happy") },
     ];
     if (count === 0) return [
       { icon: "sparkle", label: "SUGGEST TENSIONS", onClick: () => handleLucyAction("suggest") },
@@ -314,7 +314,7 @@ export default function TensionPairs({ onComplete, onBack }) {
               </>
             )}
             {lucyState !== "thinking" && lucyActions.length > 0 && (
-              <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+              <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                 {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
               </div>
             )}

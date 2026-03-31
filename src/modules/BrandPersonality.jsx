@@ -98,7 +98,7 @@ export default function BrandPersonality({ onBack } = {}) {
     if (lucyState === "thinking") return [];
     if (lucyResponse) return [
       { icon: "sparkle", label: "HELP ME REWRITE", onClick: () => handleLucyAction("rewrite") },
-      { icon: "check", label: "I'M HAPPY", onClick: () => handleLucyAction("happy") },
+      { icon: "check", label: "GOT IT", onClick: () => handleLucyAction("happy") },
     ];
     if (text.trim()) return [
       { icon: "warning-diamond", label: "CHALLENGE THIS", onClick: () => handleLucyAction("challenge") },
@@ -287,7 +287,7 @@ export default function BrandPersonality({ onBack } = {}) {
 
                 {/* Contextual action cards */}
                 {lucyState !== "thinking" && lucyActions.length > 0 && (
-                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
                     {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                   </div>
                 )}
