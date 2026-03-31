@@ -290,7 +290,7 @@ function getPrereqActions(response, navigateTo) {
     .map(p => ({ icon: "push", label: p.label, onClick: () => navigateTo(p.target) }));
 }
 
-export default function ToneOfVoice({ onBack, navigateTo } = {}) {
+export default function ToneOfVoice({ onBack, onComplete, navigateTo } = {}) {
   const [customSpectrums, setCustomSpectrums] = useState([]);
   const [customLeft, setCustomLeft] = useState("");
   const [customRight, setCustomRight] = useState("");
@@ -480,9 +480,8 @@ export default function ToneOfVoice({ onBack, navigateTo } = {}) {
             </div>
           )}
 
-          {/* Locked view — generated paragraph */}
+          {/* Locked view */}
           {locked && (() => {
-            // Build a natural, descriptive paragraph
             const describe = (spec, v) => {
               if (v < 0.2) return `clearly ${spec.left.toLowerCase()}`;
               if (v < 0.35) return `more ${spec.left.toLowerCase()} than ${spec.right.toLowerCase()}`;
@@ -490,22 +489,18 @@ export default function ToneOfVoice({ onBack, navigateTo } = {}) {
               if (v > 0.65) return `more ${spec.right.toLowerCase()} than ${spec.left.toLowerCase()}`;
               return null;
             };
-
             const strong = allSpectrums.map((spec, i) => describe(spec, values[i])).filter(Boolean);
             const mid = allSpectrums.filter((spec, i) => values[i] >= 0.35 && values[i] <= 0.65);
-
             let para = "If you met this brand at a dinner party, you'd notice they're ";
             if (strong.length === 1) para += strong[0];
             else if (strong.length === 2) para += `${strong[0]} and ${strong[1]}`;
             else if (strong.length > 2) para += strong.slice(0, -1).join(", ") + `, and ${strong[strong.length - 1]}`;
             else para += "measured and balanced in every direction";
             para += ". ";
-
-            if (mid.length > 0) {
-              para += `They don't lean hard on ${mid.map((s) => `${s.left.toLowerCase()} or ${s.right.toLowerCase()}`).join(", or ")} — they read the room. `;
-            }
-
+            if (mid.length > 0) para += `They don't lean hard on ${mid.map((s) => `${s.left.toLowerCase()} or ${s.right.toLowerCase()}`).join(", or ")} — they read the room. `;
             para += "You'd trust them immediately. Not because they perform trust, but because every word feels chosen.";
+
+            const toneData = { spectrums: allSpectrums.map((s, i) => ({ ...s, value: values[i] })) };
 
             return (
               <div style={{ padding: "40px 24px 80px", animation: `fadeIn 0.6s ${ease} both` }}>
@@ -518,53 +513,61 @@ export default function ToneOfVoice({ onBack, navigateTo } = {}) {
                     <h2 style={{ fontSize: 28, fontWeight: 300, lineHeight: 1.35, letterSpacing: "-0.02em" }}>How they sound.</h2>
                   </div>
 
-                  <div style={{ animation: `promptIn 0.5s ${ease} 0.2s both` }}>
-                    <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, padding: "24px 28px" }}>
-                      <div style={{ fontSize: 16, fontWeight: 400, color: S.text, lineHeight: 1.8, letterSpacing: "-0.01em" }}>{para}</div>
-                    </div>
-
-                    {/* Tags — module-colored */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 16, justifyContent: "center" }}>
-                      {allSpectrums.map((spec, i) => {
-                        const v = values[i];
-                        const label = v < 0.4 ? spec.left : v > 0.6 ? spec.right : `${spec.left}/${spec.right}`;
-                        const isStrong = v < 0.35 || v > 0.65;
-                        return (
-                          <div key={spec.id} style={{
-                            display: "inline-flex", alignItems: "center",
-                            padding: "5px 12px", borderRadius: 4,
-                            background: isStrong ? "rgba(74,173,255,0.08)" : "rgba(44,40,36,0.04)",
-                            boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
-                            fontSize: 9, fontWeight: 700,
-                            letterSpacing: "0.08em", textTransform: "uppercase",
-                            color: isStrong ? "rgba(74,173,255,0.7)" : "rgba(44,40,36,0.25)",
-                          }}>
-                            {label}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Unlock button */}
-                  <div style={{ marginTop: 32 }}>
-                    <button onClick={() => setLocked(false)} style={{
-                      width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer",
-                      fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                      letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)",
-                      background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                      boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    }}>UNLOCK & ADJUST</button>
-                  </div>
-
-                  <div style={{ maxWidth: 300, margin: "24px auto 0" }}>
-                    <div style={{ background: S.screen, borderRadius: 4, padding: "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.06)", textAlign: "center" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-                        <PixelIcon icon="approves" color={S.lcdBright} size={14} />
-                        <span style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: S.lcdBright }}>TONE DEFINED</span>
+                  {/* Lucy module */}
+                  <div style={{ background: colors.lucySurface, backgroundImage: colors.lucyGrain, border: `1px solid ${colors.lucyBorder}`, boxShadow: colors.lucyShadow, borderRadius: 8, overflow: "hidden" }}>
+                    <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 40, height: 30, background: colors.eink, borderRadius: 3, border: `1px solid ${colors.einkBorder}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <PixelIcon icon="check" color={colors.ink} size={18} />
                       </div>
-                      <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 9, color: S.lcdDim }}>{allSpectrums.length} spectrums · positioned</div>
+                      <span style={{ fontFamily: fonts.pixel, fontSize: 11, letterSpacing: "0.08em", color: "#5A5550", flex: 1, lineHeight: 1.4 }}>
+                        Tone calibrated. {allSpectrums.length} spectrums positioned.
+                      </span>
+                    </div>
+                    <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                    <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                      {[
+                        { icon: "probe", label: "UNLOCK & ADJUST", onClick: () => setLocked(false) },
+                        { icon: "spark", label: "WRITE EXAMPLE COPY", onClick: () => handleToneAction("write_example") },
+                        { icon: "push", label: "CONTINUE TO USPS", onClick: () => onComplete?.(toneData) },
+                      ].map(a => (
+                        <div key={a.label} onClick={a.onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon={a.icon} color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>{a.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tone summary card */}
+                  <div style={{ marginTop: 16, animation: `promptIn 0.5s ${ease} 0.2s both` }}>
+                    <div style={{ background: S.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: S.raised, padding: "24px 28px" }}>
+                      <div style={{ fontSize: 16, fontWeight: 400, color: S.text, lineHeight: 1.8, letterSpacing: "-0.01em", marginBottom: 20 }}>{para}</div>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.06)", marginBottom: 16 }} />
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {allSpectrums.map((spec, i) => {
+                          const v = values[i];
+                          const label = v < 0.4 ? spec.left : v > 0.6 ? spec.right : `${spec.left}/${spec.right}`;
+                          const isStrong = v < 0.35 || v > 0.65;
+                          return (
+                            <div key={spec.id} style={{
+                              display: "inline-flex", alignItems: "center",
+                              padding: "5px 12px", borderRadius: 4,
+                              background: isStrong ? "rgba(74,173,255,0.08)" : "rgba(44,40,36,0.04)",
+                              boxShadow: "0 1px 2px rgba(0,0,0,0.03) inset, 0 1px 0 rgba(255,255,255,0.5)",
+                              fontFamily: fonts.pixel, fontSize: 9,
+                              letterSpacing: "0.08em", textTransform: "uppercase",
+                              color: isStrong ? "rgba(74,173,255,0.7)" : "rgba(44,40,36,0.25)",
+                            }}>
+                              {label}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
