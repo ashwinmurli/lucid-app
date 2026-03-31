@@ -106,7 +106,7 @@ export function LucyActionCard({ icon, label, onClick }) {
         color: colors.ink, transition: "all 0.15s ease",
       }}
     >
-      <PixelIcon icon={icon} color={colors.ink} size={12} />
+      <PixelIcon icon={icon} color={colors.ink} size={16} />
       {label}
     </button>
   );
