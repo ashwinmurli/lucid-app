@@ -252,6 +252,22 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
           {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
         </div>
       )}
+      {lucyState !== "thinking" && text.trim() && (
+        <>
+          <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+          <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+            <div onClick={() => { setPhase("locked"); setLucyState("done"); }} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+              onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+              onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+            >
+              <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <PixelIcon icon="lock" color={colors.ink} size={16} />
+              </div>
+              <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>LOCK MANIFESTO</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -329,37 +345,20 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
                       </p>
                     ))}
                   </div>
-                  {/* Edit + Lock — transport button style */}
+                  {/* Edit — transport button style */}
                   <div style={{ marginTop: 16 }}>
                     <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                    <div style={{ display: "flex", userSelect: "none" }}>
-                      <button onClick={() => setPhase("editing")} style={{
-                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                        padding: "11px 0", border: "none", cursor: "pointer",
-                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                        letterSpacing: "0.08em", textTransform: "uppercase",
-                        color: "rgba(44,40,36,0.35)",
-                        background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                        boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
-                        borderRadius: "0 0 0 4px",
-                        userSelect: "none",
-                      }}>EDIT DIRECTLY</button>
-                      <div style={{ width: 1, background: "rgba(44,40,36,0.06)" }} />
-                      <button onClick={() => { setPhase("locked"); setLucyState("done"); }} style={{
-                        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                        padding: "11px 0", border: "none", cursor: "pointer",
-                        fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                        letterSpacing: "0.08em", textTransform: "uppercase",
-                        color: S.text,
-                        background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                        boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
-                        borderRadius: "0 0 4px 0",
-                        userSelect: "none",
-                      }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />
-                        LOCK MANIFESTO
-                      </button>
-                    </div>
+                    <button onClick={() => setPhase("editing")} style={{
+                      width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                      padding: "11px 0", border: "none", cursor: "pointer",
+                      fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
+                      letterSpacing: "0.08em", textTransform: "uppercase",
+                      color: "rgba(44,40,36,0.35)",
+                      background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
+                      boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset",
+                      borderRadius: "0 0 4px 4px",
+                      userSelect: "none",
+                    }}>EDIT DIRECTLY</button>
                   </div>
                 </div>
 
@@ -478,9 +477,6 @@ export default function Manifesto({ onBack, projectData, navigateTo } = {}) {
                     <span style={{ fontFamily: fonts.pixel, fontSize: 9, fontWeight: 400, fontVariantNumeric: "tabular-nums", letterSpacing: "0.08em", color: colors.manifesto }}>{wordCount} words</span>
                   </div>
                   <div style={{ height: 1, background: "rgba(44,40,36,0.06)", boxShadow: "0 1px 0 rgba(255,255,255,0.25)" }} />
-                  <button onClick={() => { setPhase("locked"); setLucyState("done"); }} disabled={!text.trim()} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "11px 0", border: "none", cursor: text.trim() ? "pointer" : "default", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: text.trim() ? S.text : "rgba(44,40,36,0.1)", background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset", transition: "all 0.06s ease" }}>
-                    {text.trim() && <div style={{ width: 6, height: 6, borderRadius: "50%", background: S.accent }} />}LOCK MANIFESTO
-                  </button>
                 </div>
               </div>
 

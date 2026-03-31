@@ -227,13 +227,23 @@ export default function TensionPairs({ onComplete, onBack, navigateTo }) {
                   color: colors.lucyStatusText, flex: 1,
                 }}>TENSIONS DEFINED</span>
               </div>
+              {onComplete && (
+                <>
+                  <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                  <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div onClick={() => onComplete(getData())} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                      onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                    >
+                      <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <PixelIcon icon="push" color={colors.ink} size={16} />
+                      </div>
+                      <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>CONTINUE</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
-
-            {onComplete && (
-              <div style={{ marginTop: 24 }}>
-                <TransportBtn onClick={() => onComplete(getData())} dot>CONTINUE</TransportBtn>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -331,13 +341,23 @@ export default function TensionPairs({ onComplete, onBack, navigateTo }) {
                 {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
               </div>
             )}
+            {lucyState !== "thinking" && count === 3 && (
+              <>
+                <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div onClick={() => setLocked(true)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                    onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                  >
+                    <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <PixelIcon icon="lock" color={colors.ink} size={16} />
+                    </div>
+                    <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>LOCK THESE IN</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-
-          {count === 3 && (
-            <div style={{ marginTop: 24, animation: `fadeIn 0.4s ${ease} both` }}>
-              <TransportBtn onClick={() => setLocked(true)} dot>LOCK THESE IN</TransportBtn>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -459,21 +459,22 @@ export default function ToneOfVoice({ onBack, navigateTo } = {}) {
                       {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
                     </div>
                   )}
-                </div>
-
-                {/* Lock */}
-                <div style={{ marginTop: 16 }}>
-                  <button onClick={() => setLocked(true)} style={{
-                    width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer",
-                    fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                    letterSpacing: "0.08em", textTransform: "uppercase", color: S.text,
-                    background: `linear-gradient(180deg, #F0ECE5 0%, ${S.card} 100%)`,
-                    boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.tone }} />
-                    LOCK TONE
-                  </button>
+                  {lucyState !== "thinking" && (
+                    <>
+                      <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+                      <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                        <div onClick={() => setLocked(true)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                          onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                        >
+                          <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PixelIcon icon="lock" color={colors.ink} size={16} />
+                          </div>
+                          <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>LOCK TONE</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

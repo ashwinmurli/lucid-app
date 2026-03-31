@@ -119,6 +119,14 @@ export default function Discovery({ onBack } = {}) {
     return [];
   }, [lucyState, lucyResponse]);
 
+  const progressionActions = useMemo(() => {
+    if (lucyState === "thinking") return [];
+    if (phase === "questions" && answeredCount >= 3) return [
+      { icon: "probe", label: "ANALYZE GAPS", onClick: () => { setLucyState("thinking"); setTimeout(() => { setPhase("analysis"); setLucyState("idle"); }, 1500); } },
+    ];
+    return [];
+  }, [lucyState, phase, answeredCount]);
+
   /* ── Lucy module component ── */
   const LucyModule = () => (
     <div style={{
@@ -159,6 +167,24 @@ export default function Discovery({ onBack } = {}) {
         <div style={{ padding: "0 10px 10px", display: "flex", gap: 6, flexWrap: "wrap", ...(lucyResponse ? { marginTop: 8 } : {}) }}>
           {lucyActions.map(a => <LucyActionCard key={a.label} {...a} />)}
         </div>
+      )}
+      {lucyState !== "thinking" && progressionActions.length > 0 && (
+        <>
+          <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+          <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+            {progressionActions.map(a => (
+              <div key={a.label} onClick={a.onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+              >
+                <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <PixelIcon icon={a.icon} color={colors.ink} size={16} />
+                </div>
+                <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>{a.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -394,14 +420,6 @@ export default function Discovery({ onBack } = {}) {
               {/* Lucy module — fixed at bottom, below all questions */}
               <LucyModule />
 
-              {/* Analyze gaps button */}
-              {answeredCount >= 3 && (
-                <div style={{ marginTop: 24, animation: `fadeIn 0.4s ${ease} both` }}>
-                  <button onClick={() => { setLucyState("thinking"); setTimeout(() => { setPhase("analysis"); setLucyState("idle"); }, 1500); }} style={{ width: "100%", padding: "12px 0", borderRadius: 6, border: "none", cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text, background: `linear-gradient(180deg, #F0ECE5 0%, ${colors.card} 100%)`, boxShadow: "0 -1px 0 rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.accent }} />ANALYZE GAPS
-                  </button>
-                </div>
-              )}
             </div>
           )}
 
@@ -456,40 +474,23 @@ export default function Discovery({ onBack } = {}) {
                     color: "#5A5550", flex: 1, lineHeight: 1.4,
                   }}>Discovery reviewed. {answeredCount} captured · {GAPS.length} gaps found.</span>
                 </div>
+              <div style={{ height: 1, background: "rgba(44,40,36,0.08)", margin: "4px 10px 0" }} />
+              <div style={{ padding: "8px 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+                {[
+                  { icon: "probe", label: "BACK TO QUESTIONS", onClick: () => setPhase("questions") },
+                  { icon: "done", label: "START SYNTHESIS", onClick: () => onComplete?.({}) },
+                ].map(a => (
+                  <div key={a.label} onClick={a.onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 6, background: colors.eink, border: `1px solid ${colors.einkBorder}`, cursor: "pointer", transition: `all 0.15s ${ease}` }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#C5C0B2"}
+                    onMouseLeave={e => e.currentTarget.style.background = colors.eink}
+                  >
+                    <div style={{ width: 20, height: 20, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <PixelIcon icon={a.icon} color={colors.ink} size={16} />
+                    </div>
+                    <span style={{ fontFamily: fonts.pixel, fontSize: 10, letterSpacing: "0.08em", color: colors.ink }}>{a.label}</span>
+                  </div>
+                ))}
               </div>
-
-              {/* Actions */}
-              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-                <button onClick={() => setPhase("questions")} style={{
-                  flex: 1, padding: "12px 0",
-                  background: "transparent",
-                  border: `1px solid rgba(44,40,36,0.08)`,
-                  borderRadius: 6,
-                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                  letterSpacing: "0.08em", textTransform: "uppercase",
-                  color: "rgba(44,40,36,0.45)",
-                  transition: "all 0.15s ease",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.18)"; e.currentTarget.style.color = "rgba(44,40,36,0.7)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.08)"; e.currentTarget.style.color = "rgba(44,40,36,0.45)"; }}
-                >BACK TO QUESTIONS</button>
-                <button style={{
-                  flex: 1, padding: "12px 0",
-                  background: "transparent",
-                  border: `1px solid rgba(44,40,36,0.08)`,
-                  borderRadius: 6,
-                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
-                  letterSpacing: "0.08em", textTransform: "uppercase",
-                  color: colors.text,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  transition: "all 0.15s ease",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.18)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.08)"; }}
-                >
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.accent }} />
-                  START SYNTHESIS
-                </button>
               </div>
             </div>
           )}
