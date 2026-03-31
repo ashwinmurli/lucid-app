@@ -334,9 +334,8 @@ export default function Discovery({ onBack } = {}) {
                             <div style={{ height: 1, background: "rgba(44,40,36,0.04)" }} />
                             <div style={{ padding: "12px 16px" }}>
                               {/* Lucy's strategic intent */}
-                              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 12 }}>
-                                <div style={{ width: 4, height: 4, borderRadius: "50%", marginTop: 4, flexShrink: 0, background: colors.accent, boxShadow: "0 0 4px rgba(229,166,50,0.3)" }} />
-                                <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: "rgba(229,166,50,0.45)", lineHeight: 1.5 }}>{q.intent}</div>
+                              <div style={{ marginBottom: 12 }}>
+                                <div style={{ fontFamily: fonts.pixel, letterSpacing: "0.08em", fontSize: 10, color: "rgba(44,40,36,0.35)", lineHeight: 1.5 }}>{q.intent}</div>
                               </div>
 
                               {/* Response input — always visible when expanded */}
@@ -365,15 +364,15 @@ export default function Discovery({ onBack } = {}) {
                                 />
                                 {i < questions.length - 1 && (
                                   <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
-                                    <span style={{ fontSize: 9, fontWeight: 500, color: "rgba(44,40,36,0.12)", fontFamily: fonts.primary }}>
+                                    <span style={{ fontSize: 9, fontWeight: 500, color: "rgba(44,40,36,0.3)", fontFamily: fonts.primary }}>
                                       <kbd style={{
-                                        background: colors.panel, border: `1px solid ${colors.border}`,
+                                        background: "rgba(44,40,36,0.08)", border: `1px solid rgba(44,40,36,0.12)`,
                                         borderRadius: 3, padding: "1px 4px",
                                         fontFamily: fonts.primary, fontSize: 8,
                                       }}>⌘</kbd>
                                       {" + "}
                                       <kbd style={{
-                                        background: colors.panel, border: `1px solid ${colors.border}`,
+                                        background: "rgba(44,40,36,0.08)", border: `1px solid rgba(44,40,36,0.12)`,
                                         borderRadius: 3, padding: "1px 4px",
                                         fontFamily: fonts.primary, fontSize: 8,
                                       }}>Enter</kbd>
@@ -423,11 +422,11 @@ export default function Discovery({ onBack } = {}) {
                 {GAPS.map((gap, i) => (
                   <div key={i} style={{ background: colors.card, borderRadius: 4, border: "1px solid rgba(44,40,36,0.06)", boxShadow: shadows.raised, padding: "14px 16px", animation: `promptIn 0.4s ${ease} ${i * 0.1}s both` }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <div style={{ fontFamily: fonts.pixel, fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(44,40,36,0.4)" }}>{gap.area}</div>
-                      <button onClick={() => goToThemeQuestion(gap.area)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.25)", padding: "2px 8px", borderRadius: 3, transition: "all 0.15s ease" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.color = colors.lucyAmberText; e.currentTarget.style.background = "rgba(229,166,50,0.06)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(44,40,36,0.25)"; e.currentTarget.style.background = "none"; }}
-                      >EDIT ›</button>
+                      <div style={{ fontFamily: fonts.pixel, fontSize: 8, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(44,40,36,0.3)" }}>{gap.area}</div>
+                      <button onClick={() => goToThemeQuestion(gap.area)} style={{ background: "transparent", border: "1px solid rgba(44,40,36,0.1)", cursor: "pointer", fontSize: 10, fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(44,40,36,0.35)", padding: "3px 10px", borderRadius: 12, fontFamily: fonts.primary, transition: "all 0.15s ease" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.2)"; e.currentTarget.style.color = "rgba(44,40,36,0.6)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.1)"; e.currentTarget.style.color = "rgba(44,40,36,0.35)"; }}
+                      >EDIT</button>
                     </div>
                     <div style={{ fontSize: 13, fontWeight: 400, color: colors.text, lineHeight: 1.6 }}>{gap.note}</div>
                   </div>
@@ -462,33 +461,33 @@ export default function Discovery({ onBack } = {}) {
               {/* Actions */}
               <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
                 <button onClick={() => setPhase("questions")} style={{
-                  flex: 1, padding: "8px 0",
+                  flex: 1, padding: "12px 0",
                   background: "transparent",
-                  border: `1px solid rgba(44,40,36,0.12)`,
-                  borderRadius: 16,
-                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                  border: `1px solid rgba(44,40,36,0.08)`,
+                  borderRadius: 6,
+                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
                   letterSpacing: "0.08em", textTransform: "uppercase",
                   color: "rgba(44,40,36,0.45)",
                   transition: "all 0.15s ease",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; e.currentTarget.style.color = "rgba(44,40,36,0.7)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; e.currentTarget.style.color = "rgba(44,40,36,0.45)"; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.18)"; e.currentTarget.style.color = "rgba(44,40,36,0.7)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.08)"; e.currentTarget.style.color = "rgba(44,40,36,0.45)"; }}
                 >BACK TO QUESTIONS</button>
                 <button style={{
-                  flex: 1, padding: "8px 0",
+                  flex: 1, padding: "12px 0",
                   background: "transparent",
-                  border: `1px solid rgba(44,40,36,0.12)`,
-                  borderRadius: 16,
-                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 500,
+                  border: `1px solid rgba(44,40,36,0.08)`,
+                  borderRadius: 6,
+                  cursor: "pointer", fontFamily: fonts.primary, fontSize: 10, fontWeight: 600,
                   letterSpacing: "0.08em", textTransform: "uppercase",
                   color: colors.text,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                   transition: "all 0.15s ease",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.25)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.12)"; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.18)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(44,40,36,0.08)"; }}
                 >
-                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: colors.accent }} />
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: colors.accent }} />
                   START SYNTHESIS
                 </button>
               </div>
